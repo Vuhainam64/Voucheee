@@ -1,11 +1,12 @@
 import React from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
-import { HomeLayout, SellerLayout } from "../layout";
+import { HomeLayout, SellerLayout, SettingLayout } from "../layout";
 
 import { Home } from "../pages/Home";
-import { Login, Register, VerifyPopup } from "../pages/Auth";
+import { Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
+import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
   SellerIncome,
   SellerOrder,
@@ -68,6 +69,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "myIncome", element: <SellerIncome /> },
           { path: "myTransaction", element: <SellerTransaction /> },
         ],
+      },
+      {
+        path: "/setting",
+        element: <SettingLayout />,
+        children: [{ path: "profile", element: <Profile /> }],
       }
     );
   }
