@@ -1,11 +1,20 @@
 import React from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
-import { HomeLayout } from "../layout";
+import { HomeLayout, SellerLayout } from "../layout";
 
 import { Home } from "../pages/Home";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import { PageNotFound } from "../pages/Other";
+import {
+  SellerIncome,
+  SellerOrder,
+  SellerProduct,
+  SellerPublish,
+  SellerReverse,
+  SellerReview,
+  SellerTransaction,
+} from "../pages/Seller";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [{ path: "/404", element: <PageNotFound /> }];
@@ -44,6 +53,21 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         path: "/",
         element: <HomeLayout />,
         children: [{ path: "", element: <Home /> }],
+      },
+      {
+        path: "/seller",
+        element: <SellerLayout />,
+        children: [
+          { path: "productList", element: <SellerProduct /> },
+          { path: "publish", element: <SellerPublish /> },
+
+          { path: "order", element: <SellerOrder /> },
+          { path: "reverse", element: <SellerReverse /> },
+          { path: "review", element: <SellerReview /> },
+
+          { path: "myIncome", element: <SellerIncome /> },
+          { path: "myTransaction", element: <SellerTransaction /> },
+        ],
       }
     );
   }
