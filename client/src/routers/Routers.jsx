@@ -4,7 +4,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 import { HomeLayout, SellerLayout, SettingLayout } from "../layout";
 
 import { Home } from "../pages/Home";
-import { Profile } from "../pages/Setting";
+import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
@@ -73,7 +73,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       {
         path: "/setting",
         element: <SettingLayout />,
-        children: [{ path: "profile", element: <Profile /> }],
+        children: [
+          { path: "profile", element: <Profile /> },
+          { path: "password", element: <Password /> },
+          { path: "account", element: <Account /> },
+        ],
       }
     );
   }

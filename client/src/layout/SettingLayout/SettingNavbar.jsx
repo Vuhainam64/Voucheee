@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function SettingNavbar() {
   const user = useSelector((state) => state?.user?.user);

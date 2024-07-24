@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { MdPassword } from "react-icons/md";
-import UserAuthInput from "../Auth/UserAuthInput";
-import { motion } from "framer-motion";
-import { auth } from "../../config/firebase.config";
-import { updatePassword } from "firebase/auth";
-import { useDispatch } from "react-redux";
-import {
-  alertDanger,
-  alertNULL,
-  alertSuccess,
-} from "../../context/actions/alertActions";
 import { Link } from "react-router-dom";
-import ResetPassword from "../Auth/ResetPassword";
+import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import {
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
+
+import { MdPassword } from "react-icons/md";
+
+import { auth } from "../../config/firebase.config";
+import { ResetPassword, UserAuthInput } from "../../components/Auth";
 
 function Password() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -19,40 +19,33 @@ function Password() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isForgot, setIsForgot] = useState(false);
 
-  const dispatch = useDispatch();
-
   const update = async () => {
     try {
       const user = auth.currentUser;
 
-      // Xác thực lại người dùng
-      const credential = auth.EmailAuthProvider.credential(
-        user.email,
-        currentPassword
-      );
-      await user.reauthenticateWithCredential(credential);
+      if (user) {
+        // Xác thực lại người dùng
+        const credential = EmailAuthProvider.credential(
+          user.email,
+          currentPassword
+        );
+        await reauthenticateWithCredential(user, credential);
 
-      if (password === confirmPassword) {
-        // Cập nhật mật khẩu
-        await updatePassword(user, password);
-        console.log("Password updated");
-        dispatch(alertSuccess("Password updated"));
-        setTimeout(() => {
-          dispatch(alertNULL());
-        }, 3000);
+        if (password === confirmPassword) {
+          // Cập nhật mật khẩu
+          await updatePassword(user, password);
+          toast.success("Password updated");
+          setCurrentPassword("");
+          setPassword("");
+          setConfirmPassword("");
+        } else {
+          toast.error("Passwords do not match");
+        }
       } else {
-        console.log("Passwords do not match");
-        dispatch(alertDanger("Passwords do not match"));
-        setTimeout(() => {
-          dispatch(alertNULL());
-        }, 3000);
+        toast.error("No user is currently signed in.");
       }
     } catch (error) {
-      console.log(`Error updating password: ${error.message}`);
-      dispatch(alertDanger(`Error updating password: ${error.message}`));
-      setTimeout(() => {
-        dispatch(alertNULL());
-      }, 3000);
+      toast.error(`Error updating password: ${error.message}`);
     }
   };
 
@@ -84,13 +77,13 @@ function Password() {
         isPassword={true}
         setStateFunction={setConfirmPassword}
         Icon={MdPassword}
-        values={password}
+        values={confirmPassword}
       />
       <div className="flex mt-4 justify-between">
         <motion.div
           onClick={update}
           whileTap={{ scale: 0.9 }}
-          className="flex items-center justify-center p-2 rounded-xl hover-bg-blue-700 cursor-pointer bg-blue-600"
+          className="flex items-center justify-center p-2 rounded-xl hover:bg-blue-700 cursor-pointer bg-blue-600"
         >
           <p className="text-xl text-white">Update Password</p>
         </motion.div>
