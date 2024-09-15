@@ -13,7 +13,7 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-between bg-white ">
       {/* hero  */}
-      <div className="grid grid-cols-3 gap-4 py-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="col-span-2">
           <img src={Hero} alt="hero" />
         </div>
