@@ -36,11 +36,17 @@ function UserProfileDetails() {
       </motion.div>
       <AnimatePresence>
         {isMenu && (
-          <motion.div className=" absolute top-16 right-0 px-4 py-3 rounded-xl shadow-md z-10 flex flex-col items-start justify-start gap-4 w-full bg-white">
+          <motion.div
+            className=" absolute top-16 right-0 px-4 py-3 rounded-xl
+          z-10 flex flex-col items-start justify-start gap-4 w-full bg-white
+          min-w-[250px]"
+          >
             {role === "admin" && (
               <Link
                 to={"/admin"}
-                className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
+                className="text-md flex flex-row justify-between text-gray-700 
+                hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 
+                rounded-md"
               >
                 <div className="flex flex-row gap-5">
                   <div className="text-2xl">
@@ -74,7 +80,9 @@ function UserProfileDetails() {
                 <Link
                   to={menu.uri}
                   key={menu.id}
-                  className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
+                  className="text-md flex flex-row justify-between text-gray-700 
+                  hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 
+                  py-1 rounded-md"
                 >
                   <div className="flex flex-row gap-5">
                     <div className="text-2xl">{menu.icon}</div>

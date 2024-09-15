@@ -6,7 +6,7 @@ import HomeFooter from "./HomeFooter";
 
 const HomeLayout = () => {
   return (
-    <div className="max-w-[1000px] mx-auto">
+    <div className="flex justify-center items-center flex-col w-full">
       <HomeHeader />
       <Outlet />
       <HomeFooter />

@@ -4,25 +4,29 @@ import { useSelector } from "react-redux";
 
 import { FaSearch } from "react-icons/fa";
 
-import { Logo } from "../../assets/img";
+import { logoPrimary } from "../../assets/img";
 import UserProfileDetails from "./UserProfileDetails";
 
 const HomeHeader = () => {
   const user = useSelector((state) => state.user?.user);
 
   return (
-    <div className="flex items-center justify-between bg-primary">
+    <div className="flex items-center justify-between bg-white max-w-[1400px] w-full">
       <Link to="/">
-        <img src={Logo} alt="logo" className="p-4" />
+        <img src={logoPrimary} alt="logo" className="p-4 h-20" />
       </Link>
       <div className="">
         <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 w-full">
+          <div
+            className="absolute inset-y-0 start-0 flex items-center ps-3 w-full
+          text-primary"
+          >
             <FaSearch />
           </div>
           <input
             type="search"
-            className="block w-full p outline-none rounded-md px-8 py-2 items-center"
+            className="block w-full p outline-none rounded-md px-8 py-2 items-center
+            border bg-gray-200 min-w-620"
             placeholder="Tìm kiếm voucher..."
           />
         </div>
