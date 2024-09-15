@@ -21,6 +21,7 @@ function App() {
   const getUserDataAndRole = (userCred) => {
     getDoc(doc(db, "user", userCred.uid)).then((userDoc) => {
       if (userDoc.exists() && userDoc.data().roleId) {
+        console.log("userDoc: ", userDoc.data());
         const userData = {
           ...userCred.providerData[0],
           displayName: userCred.displayName,
