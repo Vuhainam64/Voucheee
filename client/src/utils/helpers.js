@@ -40,7 +40,7 @@ export const Menus = [
     id: uuidv4(),
     icon: <BsShop />,
     name: <div className="text-nowrap">Trang người bán</div>,
-    uri: "/seller/productlist",
+    uri: "/seller/productlist/allproduct",
   },
   {
     id: uuidv4(),

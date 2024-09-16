@@ -16,6 +16,14 @@ import {
   SellerReview,
   SellerTransaction,
 } from "../pages/Seller";
+import {
+  ActiveProduct,
+  AllProduct,
+  DeleteProduct,
+  InactiveProduct,
+  PendingProduct,
+  ViolateProduct,
+} from "../pages/Seller/components/SellerProduct";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [{ path: "/404", element: <PageNotFound /> }];
@@ -59,7 +67,18 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         path: "/seller",
         element: <SellerLayout />,
         children: [
-          { path: "productList", element: <SellerProduct /> },
+          {
+            path: "productList",
+            element: <SellerProduct />,
+            children: [
+              { path: "allProduct", element: <AllProduct /> },
+              { path: "activeProduct", element: <ActiveProduct /> },
+              { path: "inactiveProduct", element: <InactiveProduct /> },
+              { path: "pendingProduct", element: <PendingProduct /> },
+              { path: "violateProduct", element: <ViolateProduct /> },
+              { path: "deletedProduct", element: <DeleteProduct /> },
+            ],
+          },
           { path: "publish", element: <SellerPublish /> },
 
           { path: "order", element: <SellerOrder /> },
