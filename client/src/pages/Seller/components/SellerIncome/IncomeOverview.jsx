@@ -12,7 +12,7 @@ import {
 import { Line } from "react-chartjs-2";
 import { DatePicker, Input, Space, Table, Button } from "antd";
 
-import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { IncomeStatement } from "./components/IncomeOverview";
 
 // Register Chart.js components
 ChartJS.register(
@@ -184,54 +184,8 @@ const IncomeOverview = () => {
             </div>
           </div>
         </div>
-
-        <div className="bg-white p-4 rounded-xl">
-          <div className="flex items-center justify-between">
-            <div className="font-semibold text-xl">Báo cáo thu nhập</div>
-            <div className="flex items-center justify-between text-primary space-x-2">
-              <div>Xem thêm</div>
-              <FaChevronRight />
-            </div>
-          </div>
-
-          <div className="border-b border-gray-200 pt-2 flex space-x-4">
-            <div className="text-primary border-b border-primary cursor-pointer">
-              Sao kê tuần
-            </div>
-            <div className="cursor-pointer">Sao kê tháng</div>
-          </div>
-
-          <div className="space-y-4 pt-4">
-            <div className="flex justify-between items-center">
-              <div className="text-gray-400">26 Sep - 02 Oct 2022</div>
-              <div className="flex items-center space-x-2 text-primary">
-                <div>Tải xuống</div>
-                <FaChevronDown />
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-gray-400">26 Sep - 02 Oct 2022</div>
-              <div className="flex items-center space-x-2 text-primary">
-                <div>Tải xuống</div>
-                <FaChevronDown />
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-gray-400">26 Sep - 02 Oct 2022</div>
-              <div className="flex items-center space-x-2 text-primary">
-                <div>Tải xuống</div>
-                <FaChevronDown />
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-gray-400">26 Sep - 02 Oct 2022</div>
-              <div className="flex items-center space-x-2 text-primary">
-                <div>Tải xuống</div>
-                <FaChevronDown />
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Báo cáo thu nhập */}
+        <IncomeStatement />
       </div>
 
       <div className="bg-white p-4 rounded-xl">

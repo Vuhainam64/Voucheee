@@ -3,7 +3,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 
 import { HomeLayout, SellerLayout, SettingLayout } from "../layout";
 
-import { Home } from "../pages/Home";
+import { Home, VoucherDetail } from "../pages/Home";
 import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
@@ -40,6 +40,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       element: <HomeLayout />,
       children: [
         { path: "", element: <Home /> },
+        { path: "detail/:id", element: <VoucherDetail /> },
         {
           path: "auth",
           children: [
@@ -67,7 +68,10 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       {
         path: "/",
         element: <HomeLayout />,
-        children: [{ path: "", element: <Home /> }],
+        children: [
+          { path: "", element: <Home /> },
+          { path: "detail/:id", element: <VoucherDetail /> },
+        ],
       },
       {
         path: "/seller",
@@ -95,10 +99,10 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
             path: "myIncome",
             element: <SellerIncome />,
             children: [
+              { path: "incomeOverview", element: <IncomeOverview /> },
+              { path: "incomeStatement", element: <IncomeStatement /> },
               { path: "incomeDetails", element: <IncomeDetails /> },
               { path: "incomeInvoice", element: <IncomeInvoice /> },
-              { path: "incomeStatement", element: <IncomeStatement /> },
-              { path: "incomeOverview", element: <IncomeOverview /> },
             ],
           },
           { path: "myTransaction", element: <SellerTransaction /> },
