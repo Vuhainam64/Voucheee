@@ -24,6 +24,12 @@ import {
   PendingProduct,
   ViolateProduct,
 } from "../pages/Seller/components/SellerProduct";
+import {
+  IncomeDetails,
+  IncomeInvoice,
+  IncomeOverview,
+  IncomeStatement,
+} from "../pages/Seller/components/SellerIncome";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [{ path: "/404", element: <PageNotFound /> }];
@@ -85,7 +91,16 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "reverse", element: <SellerReverse /> },
           { path: "review", element: <SellerReview /> },
 
-          { path: "myIncome", element: <SellerIncome /> },
+          {
+            path: "myIncome",
+            element: <SellerIncome />,
+            children: [
+              { path: "incomeDetails", element: <IncomeDetails /> },
+              { path: "incomeInvoice", element: <IncomeInvoice /> },
+              { path: "incomeStatement", element: <IncomeStatement /> },
+              { path: "incomeOverview", element: <IncomeOverview /> },
+            ],
+          },
           { path: "myTransaction", element: <SellerTransaction /> },
         ],
       },
