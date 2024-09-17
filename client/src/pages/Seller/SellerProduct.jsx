@@ -62,7 +62,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/allProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -72,7 +72,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/activeProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -82,7 +82,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/InactiveProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -92,7 +92,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/pendingProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -102,7 +102,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/violateProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -112,7 +112,7 @@ const SellerProduct = () => {
                 to={"/seller/productList/deletedProduct"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-blue-600 text-blue-600 hover:text-blue-900"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >

@@ -101,7 +101,7 @@ export const ClientMenus = [
       {
         title: "Thu nhập của tôi",
         Icon: PiCoinThin,
-        uri: "/seller/myIncome",
+        uri: "/seller/myIncome/incomeOverview",
       },
       {
         title: "Lịch sử giao dịch",
