@@ -8,6 +8,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { GiShop } from "react-icons/gi";
 
 import { Hero, Test } from "../../assets/img";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -68,7 +69,10 @@ const Home = () => {
             className="py-4 flex space-x-4 overflow-x-scroll w-full 
         scrollbar-thumb-primary scrollbar-track-primary"
           >
-            <div className="flex flex-col space-y-1 flex-shrink-0">
+            <Link
+              to={"/detail/1"}
+              className="flex flex-col space-y-1 flex-shrink-0"
+            >
               <div className="relative">
                 <div className="relative">
                   <img src={Hero} alt="" className="h-40 w-80 rounded-xl" />
@@ -93,7 +97,7 @@ const Home = () => {
               <div>Voucher giảm 120.000đ ăn tại nhà hàng</div>
               <div>T2-CN 10:00-22:00</div>
               <div className="font-semibold">100.000đ</div>
-            </div>
+            </Link>
             <div className="flex flex-col space-y-1 flex-shrink-0">
               <div className="relative">
                 <div className="relative">

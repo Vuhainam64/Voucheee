@@ -1,15 +1,18 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
 
 import { BsFillBellFill } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
+import { FiShoppingCart } from "react-icons/fi";
 
 import { logoPrimary } from "../../assets/img";
 import { setAllNotify } from "../../context/actions/allNotifyActions";
 import { getNotifications } from "../../api";
 
 import UserProfileDetails from "../HomeLayout/UserProfileDetails";
+import { buttonClick } from "../../animations";
 
 const HomeHeader = () => {
   const user = useSelector((state) => state.user?.user);
@@ -65,7 +68,7 @@ const HomeHeader = () => {
           <img src={logoPrimary} alt="logo" className="p-4 h-20" />
         </Link>
 
-        <div className="">
+        <div className="flex items-center space-x-4">
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 w-full text-primary">
               <FaSearch />
@@ -76,6 +79,15 @@ const HomeHeader = () => {
               placeholder="Tìm kiếm voucher..."
             />
           </div>
+          <motion.div {...buttonClick} className="relative cursor-pointer">
+            <FiShoppingCart className="text-xl" />
+            <div
+              className="absolute left-3 bottom-3 bg-primary text-white py-1 px-2 
+              rounded-full text-xs"
+            >
+              2
+            </div>
+          </motion.div>
         </div>
 
         <div className="flex items-center">

@@ -23,7 +23,7 @@ const SellerIncome = () => {
                 to={"/seller/myIncome/incomeOverview"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -33,7 +33,7 @@ const SellerIncome = () => {
                 to={"/seller/myIncome/incomeStatement"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -43,7 +43,7 @@ const SellerIncome = () => {
                 to={"/seller/myIncome/incomeDetails"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >
@@ -53,7 +53,7 @@ const SellerIncome = () => {
                 to={"/seller/myIncome/incomeInvoice"}
                 className={({ isActive }) =>
                   isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
+                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-"
                     : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
                 }
               >

@@ -11,7 +11,7 @@ import { buttonClick } from "../../animations";
 
 const VoucherDetail = () => {
   return (
-    <div className="p-4">
+    <div className="max-w-[1400px] w-full flex flex-col mx-auto p-4">
       <div className="flex items-center space-x-4 text-lg font-semibold">
         <div>Voucher</div>
         <FaChevronRight className="text-gray-500" />
@@ -177,6 +177,13 @@ const VoucherDetail = () => {
 
         <div className="font-semibold text-lg">Địa chỉ cửa hàng</div>
         <div className="max-h-52 overflow-y-scroll space-y-2">
+          <div
+            className="flex items-center space-x-2 bg-slate-200 bg-opacity-60
+          px-4 py-2 rounded-xl"
+          >
+            <MdGpsFixed />
+            <div>31 Trần Quốc Hoàn, P.Dịch Vọng Hậu, Q.Cầu Giấy, TP.Hà Nội</div>
+          </div>
           <div
             className="flex items-center space-x-2 bg-slate-200 bg-opacity-60
           px-4 py-2 rounded-xl"
