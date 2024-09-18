@@ -13,7 +13,7 @@ const SellerLayout = () => {
       <div className="flex flex-col flex-1 bg-gray-300">
         <SellerHeader />
         <section className="flex flex-col w-full overflow-auto ">
-          <div className="flex-grow h-screen">
+          <div className="flex-grow ">
             <Outlet />
           </div>
           <SellerFooter />

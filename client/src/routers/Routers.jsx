@@ -17,14 +17,6 @@ import {
   SellerTransaction,
 } from "../pages/Seller";
 import {
-  ActiveProduct,
-  AllProduct,
-  DeleteProduct,
-  InactiveProduct,
-  PendingProduct,
-  ViolateProduct,
-} from "../pages/Seller/components/SellerProduct";
-import {
   IncomeDetails,
   IncomeInvoice,
   IncomeOverview,
@@ -80,14 +72,6 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           {
             path: "productList",
             element: <SellerProduct />,
-            children: [
-              { path: "allProduct", element: <AllProduct /> },
-              { path: "activeProduct", element: <ActiveProduct /> },
-              { path: "inactiveProduct", element: <InactiveProduct /> },
-              { path: "pendingProduct", element: <PendingProduct /> },
-              { path: "violateProduct", element: <ViolateProduct /> },
-              { path: "deletedProduct", element: <DeleteProduct /> },
-            ],
           },
           { path: "publish", element: <SellerPublish /> },
 

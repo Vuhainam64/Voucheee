@@ -1,14 +1,55 @@
 import React from "react";
+import { Tabs } from "antd";
 import { motion } from "framer-motion";
-import { NavLink, Outlet } from "react-router-dom";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa6";
 
 import { buttonClick } from "../../animations";
+import {
+  ActiveProduct,
+  AllProduct,
+  DeleteProduct,
+  InactiveProduct,
+  PendingProduct,
+  ViolateProduct,
+} from "./components/SellerProduct";
 
 const SellerProduct = () => {
+  const items = [
+    {
+      key: "1",
+      label: <div className="text-xl">Tất cả</div>,
+      children: <AllProduct />,
+    },
+    {
+      key: "2",
+      label: <div className="text-xl">Đang hoạt động</div>,
+      children: <ActiveProduct />,
+    },
+    {
+      key: "3",
+      label: <div className="text-xl">Không hoạt động</div>,
+      children: <InactiveProduct />,
+    },
+    {
+      key: "4",
+      label: <div className="text-xl">Chờ duyệt</div>,
+      children: <PendingProduct />,
+    },
+    {
+      key: "5",
+      label: <div className="text-xl">Vi phạm</div>,
+      children: <ViolateProduct />,
+    },
+    {
+      key: "6",
+      label: <div className="text-xl">Đã xoá</div>,
+      children: <DeleteProduct />,
+    },
+  ];
+
   return (
     <div className="w-full h-full p-8 flex flex-col">
       <div className="flex items-center space-x-2">
@@ -55,76 +96,7 @@ const SellerProduct = () => {
           </div>
         </div>
 
-        <div>
-          <div className="py-4">
-            <div className="flex flex-wrap -mb-px text-xl font-medium text-center">
-              <NavLink
-                to={"/seller/productList/allProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Tất cả
-              </NavLink>
-              <NavLink
-                to={"/seller/productList/activeProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Đang hoạt động
-              </NavLink>
-              <NavLink
-                to={"/seller/productList/InactiveProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Không hoạt động
-              </NavLink>
-              <NavLink
-                to={"/seller/productList/pendingProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Chờ duyệt
-              </NavLink>
-              <NavLink
-                to={"/seller/productList/violateProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Vi phạm
-              </NavLink>
-              <NavLink
-                to={"/seller/productList/deletedProduct"}
-                className={({ isActive }) =>
-                  isActive
-                    ? "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 border-primary text-primary hover:text-heroSecondary"
-                    : "mr-6 hover:no-underline inline-block py-4 rounded-t-lg border-b-2 text-gray-500 hover:text-gray-600"
-                }
-              >
-                Đã xoá
-              </NavLink>
-            </div>
-
-            <div>
-              <Outlet />
-            </div>
-          </div>
-        </div>
+        <Tabs defaultActiveKey="1" items={items} />
       </div>
     </div>
   );
