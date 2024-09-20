@@ -161,6 +161,88 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
+              <div className="bg-white rounded-lg">
+                <div className="flex items-center space-x-4 border-b py-4 px-4">
+                  <Checkbox />
+                  <Link to={""} className="flex items-center space-x-2">
+                    <FcShop />
+                    <div>Cửa hàng Grab</div>
+                  </Link>
+                  <MdMessage />
+                </div>
+                <div className="pb-4 px-4">
+                  <div className="flex items-center space-x-4 border-b py-4">
+                    <Checkbox />
+                    <Image
+                      width={100}
+                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+                    />
+                    <div>
+                      <div>
+                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
+                        Thiền
+                      </div>
+                      <div>Chay Hương Thiền</div>
+                    </div>
+                    <div className="line-through text-gray-500">150.000đ</div>
+                    <div>100.000đ</div>
+                    <Space.Compact>
+                      <Button>-</Button>
+                      <InputNumber
+                        min={1}
+                        max={100}
+                        defaultValue={3}
+                        onChange={onChange}
+                      />
+                      <Button>+</Button>
+                    </Space.Compact>
+                    <div className="text-primary text-lg font-semibold">
+                      100.000đ
+                    </div>
+                    <motion.div
+                      {...buttonClick}
+                      className="hover:text-red-600 cursor-pointer"
+                    >
+                      <FaRegTrashAlt />
+                    </motion.div>
+                  </div>
+                  <div className="flex items-center space-x-4 border-b py-4">
+                    <Checkbox />
+                    <Image
+                      width={100}
+                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+                    />
+                    <div>
+                      <div>
+                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
+                        Thiền
+                      </div>
+                      <div>Chay Hương Thiền</div>
+                    </div>
+                    <div className="line-through text-gray-500">150.000đ</div>
+                    <div>100.000đ</div>
+                    <Space.Compact>
+                      <Button>-</Button>
+                      <InputNumber
+                        min={1}
+                        max={100}
+                        defaultValue={3}
+                        onChange={onChange}
+                      />
+                      <Button>+</Button>
+                    </Space.Compact>
+                    <div className="text-primary text-lg font-semibold">
+                      100.000đ
+                    </div>
+                    <motion.div
+                      {...buttonClick}
+                      className="hover:text-red-600 cursor-pointer"
+                    >
+                      <FaRegTrashAlt />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

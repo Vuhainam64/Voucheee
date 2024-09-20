@@ -9,7 +9,10 @@ import { HiOutlineTicket } from "react-icons/hi";
 
 const UserSlidebar = () => {
   return (
-    <div className="space-y-4">
+    <div
+      className="space-y-4 overflow-y-auto scrollbar-none"
+      style={{ maxHeight: "calc(100vh - 218px)" }}
+    >
       <div className="bg-white rounded-xl items-center">
         <div className="flex items-center space-x-4 p-4">
           <div className="text-2xl">

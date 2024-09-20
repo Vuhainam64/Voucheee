@@ -67,37 +67,42 @@ const VoucherList = () => {
       </div>
 
       {/* Grid of voucher cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[1, 2, 3, 4].map((voucher) => (
-          <div
-            key={voucher}
-            className="border rounded-lg p-4 flex justify-between"
-          >
-            <div className="flex">
-              <Image
-                src={`https://via.placeholder.com/150?text=Voucher+${voucher}`}
-                alt={`Voucher ${voucher}`}
-                width={80}
-                className="rounded-lg"
-              />
-              <div className="flex justify-between items-center ml-4">
-                <div>
-                  <h3 className="text-lg font-semibold">
-                    Tên Voucher {voucher}
-                  </h3>
-                  <p className="text-gray-500">Hạn sử dụng: 2024-12-31</p>
+      <div
+        className="overflow-y-auto scrollbar-none"
+        style={{ maxHeight: "calc(100vh - 314px)" }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map((voucher) => (
+            <div
+              key={voucher}
+              className="border rounded-lg p-4 flex justify-between"
+            >
+              <div className="flex">
+                <Image
+                  src={`https://via.placeholder.com/150?text=Voucher+${voucher}`}
+                  alt={`Voucher ${voucher}`}
+                  width={80}
+                  className="rounded-lg"
+                />
+                <div className="flex justify-between items-center ml-4">
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      Tên Voucher {voucher}
+                    </h3>
+                    <p className="text-gray-500">Hạn sử dụng: 2024-12-31</p>
+                  </div>
                 </div>
               </div>
+              <Dropdown
+                overlay={createMenu(voucher)}
+                trigger={["click"]}
+                className="cursor-pointer"
+              >
+                <HiOutlineDotsHorizontal />
+              </Dropdown>
             </div>
-            <Dropdown
-              overlay={createMenu(voucher)}
-              trigger={["click"]}
-              className="cursor-pointer"
-            >
-              <HiOutlineDotsHorizontal />
-            </Dropdown>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
