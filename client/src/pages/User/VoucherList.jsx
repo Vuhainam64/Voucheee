@@ -1,5 +1,5 @@
 import React from "react";
-import { DatePicker, Dropdown, Input, Select, Menu } from "antd";
+import { DatePicker, Dropdown, Input, Select, Menu, Image } from "antd";
 
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 
@@ -62,7 +62,7 @@ const VoucherList = () => {
             { value: "used", label: "Đã sử dụng" },
             { value: "expired", label: "Hết hạn" },
           ]}
-          className="flex-1"
+          className="flex-1 h-10"
         />
       </div>
 
@@ -74,12 +74,13 @@ const VoucherList = () => {
             className="border rounded-lg p-4 flex justify-between"
           >
             <div className="flex">
-              <img
+              <Image
                 src={`https://via.placeholder.com/150?text=Voucher+${voucher}`}
                 alt={`Voucher ${voucher}`}
-                className="w-20 h-20 mr-4 rounded-lg"
+                width={80}
+                className="rounded-lg"
               />
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center ml-4">
                 <div>
                   <h3 className="text-lg font-semibold">
                     Tên Voucher {voucher}
