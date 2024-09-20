@@ -20,6 +20,7 @@ import { auth } from "../config/firebase.config";
 import { FaBoxes } from "react-icons/fa";
 import { LuBarChartHorizontal } from "react-icons/lu";
 import { PiCoinThin } from "react-icons/pi";
+import { HiOutlineTicket } from "react-icons/hi";
 
 const googleProider = new GoogleAuthProvider();
 
@@ -41,6 +42,12 @@ export const Menus = [
     icon: <BsShop />,
     name: <div className="text-nowrap">Trang người bán</div>,
     uri: "/seller/productlist",
+  },
+  {
+    id: uuidv4(),
+    icon: <HiOutlineTicket />,
+    name: <div className="text-nowrap">Voucher của tôi</div>,
+    uri: "/user/listVoucher",
   },
   {
     id: uuidv4(),

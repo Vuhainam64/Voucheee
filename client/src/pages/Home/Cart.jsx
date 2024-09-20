@@ -26,7 +26,7 @@ const Cart = () => {
               className="overflow-y-auto scrollbar-none space-y-4"
               style={{ height: "calc(100vh - 314px)" }}
             >
-              <div className="bg-white p-4 rounde d-lg">
+              <div className="bg-white p-4 rounded-lg">
                 <div className="flex items-center space-x-4">
                   <Checkbox />
                   <div>Sản phẩm</div>
