@@ -1,25 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { BsFillBellFill } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
-import { FiShoppingCart } from "react-icons/fi";
 
 import { logoPrimary } from "../../assets/img";
 import { setAllNotify } from "../../context/actions/allNotifyActions";
 import { getNotifications } from "../../api";
 
 import UserProfileDetails from "../HomeLayout/UserProfileDetails";
-import { buttonClick } from "../../animations";
 
-const HomeHeader = () => {
+const CartHeader = () => {
   const user = useSelector((state) => state.user?.user);
   const allNotify = useSelector((state) => state.allNotify?.allNotify);
 
   const dispatch = useDispatch();
-
-  const [hasShadow, setHasShadow] = useState(false);
 
   useEffect(() => {
     async function fetchNotify() {
@@ -39,59 +34,12 @@ const HomeHeader = () => {
     ? allNotify.sort((a, b) => b.createdAt - a.createdAt).slice(0, 3) // Get the first 3 notifications
     : [];
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setHasShadow(true);
-      } else {
-        setHasShadow(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // Clean up the event listener on component unmount
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
   return (
-    <div
-      className={`flex flex-col items-center justify-between bg-white w-full border-b ${
-        hasShadow ? "shadow-xl" : ""
-      }`}
-    >
+    <div className="flex flex-col items-center justify-between bg-white w-full border-b">
       <div className="max-w-[1400px] mx-auto flex items-center w-full justify-between">
         <Link to="/">
           <img src={logoPrimary} alt="logo" className="p-4 h-20" />
         </Link>
-
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 w-full text-primary">
-              <FaSearch />
-            </div>
-            <input
-              type="search"
-              className="block w-full outline-none rounded-md px-8 py-2 items-center border bg-gray-200 min-w-620"
-              placeholder="Tìm kiếm voucher..."
-            />
-          </div>
-          <Link
-            to={"/cart"}
-            {...buttonClick}
-            className="relative cursor-pointer"
-          >
-            <FiShoppingCart className="text-xl" />
-            <div
-              className="absolute left-3 bottom-3 bg-primary text-white py-1 px-2 
-              rounded-full text-xs"
-            >
-              2
-            </div>
-          </Link>
-        </div>
 
         <div className="flex items-center">
           <div className="hidden md:block ml-auto relative">
@@ -184,4 +132,4 @@ const HomeHeader = () => {
   );
 };
 
-export default HomeHeader;
+export default CartHeader;

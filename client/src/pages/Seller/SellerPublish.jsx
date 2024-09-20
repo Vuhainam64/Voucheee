@@ -1,5 +1,5 @@
-import React from "react";
-import { Alert, Anchor, Button, Form } from "antd";
+import React, { useState } from "react";
+import { Alert, Anchor, Button, Form, Progress, Steps } from "antd";
 
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa6";
@@ -12,9 +12,13 @@ import {
 } from "./components/SellerPublish";
 
 const SellerPublish = () => {
+  const [showStepsBasicInformation, setShowStepsBasicInformation] =
+    useState(false);
+
   const onFinish = (values) => {
     console.log("Success:", values);
   };
+
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
@@ -38,16 +42,16 @@ const SellerPublish = () => {
             autoComplete
             className="space-y-6"
           >
-            <div id="part-1">
+            <div id="basic-information">
               <BasicInformation />
             </div>
-            <div id="part-2">
+            <div id="product-features">
               <ProductFeatures />
             </div>
-            <div id="part-3">
+            <div id="price-stock-variations">
               <PriceStockVariations />
             </div>
-            <div id="part-4">
+            <div id="product-description">
               <ProductDescription />
             </div>
             <div className="bg-white px-6 rounded-xl py-6 flex justify-between space-x-4">
@@ -66,31 +70,80 @@ const SellerPublish = () => {
           </Form>
         </div>
 
-        <div className="sticky top-4">
-          <Anchor
-            items={[
-              {
-                key: "part-1",
-                href: "#part-1",
-                title: "Thông tin cơ bản",
-              },
-              {
-                key: "part-2",
-                href: "#part-2",
-                title: "Đặc tính sản phẩm",
-              },
-              {
-                key: "part-3",
-                href: "#part-3",
-                title: "Giá bán, Kho hàng và Biến thể",
-              },
-              {
-                key: "part-4",
-                href: "#part-4",
-                title: "Mô tả sản phẩm",
-              },
-            ]}
-          />
+        <div className="col-span-1 h-screen sticky top-4 space-y-4">
+          <div className="bg-white rounded-xl p-6">
+            <div className="text-xl font-semibold">Điểm nội dung</div>
+            <Progress percent={30} size="small" />
+            <Anchor
+              offsetTop={100}
+              items={[
+                {
+                  key: "basic-information",
+                  href: "#basic-information",
+                  title: (
+                    <div
+                      onClick={() =>
+                        setShowStepsBasicInformation(!showStepsBasicInformation)
+                      }
+                      className="cursor-pointer"
+                    >
+                      <div className="font-semibold pb-2">Thông tin cơ bản</div>
+                      {showStepsBasicInformation && (
+                        <Steps
+                          progressDot
+                          direction="vertical"
+                          current={1}
+                          items={[
+                            {
+                              title: "Finished",
+                              description: "Thêm ít nhất 3 ảnh chính.",
+                            },
+                            {
+                              title: "In Progress",
+                              description: "Chất lượng tiêu đề",
+                            },
+                            {
+                              title: "Waiting",
+                              description:
+                                "This is a description. This is a description.",
+                            },
+                          ]}
+                        />
+                      )}
+                    </div>
+                  ),
+                },
+                {
+                  key: "product-features",
+                  href: "#product-features",
+                  title: (
+                    <div>
+                      <div className="font-semibold pb-2">
+                        Đặc tính sản phẩm
+                      </div>
+                    </div>
+                  ),
+                },
+                {
+                  key: "price-stock-variations",
+                  href: "#price-stock-variations",
+                  title: "Giá bán, Kho hàng và Biến thể",
+                },
+                {
+                  key: "product-description",
+                  href: "#product-description",
+                  title: "Mô tả sản phẩm",
+                },
+              ]}
+            />
+          </div>
+          <div className="bg-white rounded-xl p-6 space-y-2">
+            <div className="text-xl font-semibold text-blue-500">Tips</div>
+            <div className="text-gray-500">
+              Vui lòng tải lên hình ảnh, điền tên sản phẩm và chọn đúng ngành
+              hàng trước khi đăng tải sản phẩm.
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ const UserProfileContainer = () => {
     <div className="flex items-center justify-center cursor-pointer relative">
       {/* name content  */}
       <div className="flex flex-col items-start justify-start gap-1">
-        <h2 className="text-lg font-bold text-textPrimary capitalize text-nowrap">
+        <h2 className="text-lg font-bold text-primary capitalize text-nowrap">
           {user?.displayName}
         </h2>
         <div className="flex items-center justify-center gap-2">
@@ -30,7 +30,7 @@ const UserProfileContainer = () => {
           </div>
           {user?.walletBalance ? (
             <React.Fragment>
-              <p className="text-lg font-semibold text-heroPrimary">
+              <p className="text-lg font-semibold text-primary">
                 {user?.walletBalance}
               </p>
             </React.Fragment>

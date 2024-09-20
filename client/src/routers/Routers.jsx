@@ -1,9 +1,9 @@
 import React from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
-import { HomeLayout, SellerLayout, SettingLayout } from "../layout";
+import { CartLayout, HomeLayout, SellerLayout, SettingLayout } from "../layout";
 
-import { Home, VoucherDetail } from "../pages/Home";
+import { Cart, Home, VoucherDetail } from "../pages/Home";
 import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
@@ -32,6 +32,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       element: <HomeLayout />,
       children: [
         { path: "", element: <Home /> },
+        { path: "cart", element: <Login /> },
         { path: "detail/:id", element: <VoucherDetail /> },
         {
           path: "auth",
@@ -64,6 +65,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "", element: <Home /> },
           { path: "detail/:id", element: <VoucherDetail /> },
         ],
+      },
+      {
+        path: "/cart",
+        element: <CartLayout />,
+        children: [{ path: "", element: <Cart /> }],
       },
       {
         path: "/seller",
