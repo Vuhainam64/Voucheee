@@ -31,16 +31,24 @@ import {
 import { DepositHistory, OrderList, VoucherList } from "../pages/User";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
-  const routes = [{ path: "/404", element: <PageNotFound /> }];
-
-  if (!isLogin) {
-    routes.push({
+  const routes = [
+    {
       path: "/",
       element: <HomeLayout />,
       children: [
         { path: "", element: <Home /> },
         { path: "cart", element: <Login /> },
         { path: "detail/:id", element: <VoucherDetail /> },
+      ],
+    },
+    { path: "/404", element: <PageNotFound /> },
+  ];
+
+  if (!isLogin) {
+    routes.push({
+      path: "/",
+      element: <HomeLayout />,
+      children: [
         {
           path: "auth",
           children: [
@@ -65,14 +73,6 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       // { path: "/create-feedback", element: <CreateFeedback /> },
       // userRole === "employee" && { path: "/employee/*", element: <Employee /> },
       // userRole === "admin" && { path: "/admin/*", element: <Dashboard /> },
-      {
-        path: "/",
-        element: <HomeLayout />,
-        children: [
-          { path: "", element: <Home /> },
-          { path: "detail/:id", element: <VoucherDetail /> },
-        ],
-      },
       {
         path: "/cart",
         element: <CartLayout />,
