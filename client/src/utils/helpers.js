@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import {
   MdOutlineHistory,
@@ -25,7 +25,7 @@ import { HiOutlineTicket } from "react-icons/hi";
 const googleProider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
-  await signInWithRedirect(auth, googleProider).then((useCred) => {
+  await signInWithPopup(auth, googleProider).then((useCred) => {
     window.location.reload();
   });
 };
@@ -111,7 +111,7 @@ export const ClientMenus = [
         uri: "/seller/myIncome/incomeOverview",
       },
       {
-        title: "Lịch sử giao dịch",
+        title: "Ví của tôi",
         Icon: MdOutlineHistory,
         uri: "/seller/myTransaction",
       },
