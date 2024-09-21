@@ -28,7 +28,7 @@ import {
   IncomeOverview,
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
-import { VoucherList } from "../pages/User";
+import { DepositHistory, OrderList, VoucherList } from "../pages/User";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [{ path: "/404", element: <PageNotFound /> }];
@@ -81,7 +81,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       {
         path: "/user",
         element: <UserLayout />,
-        children: [{ path: "listVoucher", element: <VoucherList /> }],
+        children: [
+          { path: "listVoucher", element: <VoucherList /> },
+          { path: "orderList", element: <OrderList /> },
+          { path: "depositHistory", element: <DepositHistory /> },
+        ],
       },
       {
         path: "/seller",

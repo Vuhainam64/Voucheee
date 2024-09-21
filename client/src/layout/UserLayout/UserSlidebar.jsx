@@ -121,7 +121,7 @@ const UserSlidebar = () => {
           <div className="text-xl font-semibold">Giao dịch</div>
         </div>
         <NavLink
-          to={"/user/purchase"}
+          to={"/user/orderList"}
           className={({ isActive }) =>
             isActive
               ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"
@@ -131,7 +131,7 @@ const UserSlidebar = () => {
           <div>Lịch sử mua hàng</div>
         </NavLink>
         <NavLink
-          to={"/user/transaction"}
+          to={"/user/depositHistory"}
           className={({ isActive }) =>
             isActive
               ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"
