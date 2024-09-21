@@ -96,7 +96,6 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
             element: <SellerProduct />,
           },
           { path: "publish", element: <SellerPublish /> },
-
           { path: "order", element: <SellerOrder /> },
           { path: "reverse", element: <SellerReverse /> },
           { path: "review", element: <SellerReview /> },
