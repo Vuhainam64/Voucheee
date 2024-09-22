@@ -14,6 +14,7 @@ import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
+  SellerBank,
   SellerIncome,
   SellerOrder,
   SellerProduct,
@@ -111,6 +112,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
             ],
           },
           { path: "myTransaction", element: <SellerTransaction /> },
+          { path: "myBank", element: <SellerBank /> },
         ],
       },
       {

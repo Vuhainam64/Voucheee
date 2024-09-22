@@ -7,3 +7,4 @@ export { default as SellerReview } from "./SellerReview";
 
 export { default as SellerIncome } from "./SellerIncome";
 export { default as SellerTransaction } from "./SellerTransaction";
+export { default as SellerBank } from "./SellerBank";

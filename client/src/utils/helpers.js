@@ -2,25 +2,24 @@ import { v4 as uuidv4 } from "uuid";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import {
-  MdOutlineHistory,
   MdOutlineRateReview,
   MdOutlineSettings,
 } from "react-icons/md";
-import { BsShop } from "react-icons/bs";
-import { IoShareSocial, IoWallet } from "react-icons/io5";
-import { TbTruckDelivery } from "react-icons/tb";
 import {
   RiCustomerService2Fill,
   RiInboxArchiveFill,
   RiRefundFill,
 } from "react-icons/ri";
+import { CiBank } from "react-icons/ci";
 import { SiZalo } from "react-icons/si";
-
-import { auth } from "../config/firebase.config";
+import { BsShop } from "react-icons/bs";
 import { FaBoxes } from "react-icons/fa";
-import { LuBarChartHorizontal } from "react-icons/lu";
 import { PiCoinThin } from "react-icons/pi";
 import { HiOutlineTicket } from "react-icons/hi";
+import { TbTruckDelivery } from "react-icons/tb";
+import { IoShareSocial, IoWallet } from "react-icons/io5";
+import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
+import { auth } from "../config/firebase.config";
 
 const googleProider = new GoogleAuthProvider();
 
@@ -112,9 +111,14 @@ export const ClientMenus = [
       },
       {
         title: "Ví của tôi",
-        Icon: MdOutlineHistory,
+        Icon: LuWallet,
         uri: "/seller/myTransaction",
       },
+      {
+        title: "Tài khoản ngân hàng",
+        Icon: CiBank,
+        uri: "/seller/myBank",
+      }
     ],
   },
   {
