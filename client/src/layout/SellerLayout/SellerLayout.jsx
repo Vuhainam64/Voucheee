@@ -10,7 +10,7 @@ const SellerLayout = () => {
     <main className="min-h-screen h-screen flex">
       <SellerSidebar />
 
-      <div className="flex flex-col flex-1 bg-gray-300">
+      <div className="flex flex-col flex-1 bg-gray-200">
         <SellerHeader />
         <section className="flex flex-col w-full overflow-auto ">
           <div className="flex-grow ">

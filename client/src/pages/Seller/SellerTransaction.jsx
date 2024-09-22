@@ -108,7 +108,7 @@ const SellerTransaction = () => {
             <div className="flex itemc-center justify-between">
               <div className="text-xl font-semibold">Tài khoản ngân hàng</div>
               <Link
-                to="/bank-account"
+                to="/seller/myBank"
                 className="flex items-center space-x-2 text-primary hover:no-underline"
               >
                 <div>Quản lí tài khoản ngân hàng</div>
