@@ -9,7 +9,7 @@ import {
   UserLayout,
 } from "../layout";
 
-import { Cart, Home, VoucherDetail } from "../pages/Home";
+import { Cart, Home, SearchProduct, VoucherDetail } from "../pages/Home";
 import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
@@ -39,6 +39,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       children: [
         { path: "", element: <Home /> },
         { path: "cart", element: <Login /> },
+        { path: "search", element: <SearchProduct /> },
         { path: "detail/:id", element: <VoucherDetail /> },
       ],
     },

@@ -99,7 +99,7 @@ const SellerBank = () => {
             </div>
           </div>
           <Alert
-            message="Lưu í"
+            message="Lưu ý"
             description="Quét lại mã Qrcode kế bên để chắc chắn tài khoản nhận tiền của bạn đã chính xác"
             type="warning"
             showIcon

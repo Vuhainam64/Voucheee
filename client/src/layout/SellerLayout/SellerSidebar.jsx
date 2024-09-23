@@ -14,7 +14,8 @@ const SellerSidebar = () => {
       className={`${
         isClose ? "w-20 px3" : "w-80"
       } py-3 relative bg-third border-r border-secondory h-full
-        duration-200 flex flex-col items-center justify-start`}
+        duration-200 flex flex-col items-center justify-start 
+        overflow-y-auto scrollbar-none`}
     >
       {/* absolute action button  */}
       <div

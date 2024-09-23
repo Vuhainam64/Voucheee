@@ -3,15 +3,15 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { BsFillBellFill } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 
 import { logoPrimary } from "../../assets/img";
 import { setAllNotify } from "../../context/actions/allNotifyActions";
 import { getNotifications } from "../../api";
 
-import UserProfileDetails from "../HomeLayout/UserProfileDetails";
 import { buttonClick } from "../../animations";
+import UserProfileDetails from "../HomeLayout/UserProfileDetails";
+import SearchInput from "./SearchInput";
 
 const HomeHeader = () => {
   const user = useSelector((state) => state.user?.user);
@@ -68,16 +68,8 @@ const HomeHeader = () => {
         </Link>
 
         <div className="flex items-center space-x-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 start-0 flex items-center ps-3 w-full text-primary">
-              <FaSearch />
-            </div>
-            <input
-              type="search"
-              className="block w-full outline-none rounded-md px-8 py-2 items-center border bg-gray-200 min-w-620"
-              placeholder="Tìm kiếm voucher..."
-            />
-          </div>
+          <SearchInput placeholder="Tìm kiếm voucher..." />
+
           <Link
             to={"/cart"}
             {...buttonClick}

@@ -76,7 +76,7 @@ export const ClientMenus = [
     ],
   },
   {
-    title: "Đơn hàng",
+    title: "Đơn Hàng",
     Icon: LuBarChartHorizontal,
     spacing: true,
     submenu: true,
@@ -122,7 +122,7 @@ export const ClientMenus = [
     ],
   },
   {
-    title: "Hỗ trợ",
+    title: "Hỗ Trợ",
     Icon: RiCustomerService2Fill,
     spacing: true,
     submenu: true,
