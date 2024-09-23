@@ -1,6 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Tree, Slider, Tooltip, Checkbox, Select } from "antd";
+
 import { PiWarningCircleFill } from "react-icons/pi";
+
 import { Hero, Test } from "../../assets/img";
 
 // Dữ liệu danh mục
@@ -160,9 +163,10 @@ const SearchProduct = () => {
             style={{ maxHeight: "calc(100vh - 298px)" }}
           >
             {Array.from({ length: 12 }).map((_, index) => (
-              <div
+              <Link
+                to={`/detail/${index + 1}`}
                 key={index}
-                className="bg-white rounded-lg shadow-lg flex flex-col"
+                className="bg-white rounded-lg shadow-lg flex flex-col hover:no-underline"
               >
                 <div className="relative">
                   <img
@@ -192,7 +196,7 @@ const SearchProduct = () => {
                     100.000đ
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

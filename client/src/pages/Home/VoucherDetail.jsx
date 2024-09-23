@@ -1,12 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Rate } from "antd";
+import { Carousel, Image, Rate } from "antd";
 
 import { FaChevronRight } from "react-icons/fa";
 import { MdVerified, MdGpsFixed } from "react-icons/md";
 
 import { Hero, Logo, Test } from "../../assets/img";
-import { Link } from "react-router-dom";
 import { buttonClick } from "../../animations";
 
 const VoucherDetail = () => {
@@ -33,101 +33,101 @@ const VoucherDetail = () => {
         </div>
       </div>
 
-      <div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="border rounded-xl aspect-w-1 aspect-h-1">
-            <div className="w-full h-full flex items-center justify-center">
-              <img
+      <div className="grid grid-cols-2 gap-4 ">
+        <div className="flex items-center justify-center border rounded-xl">
+          <Carousel autoplay className="w-full max-w-2xl">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Image
                 src={Hero}
-                alt="Voucher"
+                alt={`Voucher ${index + 1}`}
                 className="object-cover rounded-xl"
               />
+            ))}
+          </Carousel>
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-4">
+            <img
+              src={Test}
+              alt=""
+              className="w-16 h-16 object-cover rounded-full"
+            />
+            <div className="text-2xl font-semibold">
+              Phiếu quà tặng ẩm thực MaybeLine
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Rate allowHalf defaultValue={3.8} disabled />
+            <div className="text-primary">949 đánh giá</div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="text-gray-400">Thương hiệu: </div>
+            <span className="text-primary">MaybeLine | </span>
+            <Link to={""} className="text-primary">
+              Xem thêm về MaybeLine
+            </Link>
+          </div>
+          <div className="flex items-center space-x-8">
+            <div>
+              <div className="font-semibold text-primary text-3xl">
+                50.000 đ
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="line-through text-gray-400">100.000 đ</div>
+                <div>-50%</div>
+              </div>
+            </div>
+            <motion.div
+              {...buttonClick}
+              className="bg-primary text-white px-4 py-2 rounded-xl
+              cursor-pointer"
+            >
+              Xem biến động giá
+            </motion.div>
+          </div>
+          <div className="flex space-x-4">
+            <div className="text-gray-500">Ưu đãi</div>
+            <div>
+              <div>Giảm 10% khi mua từ 5</div>
+              <div>Giảm 20% khi mua từ 10</div>
+              <div>Giảm 30% khi mua từ 15</div>
+            </div>
+          </div>
+
+          <div className="flex space-x-4">
+            <div className="text-gray-500">Số lượng</div>
             <div className="flex items-center space-x-4">
-              <img
-                src={Test}
-                alt=""
-                className="w-16 h-16 object-cover rounded-full"
-              />
-              <div className="text-2xl font-semibold">
-                Phiếu quà tặng ẩm thực MaybeLine
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Rate allowHalf defaultValue={3.8} disabled />
-              <div className="text-primary">949 đánh giá</div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="text-gray-400">Thương hiệu: </div>
-              <span className="text-primary">MaybeLine | </span>
-              <Link to={""} className="text-primary">
-                Xem thêm về MaybeLine
-              </Link>
-            </div>
-            <div className="flex items-center space-x-8 ">
-              <div>
-                <div className="font-semibold text-primary text-3xl">
-                  50.000 đ
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="line-through text-gray-400">100.000 đ</div>
-                  <div>-50%</div>
-                </div>
-              </div>
-              <motion.div
-                {...buttonClick}
-                className="bg-primary text-white px-4 py-2 rounded-xl
-                cursor-pointer"
-              >
-                Xem biến động giá
-              </motion.div>
-            </div>
-            <div className="flex space-x-4">
-              <div className="text-gray-500">Ưu đãi</div>
-              <div>
-                <div>Giảm 10% khi mua từ 5</div>
-                <div>Giảm 20% khi mua từ 10</div>
-                <div>Giảm 30% khi mua từ 15</div>
-              </div>
-            </div>
-
-            <div className="flex space-x-4">
-              <div className="text-gray-500">Số lượng</div>
-              <div className="flex items-center space-x-4">
-                <div
-                  className="px-4 py-2 cursor-pointer border bg-slate-100
+              <div
+                className="px-4 py-2 cursor-pointer border bg-slate-100
                 hover:bg-white"
-                >
-                  -
-                </div>
-                <div>1</div>
-                <div
-                  className="px-4 py-2 cursor-pointer border bg-slate-200
+              >
+                -
+              </div>
+              <div>1</div>
+              <div
+                className="px-4 py-2 cursor-pointer border bg-slate-200
                 hover:bg-white"
-                >
-                  +
-                </div>
+              >
+                +
               </div>
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-4 items-center">
-              <motion.div
-                {...buttonClick}
-                className="flex bg-primary text-white py-2 rounded-xl
-              cursor-pointer text-nowrap items-center justify-center"
-              >
-                Mua ngay
-              </motion.div>
-              <motion.div
-                {...buttonClick}
-                className="flex bg-primary text-white py-2 rounded-xl
-                  cursor-pointer text-nowrap items-center justify-center"
-              >
-                Thêm vào giỏ hàng
-              </motion.div>
-            </div>
+          <div className="grid grid-cols-2 gap-4 items-center">
+            <motion.div
+              {...buttonClick}
+              className="flex bg-primary text-white py-2 rounded-xl
+          cursor-pointer text-nowrap items-center justify-center"
+            >
+              Mua ngay
+            </motion.div>
+            <motion.div
+              {...buttonClick}
+              className="flex bg-primary text-white py-2 rounded-xl
+            cursor-pointer text-nowrap items-center justify-center"
+            >
+              Thêm vào giỏ hàng
+            </motion.div>
           </div>
         </div>
       </div>
