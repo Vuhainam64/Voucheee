@@ -12,6 +12,7 @@ import { MdPassword } from "react-icons/md";
 import { signInWithGoogle } from "../../utils/helpers";
 import { auth } from "../../config/firebase.config";
 import { ResetPassword, UserAuthInput } from "../../components/Auth";
+import { buttonClick } from "../../animations";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -94,7 +95,7 @@ const Login = () => {
                   </div>
                   <motion.div
                     onClick={loginWithEmailPassword}
-                    whileTap={{ scale: 0.9 }}
+                    {...buttonClick}
                     className="flex items-center justify-center w-full py-3 rounded-xl hover:bg-opacity-80 cursor-pointer bg-primary"
                   >
                     <p className="text-xl text-white">Login</p>
@@ -109,7 +110,7 @@ const Login = () => {
 
                 <motion.div
                   onClick={signInWithGoogle}
-                  whileTap={{ scale: 0.9 }}
+                  {...buttonClick}
                   className="flex items-center justify-center gap-3 bg-[rgba(2566,256,256,0.2)] backdrop-blur-md w-full py-3 rounded-xl hover:bg-[rgba(2566,256,256,0.4)] cursor-pointer border border-gray-500"
                 >
                   <FcGoogle className="text-3xl" />

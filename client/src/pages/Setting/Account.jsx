@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
+import { buttonClick } from "../../animations";
+
 function Account() {
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -32,7 +34,7 @@ function Account() {
       </div>
       <div className="flex mt-4">
         <motion.div
-          whileTap={{ scale: 0.9 }}
+          {...buttonClick}
           onClick={handleDeleteAccount}
           className="flex items-center justify-center p-2 rounded-xl hover-bg-blue-700 cursor-pointer bg-red-600 hover:bg-red-700"
         >
@@ -49,14 +51,14 @@ function Account() {
             </p>
             <div className="flex justify-between pt-20">
               <motion.div
-                whileTap={{ scale: 0.9 }}
+                {...buttonClick}
                 onClick={handleConfirmDelete}
                 className="p-2 bg-red-600 hover:bg-red-700 text-white rounded-md cursor-pointer mr-2"
               >
                 Confirm
               </motion.div>
               <motion.div
-                whileTap={{ scale: 0.9 }}
+                {...buttonClick}
                 onClick={handleCancelDelete}
                 className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md cursor-pointer"
               >

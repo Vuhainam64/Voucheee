@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { motion } from "framer-motion";
+import { buttonClick } from "../../animations";
 
 function UserAuthInput({
   label,
@@ -53,8 +54,8 @@ function UserAuthInput({
 
         {isPassword && (
           <motion.div
+            {...buttonClick}
             onClick={() => setShowPassword(!showPassword)}
-            whileTap={{ scale: 0.9 }}
             className="cursor-pointer"
           >
             {showPassword ? (

@@ -12,6 +12,7 @@ import { MdPassword } from "react-icons/md";
 
 import { auth } from "../../config/firebase.config";
 import { ResetPassword, UserAuthInput } from "../../components/Auth";
+import { buttonClick } from "../../animations";
 
 function Password() {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -81,8 +82,8 @@ function Password() {
       />
       <div className="flex mt-4 justify-between">
         <motion.div
+          {...buttonClick}
           onClick={update}
-          whileTap={{ scale: 0.9 }}
           className="flex items-center justify-center p-2 rounded-xl hover:bg-blue-700 cursor-pointer bg-blue-600"
         >
           <p className="text-xl text-white">Update Password</p>

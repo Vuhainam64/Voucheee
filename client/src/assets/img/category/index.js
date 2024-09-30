@@ -1,0 +1,10 @@
+export { default as Entertainment } from "./movie-theater.svg";
+export { default as Beauty } from "./woman.svg";
+export { default as Food } from "./iftar.svg";
+export { default as Travel } from "./travel-bag.svg";
+export { default as Golf } from "./golf-course.svg";
+export { default as Course } from "./course.svg";
+export { default as Lounge } from "./lounge.svg";
+export { default as GiftBox } from "./gift-box.svg";
+export { default as AllGift } from "./transform.svg";
+export { default as Software } from "./windows.svg";

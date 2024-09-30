@@ -145,14 +145,14 @@ function Profile() {
             </div>
           )}
           {imageDownloadURL && (
-            <motion.button
+            <motion.div
               {...buttonClick}
               type="button"
               className="absolute top-1 left-24 p-3 rounded-full bg-red-500 text-xl cursor-pointer outline-none hover:shadow-md duration-500 transition-all ease-in-out"
               onClick={() => deleteImageFromFirebase(imageDownloadURL)}
             >
               <MdDelete className="-rotate-0" />
-            </motion.button>
+            </motion.div>
           )}
         </label>
       </div>
@@ -167,7 +167,7 @@ function Profile() {
       <div className="flex mt-4">
         <motion.div
           onClick={submitNewData}
-          whileTap={{ scale: 0.9 }}
+          {...buttonClick}
           className="flex items-center justify-center p-2 rounded-xl hover-bg-blue-700 cursor-pointer bg-blue-600"
         >
           <p className="text-xl text-white">Save changes</p>

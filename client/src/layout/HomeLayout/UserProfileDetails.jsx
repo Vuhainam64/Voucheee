@@ -9,6 +9,7 @@ import { BiTask } from "react-icons/bi";
 
 import { Avatar } from "../../assets/img";
 import { Menus, signOutAction } from "../../utils/helpers";
+import { buttonClick } from "../../animations";
 
 function UserProfileDetails() {
   const user = useSelector((state) => state.user?.user);
@@ -21,7 +22,7 @@ function UserProfileDetails() {
       <motion.div
         className="flex flex-row items-center cursor-pointer"
         onClick={() => setIsMenu(!isMenu)}
-        whileTap={{ scale: 0.9 }}
+        {...buttonClick}
       >
         <motion.img
           whileHover={{ scale: 1.2 }}
@@ -94,8 +95,8 @@ function UserProfileDetails() {
                 </Link>
               ))}
             <motion.div
+              {...buttonClick}
               onClick={signOutAction}
-              whileTap={{ scale: 0.9 }}
               className="flex flex-row justify-between text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
             >
               <button>Log out</button>

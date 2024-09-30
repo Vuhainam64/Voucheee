@@ -17,6 +17,7 @@ import { RxAvatar } from "react-icons/rx";
 import { signInWithGoogle } from "../../utils/helpers";
 import { auth } from "../../config/firebase.config";
 import { UserAuthInput } from "../../components/Auth";
+import { buttonClick } from "../../animations";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -136,7 +137,7 @@ const Register = () => {
                   </div>
                   <motion.div
                     onClick={createNewUser}
-                    whileTap={{ scale: 0.9 }}
+                    {...buttonClick}
                     className="flex items-center justify-center w-full py-3 rounded-xl hover:bg-blue-500 cursor-pointer bg-blue-600"
                   >
                     <p className="text-xl text-white">Create an account</p>
@@ -151,7 +152,7 @@ const Register = () => {
 
                 <motion.div
                   onClick={signInWithGoogle}
-                  whileTap={{ scale: 0.9 }}
+                  {...buttonClick}
                   className="flex items-center justify-center gap-3 bg-[rgba(2566,256,256,0.2)] backdrop-blur-md w-full py-3 rounded-xl hover:bg-[rgba(2566,256,256,0.4)] cursor-pointer border border-gray-500"
                 >
                   <FcGoogle className="text-3xl" />
