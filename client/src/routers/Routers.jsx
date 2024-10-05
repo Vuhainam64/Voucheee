@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, useRoutes } from "react-router-dom";
 
 import {
+  AdminLayout,
   CartLayout,
   HomeLayout,
   SellerLayout,
@@ -30,6 +31,7 @@ import {
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
 import { DepositHistory, OrderList, VoucherList } from "../pages/User";
+import { AdminDashboard, FinancialOverview } from "../pages/Admin";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [
@@ -123,6 +125,14 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "profile", element: <Profile /> },
           { path: "password", element: <Password /> },
           { path: "account", element: <Account /> },
+        ],
+      },
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          { path: "dashboard", element: <AdminDashboard /> },
+          { path: "financial-overview", element: <FinancialOverview /> },
         ],
       }
     );

@@ -2,10 +2,14 @@ import { v4 as uuidv4 } from "uuid";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import {
+  MdDashboard,
+  MdOutlineDashboard,
+  MdOutlinePayments,
   MdOutlineRateReview,
   MdOutlineSettings,
 } from "react-icons/md";
 import {
+  RiAdminLine,
   RiCustomerService2Fill,
   RiInboxArchiveFill,
   RiRefundFill,
@@ -19,6 +23,7 @@ import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
 import { IoShareSocial, IoWallet } from "react-icons/io5";
 import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
+
 import { auth } from "../config/firebase.config";
 
 const googleProider = new GoogleAuthProvider();
@@ -36,6 +41,12 @@ export const signOutAction = async () => {
 };
 
 export const Menus = [
+  {
+    id: uuidv4(),
+    icon: <RiAdminLine />,
+    name: <div className="text-nowrap">Trang quản trị</div>,
+    uri: "/admin/dashboard",
+  },
   {
     id: uuidv4(),
     icon: <BsShop />,
@@ -136,6 +147,35 @@ export const ClientMenus = [
         title: "Social",
         Icon: IoShareSocial,
         uri: "/dash/social",
+      },
+    ],
+  },
+];
+
+export const AdminMenus = [
+  {
+    title: "Trung tâm",
+    Icon: MdDashboard,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Tổng quát",
+        Icon: MdOutlineDashboard,
+        uri: "/admin/dashboard",
+      },
+    ],
+  },
+  {
+    title: "Quản lí thanh toán",
+    Icon: MdOutlinePayments,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Tổng quan",
+        Icon: MdOutlineDashboard,
+        uri: "/admin/financial-overview",
       },
     ],
   },
