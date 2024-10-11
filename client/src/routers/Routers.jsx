@@ -31,7 +31,12 @@ import {
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
 import { DepositHistory, OrderList, VoucherList } from "../pages/User";
-import { AdminDashboard, FinancialOverview } from "../pages/Admin";
+import {
+  AdminDashboard,
+  AdminTransactions,
+  FinancialOverview,
+  UserManagerment,
+} from "../pages/Admin";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [
@@ -133,6 +138,8 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         children: [
           { path: "dashboard", element: <AdminDashboard /> },
           { path: "financial-overview", element: <FinancialOverview /> },
+          { path: "transactions", element: <AdminTransactions /> },
+          { path: "permission", element: <UserManagerment /> },
         ],
       }
     );

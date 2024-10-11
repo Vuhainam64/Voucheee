@@ -6,7 +6,6 @@ import { BsFillBellFill } from "react-icons/bs";
 
 import { logoPrimary } from "../../assets/img";
 import { setAllNotify } from "../../context/actions/allNotifyActions";
-import { getNotifications } from "../../api";
 
 import UserProfileDetails from "../HomeLayout/UserProfileDetails";
 
@@ -19,7 +18,7 @@ const CartHeader = () => {
   useEffect(() => {
     async function fetchNotify() {
       try {
-        const notiData = await getNotifications();
+        const notiData = "";
         dispatch(setAllNotify(notiData));
       } catch (error) {
         console.log("Error fetching notify:", error);

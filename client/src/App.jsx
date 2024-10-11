@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ToastContainer } from "react-toastify";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth } from "./config/firebase.config";
 
-import { createDefaultRole, getRoleWithRoleID } from "./api";
 import { SET_USER } from "./context/actions/userActions";
 import { SET_ROLE } from "./context/actions/roleActions";
-import { auth, db } from "./config/firebase.config";
+
+import { getUserInfo } from "./api/auth";
 import { Spinner } from "./components/Spinner";
 import { Routers } from "./routers";
 
@@ -18,49 +18,36 @@ function App() {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [userRole, setUserRole] = useState("");
 
-  const getUserDataAndRole = (userCred) => {
-    getDoc(doc(db, "user", userCred.uid)).then((userDoc) => {
-      if (userDoc.exists() && userDoc.data().roleId) {
-        console.log("userDoc: ", userDoc.data());
+  const getUserData = async (userCred) => {
+    try {
+      const userInfo = await getUserInfo(userCred.accessToken);
+      if (userInfo) {
+        console.log("User Info:", userInfo);
+        const { email, accessToken, roleId, roleName } = userInfo;
+        // Cập nhật thông tin người dùng vào Redux
         const userData = {
           ...userCred.providerData[0],
-          displayName: userCred.displayName,
+          displayName: userInfo.name,
+          email,
           emailVerified: userCred.emailVerified,
           creationTime: userCred.metadata.creationTime,
           lastSignInTime: userCred.metadata.lastSignInTime,
-          photoURL: userCred.photoURL,
-          roleId: userDoc.data().roleId,
+          photoURL: userInfo.image,
+          roleId,
         };
-        setDoc(doc(db, "user", userCred.uid), userData).then(() => {
-          dispatch(SET_USER(userData));
-          if (userCred.emailVerified) {
-            setIsEmailVerified(true);
-          } else {
-            setIsEmailVerified(false);
-          }
-        });
-        const getRole = async () => {
-          const roleId = userDoc.data().roleId;
-          const role = await getRoleWithRoleID(roleId);
-          setUserRole(role);
-          console.log("role_name: ", role);
-          dispatch(SET_ROLE(role));
-        };
-        getRole();
-        localStorage.setItem("userId", userCred.uid);
-        localStorage.setItem("uid", userCred.providerData[0].uid);
-        console.log("userCred: ", userCred);
-        console.log("roleID: ", userDoc.data().roleId);
-        console.log("uid: ", userCred.providerData[0].uid);
+        dispatch(SET_USER(userData));
+        setUserRole(roleName);
+        dispatch(SET_ROLE(roleName));
+        // localStorage.setItem("userId", userCred.uid);
+        // localStorage.setItem("uid", userCred.providerData[0].uid);
+        localStorage.setItem("accessToken", accessToken); // Lưu access token nếu cần
       } else {
-        console.log("Invalid roleId => Update role");
-        setDoc(doc(db, "user", userCred.uid), userCred.providerData[0]);
-        createDefaultRole(userCred.uid).then(() => {
-          // Sau khi cập nhật role, gọi lại hàm getUserDataAndRole để cập nhật dữ liệu mới
-          getUserDataAndRole(userCred);
-        });
+        console.log("No user info found.");
       }
-    });
+      setIsEmailVerified(userCred.emailVerified);
+    } catch (error) {
+      console.error("Error getting user data:", error);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +55,7 @@ function App() {
       (userCred) => {
         if (userCred) {
           setIsLogin(true);
-          getUserDataAndRole(userCred);
+          getUserData(userCred);
         } else {
         }
 

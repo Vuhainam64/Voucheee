@@ -7,7 +7,6 @@ import { FiShoppingCart } from "react-icons/fi";
 
 import { logoPrimary } from "../../assets/img";
 import { setAllNotify } from "../../context/actions/allNotifyActions";
-import { getNotifications } from "../../api";
 
 import { buttonClick } from "../../animations";
 import UserProfileDetails from "../HomeLayout/UserProfileDetails";
@@ -24,7 +23,7 @@ const HomeHeader = () => {
   useEffect(() => {
     async function fetchNotify() {
       try {
-        const notiData = await getNotifications();
+        const notiData = "";
         dispatch(setAllNotify(notiData));
       } catch (error) {
         console.log("Error fetching notify:", error);

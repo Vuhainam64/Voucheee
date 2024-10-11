@@ -261,7 +261,7 @@ const FinancialOverview = () => {
               ]}
             />
             <Link
-              to={""}
+              to={"/admin/transactions"}
               className="flex items-center justify-center space-x-2 hover:no-underline text-primary"
             >
               <div>Xem thêm </div>

@@ -19,12 +19,14 @@ import { SiZalo } from "react-icons/si";
 import { BsShop } from "react-icons/bs";
 import { FaBoxes } from "react-icons/fa";
 import { PiCoinThin } from "react-icons/pi";
+import { GrTransaction } from "react-icons/gr";
 import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
 import { IoShareSocial, IoWallet } from "react-icons/io5";
 import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
 
 import { auth } from "../config/firebase.config";
+import { FaUserGear } from "react-icons/fa6";
 
 const googleProider = new GoogleAuthProvider();
 
@@ -163,7 +165,12 @@ export const AdminMenus = [
         title: "Tổng quát",
         Icon: MdOutlineDashboard,
         uri: "/admin/dashboard",
+      }, {
+        title: "Quản lý người dùng",
+        Icon: FaUserGear,
+        uri: "/admin/permission",
       },
+
     ],
   },
   {
@@ -176,6 +183,10 @@ export const AdminMenus = [
         title: "Tổng quan",
         Icon: MdOutlineDashboard,
         uri: "/admin/financial-overview",
+      }, {
+        title: "Giao dịch",
+        Icon: GrTransaction,
+        uri: "/admin/transactions",
       },
     ],
   },
