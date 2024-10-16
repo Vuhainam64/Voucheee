@@ -5,6 +5,7 @@ import { auth } from "./config/firebase.config";
 
 import { SET_USER } from "./context/actions/userActions";
 import { SET_ROLE } from "./context/actions/roleActions";
+import { SET_LOCATION } from "./context/actions/locationActions";
 
 import { getUserInfo } from "./api/auth";
 import { Spinner } from "./components/Spinner";
@@ -22,7 +23,6 @@ function App() {
     try {
       const userInfo = await getUserInfo(userCred.accessToken);
       if (userInfo) {
-        console.log("User Info:", userInfo);
         const { email, accessToken, roleId, roleName } = userInfo;
         // Cập nhật thông tin người dùng vào Redux
         const userData = {
@@ -34,13 +34,23 @@ function App() {
           lastSignInTime: userCred.metadata.lastSignInTime,
           photoURL: userInfo.image,
           roleId,
+          accessToken,
         };
         dispatch(SET_USER(userData));
         setUserRole(roleName);
         dispatch(SET_ROLE(roleName));
-        // localStorage.setItem("userId", userCred.uid);
-        // localStorage.setItem("uid", userCred.providerData[0].uid);
-        localStorage.setItem("accessToken", accessToken); // Lưu access token nếu cần
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              dispatch(SET_LOCATION({ latitude, longitude }));
+            },
+            (error) => {
+              console.error("Error getting location:", error);
+            }
+          );
+        }
       } else {
         console.log("No user info found.");
       }
@@ -56,10 +66,8 @@ function App() {
         if (userCred) {
           setIsLogin(true);
           getUserData(userCred);
-        } else {
         }
-
-        setInterval(() => {
+        setTimeout(() => {
           setIsLoading(false);
         }, 1000);
       },
@@ -68,7 +76,7 @@ function App() {
 
     return () => unsubscribe();
     // eslint-disable-next-line
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

@@ -28,10 +28,10 @@ import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
 import { auth } from "../config/firebase.config";
 import { FaUserGear } from "react-icons/fa6";
 
-const googleProider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
-  await signInWithPopup(auth, googleProider).then((useCred) => {
+  await signInWithPopup(auth, googleProvider).then((useCred) => {
     window.location.reload();
   });
 };
