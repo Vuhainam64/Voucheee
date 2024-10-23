@@ -50,8 +50,8 @@ const SellerPublish = () => {
             autoComplete="off"
             className="space-y-6"
             initialValues={{
-              brandName: "Hoàng Yến",
-              supplierName: "GiftPop",
+              brandName: "Chọn Thương Hiệu",
+              supplierName: "Chọn Nhà Cung Cấp",
             }}
           >
             <div id="basic-information">

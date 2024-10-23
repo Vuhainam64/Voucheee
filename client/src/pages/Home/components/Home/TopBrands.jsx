@@ -33,7 +33,7 @@ const TopBrands = () => {
               />
               <div className="text-lg font-medium">{supplier.name}</div>
               <div className="text-sm text-gray-500">
-                Đã bán: {supplier.soldVoucher.toLocaleString("vi-VN")}
+                Đã bán: {supplier.soldVoucher?.toLocaleString("vi-VN") || "0"}
               </div>
             </div>
           ))}

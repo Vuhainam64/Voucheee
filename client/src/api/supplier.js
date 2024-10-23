@@ -12,3 +12,13 @@ export const getBestSupplier = async () => {
     }
 };
 
+export const getAllSupplier = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/supplier/get_all_supplier`
+        );
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
