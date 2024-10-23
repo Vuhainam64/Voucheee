@@ -14,6 +14,14 @@ import {
 const SellerPublish = () => {
   const [showStepsBasicInformation, setShowStepsBasicInformation] =
     useState(false);
+  const [brandId, setBrandId] = useState("");
+  const [supplierId, setSupplierId] = useState("");
+  const [categoryId, setCategoryId] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [images, setImages] = useState([]);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [modals, setModals] = useState([]);
 
   const onFinish = (values) => {
     console.log("Success:", values);
@@ -39,20 +47,33 @@ const SellerPublish = () => {
             name="addVoucher"
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
-            autoComplete
+            autoComplete="off"
             className="space-y-6"
+            initialValues={{
+              brandName: "Hoàng Yến",
+              supplierName: "GiftPop",
+            }}
           >
             <div id="basic-information">
-              <BasicInformation />
+              <BasicInformation
+                setCategoryId={setCategoryId}
+                title={title}
+                setTitle={setTitle}
+                setImages={setImages}
+                setVideoUrl={setVideoUrl}
+              />
             </div>
             <div id="product-features">
-              <ProductFeatures />
+              <ProductFeatures
+                setBrandId={setBrandId}
+                setSupplierId={setSupplierId}
+              />
             </div>
             <div id="price-stock-variations">
-              <PriceStockVariations />
+              {/* <PriceStockVariations setModals={setModals} /> */}
             </div>
             <div id="product-description">
-              <ProductDescription />
+              {/* <ProductDescription setDescription={setDescription} /> */}
             </div>
             <div className="bg-white px-6 rounded-xl py-6 flex justify-between space-x-4">
               <div className="flex-1">

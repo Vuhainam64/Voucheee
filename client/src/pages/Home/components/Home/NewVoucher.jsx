@@ -97,11 +97,14 @@ const NewVoucher = () => {
               </div>
               <div className="font-semibold">
                 Giá bán:{" "}
-                {voucher.salePrice
+                {voucher.salePrice != null
                   ? voucher.salePrice.toLocaleString("vi-VN")
-                  : voucher.originalPrice.toLocaleString("vi-VN")}
+                  : voucher.originalPrice != null
+                  ? voucher.originalPrice.toLocaleString("vi-VN")
+                  : "Không có giá"}
                 đ
               </div>
+
               {/* {voucher.addresses && (
                 <div>
                   Khoảng cách:{" "}

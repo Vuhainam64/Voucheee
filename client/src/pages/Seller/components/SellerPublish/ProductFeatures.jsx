@@ -27,7 +27,6 @@ const ProductFeatures = () => {
           ]}
         >
           <Select
-            defaultValue="Hoàng Yến"
             onChange={handleProductChange}
             options={[
               { value: "Hoàng Yến", label: "Hoàng Yến" },
@@ -52,7 +51,6 @@ const ProductFeatures = () => {
           ]}
         >
           <Select
-            defaultValue="GiftPop"
             onChange={handleProductChange}
             options={[
               { value: "GiftPop", label: "GiftPop" },
