@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactQuill from "react-quill";
 
 import TextEditorBar, {
@@ -6,9 +6,7 @@ import TextEditorBar, {
   modules,
 } from "../../../../components/ReactQuill/TextEditorBar";
 
-const ProductDescription = () => {
-  const [content, setContent] = useState("");
-
+const ProductDescription = ({ description, setDescription }) => {
   return (
     <div className="bg-white px-6 rounded-xl py-6">
       <div className="text-2xl font-semibold">Mô tả sản phẩm</div>
@@ -21,8 +19,8 @@ const ProductDescription = () => {
           modules={modules("t1")}
           formats={formats}
           className="min-h-[20.5rem] max-h-[25.5rem] overflow-auto"
-          value={content}
-          onChange={(value) => setContent(value)}
+          value={description}
+          onChange={(value) => setDescription(value)}
         />
       </div>
     </div>

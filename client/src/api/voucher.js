@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_API_URL } from ".";
+import { access_token, BACKEND_API_URL } from ".";
 
 export const getNewestVoucher = async () => {
     try {
@@ -42,5 +42,23 @@ export const getVoucherByID = async (id) => {
         return res.data;
     } catch (err) {
         return null;
+    }
+};
+
+export const createVoucher = async (data) => {
+    try {
+        const res = await axios.post(
+            `${BACKEND_API_URL}/v1/voucher/create_voucher`,
+            data,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error creating voucher:", err);
+        throw err;
     }
 };

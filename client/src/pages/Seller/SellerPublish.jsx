@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { Alert, Anchor, Button, Form, Progress, Steps } from "antd";
-
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa6";
-
 import {
   BasicInformation,
   PriceStockVariations,
   ProductDescription,
   ProductFeatures,
 } from "./components/SellerPublish";
+
+import { createVoucher } from "../../api/voucher";
 
 const SellerPublish = () => {
   const [showStepsBasicInformation, setShowStepsBasicInformation] =
@@ -22,9 +22,36 @@ const SellerPublish = () => {
   const [images, setImages] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
   const [modals, setModals] = useState([]);
+  console.log(videoUrl);
+  const onFinish = async (values) => {
+    const data = {
+      brandId,
+      supplierId,
+      categoryId,
+      title,
+      description,
+      images,
+      video: videoUrl,
+      status: 0,
+      modals: modals.map((modal) => ({
+        title: modal.title,
+        originalPrice: modal.originalPrice,
+        sellPrice: modal.sellPrice,
+        image: modal.image,
+        status: modal.status,
+      })),
+    };
 
-  const onFinish = (values) => {
-    console.log("Success:", values);
+    try {
+      const response = await createVoucher(data);
+      if (response) {
+        console.log("Voucher created successfully:", response);
+      } else {
+        console.error("Failed to create voucher");
+      }
+    } catch (error) {
+      console.error("Error creating voucher:", error);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -70,10 +97,13 @@ const SellerPublish = () => {
               />
             </div>
             <div id="price-stock-variations">
-              {/* <PriceStockVariations setModals={setModals} /> */}
+              <PriceStockVariations setModals={setModals} />
             </div>
             <div id="product-description">
-              {/* <ProductDescription setDescription={setDescription} /> */}
+              <ProductDescription
+                description={description}
+                setDescription={setDescription}
+              />
             </div>
             <div className="bg-white px-6 rounded-xl py-6 flex justify-between space-x-4">
               <div className="flex-1">
@@ -85,7 +115,9 @@ const SellerPublish = () => {
               </div>
               <div className="flex items-center space-x-4">
                 <Button>Lưu bản nháp</Button>
-                <Button type="primary">Gửi đi</Button>
+                <Button type="primary" htmlType="submit">
+                  Gửi đi
+                </Button>
               </div>
             </div>
           </Form>

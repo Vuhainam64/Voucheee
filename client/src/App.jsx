@@ -25,6 +25,8 @@ function App() {
       if (userInfo) {
         const { email, accessToken, roleId, roleName } = userInfo;
         // Cập nhật thông tin người dùng vào Redux
+        localStorage.setItem("access_token", accessToken);
+
         const userData = {
           ...userCred.providerData[0],
           displayName: userInfo.name,
