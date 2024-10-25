@@ -15,6 +15,7 @@ import SearchInput from "./SearchInput";
 const HomeHeader = () => {
   const user = useSelector((state) => state.user?.user);
   const allNotify = useSelector((state) => state.allNotify?.allNotify);
+  const cart = useSelector((state) => state.cart?.cart);
 
   const dispatch = useDispatch();
 
@@ -75,12 +76,12 @@ const HomeHeader = () => {
             className="relative cursor-pointer"
           >
             <FiShoppingCart className="text-xl" />
-            <div
-              className="absolute left-3 bottom-3 bg-primary text-white py-1 px-2 
-              rounded-full text-xs"
-            >
-              2
-            </div>
+            {cart &&
+              cart.totalQuantity >= 0 && ( // Hiển thị số lượng nếu có
+                <div className="absolute left-3 bottom-3 bg-primary text-white py-1 px-2 rounded-full text-xs">
+                  {cart.totalQuantity}
+                </div>
+              )}
           </Link>
         </div>
 
@@ -135,8 +136,7 @@ const HomeHeader = () => {
                         to={"/auth/login"}
                         className="text-gray-600 hover:text-gray-800 px-0 sm:px-3 py-2 rounded-md text-sm"
                       >
-                        {" "}
-                        Login{" "}
+                        Login
                       </Link>
                     </div>
                   )}

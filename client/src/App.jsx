@@ -6,8 +6,10 @@ import { auth } from "./config/firebase.config";
 import { SET_USER } from "./context/actions/userActions";
 import { SET_ROLE } from "./context/actions/roleActions";
 import { SET_LOCATION } from "./context/actions/locationActions";
+import { SET_CART } from "./context/actions/cartActions";
 
 import { getUserInfo } from "./api/auth";
+import { getCart } from "./api/cart";
 import { Spinner } from "./components/Spinner";
 import { Routers } from "./routers";
 
@@ -41,6 +43,10 @@ function App() {
         dispatch(SET_USER(userData));
         setUserRole(roleName);
         dispatch(SET_ROLE(roleName));
+
+        // Gọi API để lấy giỏ hàng
+        const cartData = await getCart(userCred.accessToken);
+        dispatch(SET_CART(cartData));
 
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
