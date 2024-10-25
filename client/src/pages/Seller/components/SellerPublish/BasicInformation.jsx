@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import ImgCrop from "antd-img-crop";
 import { Form, Input, TreeSelect, Upload, Progress } from "antd";
 import { toast } from "react-toastify";
 import {
@@ -219,22 +218,20 @@ const BasicInformation = ({
           wrapperCol={{ span: 24 }}
         >
           <div className="flex space-x-2">
-            <ImgCrop rotationSlider>
-              <Upload
-                listType="picture-card"
-                fileList={imageFiles}
-                onChange={({ fileList }) => handleFileChange(fileList)}
-                beforeUpload={(file) => handleBeforeUpload(file)}
-                onRemove={(file) => deleteFile(file)}
-              >
-                {imageFiles.length < 5 && (
-                  <button type="button">
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </button>
-                )}
-              </Upload>
-            </ImgCrop>
+            <Upload
+              listType="picture-card"
+              fileList={imageFiles}
+              onChange={({ fileList }) => handleFileChange(fileList)}
+              beforeUpload={(file) => handleBeforeUpload(file)}
+              onRemove={(file) => deleteFile(file)}
+            >
+              {imageFiles.length < 5 && (
+                <button type="button">
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </button>
+              )}
+            </Upload>
           </div>
           {imageFiles.map(
             (file) =>

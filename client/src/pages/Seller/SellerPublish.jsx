@@ -22,7 +22,7 @@ const SellerPublish = () => {
   const [images, setImages] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
   const [modals, setModals] = useState([]);
-  console.log(videoUrl);
+  console.log(modals);
   const onFinish = async (values) => {
     const data = {
       brandId,

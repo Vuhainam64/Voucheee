@@ -73,7 +73,7 @@ const VoucherDetail = () => {
       <div className="grid grid-cols-2 gap-4">
         <div className="flex items-center justify-center border rounded-xl">
           <Carousel autoplay className="w-full max-w-2xl">
-            {voucher.image && voucher.medias.length > 0 ? (
+            {voucher.medias && voucher.medias.length > 0 ? (
               voucher.medias.map((media, index) => (
                 <Image
                   key={media.id}
