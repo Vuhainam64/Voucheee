@@ -2,10 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Carousel, Image, Rate } from "antd";
-
 import { FaChevronRight } from "react-icons/fa";
 import { MdVerified, MdGpsFixed } from "react-icons/md";
-
 import { buttonClick } from "../../animations";
 import { getVoucherByID } from "../../api/voucher";
 import { Logo } from "../../assets/img";
@@ -74,13 +72,17 @@ const VoucherDetail = () => {
         <div className="flex items-center justify-center border rounded-xl">
           <Carousel autoplay className="w-full max-w-2xl">
             {voucher.medias && voucher.medias.length > 0 ? (
-              voucher.medias.map((media, index) => (
-                <Image
+              voucher.medias.map((media) => (
+                <div
                   key={media.id}
-                  src={media.url}
-                  alt={`Voucher ${index + 1}`}
-                  className="object-cover rounded-xl"
-                />
+                  className="flex justify-center items-center h-96"
+                >
+                  <Image
+                    src={media.url}
+                    alt={`Voucher ${media.id}`}
+                    className="object-contain max-h-full max-w-full"
+                  />
+                </div>
               ))
             ) : (
               <div>No images available</div>

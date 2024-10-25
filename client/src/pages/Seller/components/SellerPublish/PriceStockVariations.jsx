@@ -21,9 +21,10 @@ const PriceStockVariations = ({ setModals }) => {
           title: variant.variantName || "",
           originalPrice: variant.originalPrice || 0.01,
           sellPrice: variant.curentPrice || 0.01,
-          image: variant.variantImage.length
-            ? variant.variantImage[0]?.url || ""
-            : "",
+          image:
+            Array.isArray(variant.variantImage) && variant.variantImage.length
+              ? variant.variantImage[0]?.url || ""
+              : "",
           status: variant.isOpen ? 1 : 0,
         }));
 
