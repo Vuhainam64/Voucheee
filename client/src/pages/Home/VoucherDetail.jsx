@@ -69,8 +69,8 @@ const VoucherDetail = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div className="flex items-center justify-center border rounded-xl">
-          <Carousel autoplay className="w-full max-w-2xl">
+        <div className="flex items-center justify-center border rounded-xl overflow-hidden">
+          <Carousel autoplay className="w-full max-w-2xl" effect="fade">
             {voucher.medias && voucher.medias.length > 0 ? (
               voucher.medias.map((media) => (
                 <div
@@ -80,7 +80,7 @@ const VoucherDetail = () => {
                   <Image
                     src={media.url}
                     alt={`Voucher ${media.id}`}
-                    className="object-contain max-h-full max-w-full"
+                    className="object-contain w-full h-full"
                   />
                 </div>
               ))
@@ -160,7 +160,9 @@ const VoucherDetail = () => {
                     <img
                       src={modal.image}
                       alt={modal.title}
-                      className="w-12 h-12 object-cover"
+                      className={`w-12 h-12 object-cover ${
+                        modal.quantity === 0 ? "opacity-50" : ""
+                      }`}
                     />
                   </div>
                 ))
