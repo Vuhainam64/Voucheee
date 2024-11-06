@@ -62,3 +62,36 @@ export const createVoucher = async (data) => {
         throw err;
     }
 };
+
+export const getSellerVoucher = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/voucher/get_seller_vouchers`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};
+
+export const updateVoucherActive = async (id, isActive) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/voucher/update_voucher_isActive/${id}?isActive=${isActive}`,
+            {}, {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
+        }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error change active voucher:", err);
+        throw err;
+    }
+};

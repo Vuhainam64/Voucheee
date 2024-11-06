@@ -1,13 +1,27 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { buttonClick } from "../../../../animations";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Select, Space, Table, Switch, Dropdown } from "antd";
+import { motion } from "framer-motion";
+
 import { FaChevronDown } from "react-icons/fa";
+
+import { buttonClick } from "../../../../animations";
+import { getSellerVoucher, updateVoucherActive } from "../../../../api/voucher";
+import { updateModalActive } from "../../../../api/modal";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 
 const AllProduct = () => {
   const [filterOutOfStock, setfilterOutOfStock] = useState(false);
+  const [vouchers, setVouchers] = useState([]);
+
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      const data = await getSellerVoucher();
+      setVouchers(data?.results || []);
+    };
+    fetchVouchers();
+  }, []);
 
   const items = [
     {
@@ -24,8 +38,8 @@ const AllProduct = () => {
   const columns = [
     {
       title: "Hình ảnh",
-      dataIndex: "productImage",
-      key: "productImage",
+      dataIndex: "image",
+      key: "image",
       render: (image) => (
         <img src={image} alt="Product" style={{ width: 50, height: 50 }} />
       ),
@@ -33,19 +47,14 @@ const AllProduct = () => {
     },
     {
       title: "Thông tin sản phẩm",
-      dataIndex: "productName",
-      key: "productName",
+      dataIndex: "title",
+      key: "title",
       width: "30%",
     },
     {
       title: "Nhà cung cấp",
-      dataIndex: "supplier",
-      key: "supplier",
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "supplierName",
+      key: "supplierName",
     },
     {
       title: "Kho",
@@ -54,9 +63,93 @@ const AllProduct = () => {
     },
     {
       title: "Đang hoạt động",
-      dataIndex: "active",
-      key: "active",
-      render: (active) => <Switch checked={active} />,
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (active, record) => (
+        <Switch
+          checked={active}
+          onChange={async (checked) => {
+            try {
+              await updateVoucherActive(record.id, checked);
+              setVouchers((prevVouchers) =>
+                prevVouchers.map((voucher) =>
+                  voucher.id === record.id
+                    ? { ...voucher, isActive: checked }
+                    : voucher
+                )
+              );
+            } catch (error) {
+              console.error("Failed to update active status:", error);
+            }
+          }}
+        />
+      ),
+    },
+  ];
+
+  // Columns for the nested modal table
+  const modalColumns = [
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      render: (image) => (
+        <img src={image} alt="Modal" style={{ width: 50, height: 50 }} />
+      ),
+      width: "10%",
+    },
+    {
+      title: "Tên Modal",
+      dataIndex: "title",
+      key: "title",
+      width: "30%",
+    },
+    {
+      title: "Giá gốc",
+      dataIndex: "originalPrice",
+      key: "originalPrice",
+    },
+    {
+      title: "Giá bán",
+      dataIndex: "sellPrice",
+      key: "sellPrice",
+    },
+    {
+      title: "Giá sự kiện",
+      dataIndex: "salePrice",
+      key: "salePrice",
+    },
+    {
+      title: "Kho",
+      dataIndex: "stock",
+      key: "stock",
+    },
+    {
+      title: "Đang hoạt động",
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (active, record) => (
+        <Switch
+          checked={active}
+          onChange={async (checked) => {
+            try {
+              await updateModalActive(record.id, checked);
+              setVouchers((prevVouchers) =>
+                prevVouchers.map((voucher) => ({
+                  ...voucher,
+                  modals: voucher.modals.map((modal) =>
+                    modal.id === record.id
+                      ? { ...modal, isActive: checked }
+                      : modal
+                  ),
+                }))
+              );
+            } catch (error) {
+              toast.error("Failed to update active status for modal:", error);
+            }
+          }}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -80,77 +173,6 @@ const AllProduct = () => {
           </Dropdown>
         </Space>
       ),
-    },
-  ];
-
-  // Columns for the nested modal table
-  const modalColumns = [
-    {
-      title: "Hình ảnh",
-      dataIndex: "modalImage",
-      key: "modalImage",
-      render: (image) => (
-        <img src={image} alt="Modal" style={{ width: 50, height: 50 }} />
-      ),
-      width: "10%",
-    },
-    {
-      title: "Tên Modal",
-      dataIndex: "modalName",
-      key: "modalName",
-      width: "30%",
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-    },
-    {
-      title: "Kho",
-      dataIndex: "stock",
-      key: "stock",
-    },
-    {
-      title: "Đang hoạt động",
-      dataIndex: "active",
-      key: "active",
-      render: (active) => <Switch checked={active} />,
-    },
-  ];
-
-  // Data for the table
-  const data = [
-    {
-      key: 1,
-      productID: 1,
-      productName:
-        "Miếng silicon chặn rác, lọc rác Gia Dụng Miền Nam 22 đa năng ngăn ngừa tắc nghẽn ống nước có nút xả nước và khóa nước tiện lợi",
-      price: "24,900₫",
-      active: true,
-      stock: 10,
-      productImage:
-        "https://cf.shopee.vn/file/vn-11134207-7r98o-lwee41pj1djv76",
-      supplier: "GiftPop",
-      modals: [
-        {
-          key: "1-1",
-          modalName: "Hồng",
-          price: "24,900₫",
-          active: true,
-          stock: 7,
-          modalImage:
-            "https://cf.shopee.vn/file/vn-11134207-7r98o-lwee41pjgtsra8",
-        },
-        {
-          key: "1-2",
-          modalName: "Trắng",
-          price: "24,900₫",
-          active: false,
-          stock: 3,
-          modalImage:
-            "https://cf.shopee.vn/file/vn-11134207-7r98o-llvfz7b09ihrac",
-        },
-      ],
     },
   ];
 
@@ -235,7 +257,7 @@ const AllProduct = () => {
               rowExpandable: (record) =>
                 record.modals && record.modals.length > 0,
             }}
-            dataSource={data}
+            dataSource={vouchers}
           />
         </div>
       </div>
