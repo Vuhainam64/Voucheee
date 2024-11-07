@@ -17,3 +17,20 @@ export const updateModalActive = async (id, isActive) => {
         throw err;
     }
 };
+
+export const getModal = async (id) => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/modal/get_modal/${id}`,
+            {}, {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
+        }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error get modal:", err);
+        throw err;
+    }
+};

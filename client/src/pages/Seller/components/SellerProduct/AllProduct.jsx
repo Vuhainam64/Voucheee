@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Input, Select, Space, Table, Switch, Dropdown } from "antd";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
 import { FaChevronDown } from "react-icons/fa";
@@ -7,13 +8,15 @@ import { FaChevronDown } from "react-icons/fa";
 import { buttonClick } from "../../../../animations";
 import { getSellerVoucher, updateVoucherActive } from "../../../../api/voucher";
 import { updateModalActive } from "../../../../api/modal";
-import { toast } from "react-toastify";
+import { ModalPopup } from "./components/AllProduct";
 
 const { Option } = Select;
 
 const AllProduct = () => {
   const [filterOutOfStock, setfilterOutOfStock] = useState(false);
   const [vouchers, setVouchers] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalId, setModalId] = useState(null);
 
   useEffect(() => {
     const fetchVouchers = async () => {
@@ -22,6 +25,11 @@ const AllProduct = () => {
     };
     fetchVouchers();
   }, []);
+
+  const showModal = (id) => {
+    setModalId(id);
+    setIsModalVisible(true);
+  };
 
   const items = [
     {
@@ -155,9 +163,11 @@ const AllProduct = () => {
       title: "Chức năng",
       dataIndex: "operation",
       key: "operation",
-      render: (active) => (
+      render: (_, record) => (
         <Space size="middle" direction="vertical">
-          <Button type="link">Chỉnh sửa</Button>
+          <Button type="link" onClick={() => showModal(record.id)}>
+            Quản lý kho
+          </Button>
           <Dropdown
             menu={{
               items,
@@ -261,6 +271,12 @@ const AllProduct = () => {
           />
         </div>
       </div>
+
+      <ModalPopup
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        modalId={modalId}
+      />
     </div>
   );
 };

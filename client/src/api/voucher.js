@@ -95,3 +95,23 @@ export const updateVoucherActive = async (id, isActive) => {
         throw err;
     }
 };
+
+export const createVoucherCode = async (modalId, data) => {
+    try {
+        const res = await axios.post(
+            `${BACKEND_API_URL}/v1/voucherCode/create_voucher_code?modalId=${modalId}`,
+            [
+                data
+            ],
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error creating voucher:", err);
+        throw err;
+    }
+};
