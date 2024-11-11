@@ -17,11 +17,11 @@ const VoucherDetail = () => {
   useEffect(() => {
     const fetchVoucher = async () => {
       const data = await getVoucherByID(id);
-      setVoucher(data);
+      setVoucher(data.results);
 
       // Thiết lập mặc định phân loại là cái đầu tiên nếu có
-      if (data && data.modals && data.modals.length > 0) {
-        setSelectedModal(data.modals[0]);
+      if (data && data.results.modals && data.results.modals.length > 0) {
+        setSelectedModal(data.results.modals[0]);
       }
     };
 

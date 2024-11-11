@@ -78,13 +78,12 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      render: (image) => (
-        <Image
-          width={50}
-          src={image || "https://via.placeholder.com/50"}
-          alt="Voucher"
-        />
-      ),
+      render: (image) =>
+        image ? (
+          <Image width={50} src={image} alt="Voucher" />
+        ) : (
+          <span>No Image</span>
+        ),
     },
     {
       title: "Operation",
