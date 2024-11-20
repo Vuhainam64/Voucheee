@@ -1,20 +1,181 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Button, Checkbox, Image, InputNumber, Space } from "antd";
-
-import { FiGift } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { FcShop } from "react-icons/fc";
 import { MdMessage } from "react-icons/md";
-import { FaPercent, FaRegTrashAlt } from "react-icons/fa";
+import { HiOutlineTicket } from "react-icons/hi";
+import { FaRegTrashAlt } from "react-icons/fa";
 
-import { buttonClick } from "../../animations";
-import { LuScanLine } from "react-icons/lu";
-import { Momo } from "../../assets/img";
+import { getCart } from "../../api/cart";
+import { PaymentForm, VoucherModal } from "./components/Cart";
 
 const Cart = () => {
-  const onChange = (value) => {
-    console.log("changed", value);
+  const [cartData, setCartData] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [isVoucherModalVisible, setIsVoucherModalVisible] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState(null);
+  const [selectedPromotions, setSelectedPromotions] = useState([]);
+
+  console.log(selectedItems);
+  console.log(selectedPromotions);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        const data = await getCart();
+        setCartData(data);
+      } catch (error) {
+        toast.error("Error fetching cart data:", error);
+      }
+    };
+
+    fetchCartData();
+  }, []);
+
+  const handleCheckboxChange = (checked, sellerId, modal) => {
+    const selectedItem = {
+      quantity: modal.quantity,
+      id: modal.id,
+      salePrice: modal.salePrice,
+    };
+
+    setSelectedItems((prevItems) => {
+      let updatedItems = [...prevItems];
+
+      if (checked) {
+        const sellerIndex = updatedItems.findIndex(
+          (item) => item.sellerId === sellerId
+        );
+
+        if (sellerIndex === -1) {
+          updatedItems.push({
+            sellerId: sellerId,
+            promotions: {
+              id: null,
+              name: null,
+              description: null,
+              percentDiscount: null,
+              moneyDiscount: null,
+              requiredQuantity: null,
+              maxMoneyToDiscount: null,
+              minMoneyToApply: null,
+            },
+            modals: [selectedItem],
+          });
+        } else {
+          const productIndex = updatedItems[sellerIndex].modals.findIndex(
+            (item) => item.id === selectedItem.id
+          );
+
+          if (productIndex === -1) {
+            updatedItems[sellerIndex].modals.push(selectedItem);
+          } else {
+            updatedItems[sellerIndex].modals[productIndex].quantity +=
+              selectedItem.quantity;
+          }
+        }
+      } else {
+        updatedItems = updatedItems.map((item) => {
+          if (item.sellerId === sellerId) {
+            item.modals = item.modals.filter(
+              (modalItem) => modalItem.id !== selectedItem.id
+            );
+          }
+          return item;
+        });
+      }
+
+      updatedItems = updatedItems.filter((item) => item.modals.length > 0);
+
+      return updatedItems;
+    });
+  };
+
+  const renderSellers = () => {
+    return cartData?.sellers.map((seller) => (
+      <div key={seller.sellerId} className="bg-white rounded-lg">
+        <div className="flex items-center space-x-4 border-b py-4 px-4">
+          <Checkbox
+            onChange={(e) =>
+              handleCheckboxChange(
+                e.target.checked,
+                seller.sellerId,
+                seller.modals[0]
+              )
+            }
+          />
+          <Link
+            to={`/store/${seller.sellerId}`}
+            className="flex items-center space-x-2"
+          >
+            <FcShop />
+            <div>{seller.sellerName}</div>
+          </Link>
+          <MdMessage />
+        </div>
+
+        <div className="pb-4 px-4">
+          {seller.modals.map((modal) => (
+            <div
+              key={modal.id}
+              className="flex items-center space-x-4 border-b py-4 justify-between"
+            >
+              <Checkbox
+                onChange={(e) =>
+                  handleCheckboxChange(e.target.checked, seller.sellerId, modal)
+                }
+              />
+              <Image width={100} src={modal.image} />
+              <div className="flex-1">
+                <div>{modal.title}</div>
+                <div>{modal.brandName}</div>
+              </div>
+              <div className="line-through text-gray-500">
+                {modal.originalPrice}
+              </div>
+              <div>{modal.sellPrice}</div>
+              <Space.Compact>
+                <Button>-</Button>
+                <InputNumber min={1} max={10} value={modal.quantity} />
+                <Button>+</Button>
+              </Space.Compact>
+              <div className="text-primary text-lg font-semibold">
+                {modal.totalFinalPrice}
+              </div>
+              <motion.div className="hover:text-red-600 cursor-pointer">
+                <FaRegTrashAlt />
+              </motion.div>
+            </div>
+          ))}
+        </div>
+
+        <div className="pb-4 px-4 flex items-center space-x-4">
+          <div
+            className="flex items-center space-x-2 group cursor-pointer"
+            onClick={() => handleVoucherModalOpen(seller.sellerId)}
+          >
+            <HiOutlineTicket className="text-xl text-primary transition-colors" />
+            <div className="text-primary transition-all">Xem thêm voucher</div>
+          </div>
+          <div>
+            {selectedPromotions
+              .filter((promo) => promo.sellerId === seller.sellerId)
+              .map((promo) => (
+                <div key={promo.id} className="text-primary text-sm">
+                  {promo.name}
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    ));
+  };
+
+  const handleVoucherModalOpen = (sellerId) => {
+    setSelectedSeller(cartData.sellers.find((s) => s.sellerId === sellerId));
+    setIsVoucherModalVisible(true);
   };
 
   return (
@@ -32,288 +193,27 @@ const Cart = () => {
                   <div>Sản phẩm</div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg">
-                <div className="flex items-center space-x-4 border-b py-4 px-4">
-                  <Checkbox />
-                  <Link to={""} className="flex items-center space-x-2">
-                    <FcShop />
-                    <div>Cửa hàng Grab</div>
-                  </Link>
-                  <MdMessage />
-                </div>
-                <div className="pb-4 px-4">
-                  <div className="flex items-center space-x-4 border-b py-4">
-                    <Checkbox />
-                    <Image
-                      width={100}
-                      src="https://cdn.dealtoday.vn/img/c280x280/Nghi-duong-phong-Grand-Beach-Front-Triple-tai-Canvas-Hotel-Da-Nang-avt_12092024162347.jpg?sign=EBibDmSt-kDPmr-A0EY1Bw"
-                    />
-                    <div>
-                      <div>
-                        Canvas Hotel Đà Nẵng - Nghỉ dưỡng phòng Grand Beach
-                        Front Triple
-                      </div>
-                      <div>Canvas Danang Beach Hotel</div>
-                    </div>
-                    <div className="line-through text-gray-500">2.000.000đ</div>
-                    <div>1.500.000đ</div>
-                    <Space.Compact>
-                      <Button>-</Button>
-                      <InputNumber
-                        min={1}
-                        max={100}
-                        defaultValue={3}
-                        onChange={onChange}
-                      />
-                      <Button>+</Button>
-                    </Space.Compact>
-                    <div className="text-primary text-lg font-semibold">
-                      1.500.000đ
-                    </div>
-                    <motion.div
-                      {...buttonClick}
-                      className="hover:text-red-600 cursor-pointer"
-                    >
-                      <FaRegTrashAlt />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg">
-                <div className="flex items-center space-x-4 border-b py-4 px-4">
-                  <Checkbox />
-                  <Link to={""} className="flex items-center space-x-2">
-                    <FcShop />
-                    <div>Cửa hàng Grab</div>
-                  </Link>
-                  <MdMessage />
-                </div>
-                <div className="pb-4 px-4">
-                  <div className="flex items-center space-x-4 border-b py-4">
-                    <Checkbox />
-                    <Image
-                      width={100}
-                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                    />
-                    <div>
-                      <div>
-                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
-                        Thiền
-                      </div>
-                      <div>Chay Hương Thiền</div>
-                    </div>
-                    <div className="line-through text-gray-500">150.000đ</div>
-                    <div>100.000đ</div>
-                    <Space.Compact>
-                      <Button>-</Button>
-                      <InputNumber
-                        min={1}
-                        max={100}
-                        defaultValue={3}
-                        onChange={onChange}
-                      />
-                      <Button>+</Button>
-                    </Space.Compact>
-                    <div className="text-primary text-lg font-semibold">
-                      100.000đ
-                    </div>
-                    <motion.div
-                      {...buttonClick}
-                      className="hover:text-red-600 cursor-pointer"
-                    >
-                      <FaRegTrashAlt />
-                    </motion.div>
-                  </div>
-                  <div className="flex items-center space-x-4 border-b py-4">
-                    <Checkbox />
-                    <Image
-                      width={100}
-                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                    />
-                    <div>
-                      <div>
-                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
-                        Thiền
-                      </div>
-                      <div>Chay Hương Thiền</div>
-                    </div>
-                    <div className="line-through text-gray-500">150.000đ</div>
-                    <div>100.000đ</div>
-                    <Space.Compact>
-                      <Button>-</Button>
-                      <InputNumber
-                        min={1}
-                        max={100}
-                        defaultValue={3}
-                        onChange={onChange}
-                      />
-                      <Button>+</Button>
-                    </Space.Compact>
-                    <div className="text-primary text-lg font-semibold">
-                      100.000đ
-                    </div>
-                    <motion.div
-                      {...buttonClick}
-                      className="hover:text-red-600 cursor-pointer"
-                    >
-                      <FaRegTrashAlt />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg">
-                <div className="flex items-center space-x-4 border-b py-4 px-4">
-                  <Checkbox />
-                  <Link to={""} className="flex items-center space-x-2">
-                    <FcShop />
-                    <div>Cửa hàng Grab</div>
-                  </Link>
-                  <MdMessage />
-                </div>
-                <div className="pb-4 px-4">
-                  <div className="flex items-center space-x-4 border-b py-4">
-                    <Checkbox />
-                    <Image
-                      width={100}
-                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                    />
-                    <div>
-                      <div>
-                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
-                        Thiền
-                      </div>
-                      <div>Chay Hương Thiền</div>
-                    </div>
-                    <div className="line-through text-gray-500">150.000đ</div>
-                    <div>100.000đ</div>
-                    <Space.Compact>
-                      <Button>-</Button>
-                      <InputNumber
-                        min={1}
-                        max={100}
-                        defaultValue={3}
-                        onChange={onChange}
-                      />
-                      <Button>+</Button>
-                    </Space.Compact>
-                    <div className="text-primary text-lg font-semibold">
-                      100.000đ
-                    </div>
-                    <motion.div
-                      {...buttonClick}
-                      className="hover:text-red-600 cursor-pointer"
-                    >
-                      <FaRegTrashAlt />
-                    </motion.div>
-                  </div>
-                  <div className="flex items-center space-x-4 border-b py-4">
-                    <Checkbox />
-                    <Image
-                      width={100}
-                      src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                    />
-                    <div>
-                      <div>
-                        Buffet chay thanh tịnh tại Nhà hàng Buffet Chay Hương
-                        Thiền
-                      </div>
-                      <div>Chay Hương Thiền</div>
-                    </div>
-                    <div className="line-through text-gray-500">150.000đ</div>
-                    <div>100.000đ</div>
-                    <Space.Compact>
-                      <Button>-</Button>
-                      <InputNumber
-                        min={1}
-                        max={100}
-                        defaultValue={3}
-                        onChange={onChange}
-                      />
-                      <Button>+</Button>
-                    </Space.Compact>
-                    <div className="text-primary text-lg font-semibold">
-                      100.000đ
-                    </div>
-                    <motion.div
-                      {...buttonClick}
-                      className="hover:text-red-600 cursor-pointer"
-                    >
-                      <FaRegTrashAlt />
-                    </motion.div>
-                  </div>
-                </div>
-              </div>
+
+              {renderSellers()}
             </div>
           </div>
 
-          {/* Phần này sẽ được giữ cố định khi cuộn */}
-          <div className="sticky top-4">
-            <div className="bg-white p-4 rounded-lg space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="font-semibold">Bạn có mã ưu đãi?</div>
-                <FaPercent />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="font-semibold">Bạn muốn tặng cho bạn bè?</div>
-                <FiGift />
-              </div>
-              <div className="font-semibold">Thanh toán</div>
-              <div className="flex items-center justify-between">
-                <div>Tổng giá trị sản phẩms</div>
-                <div>1.500.000đ</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>Thưởng VPoint</div>
-                <div>1.500</div>
-              </div>
-              <div className="border-b"></div>
-              <div className="flex items-center justify-between">
-                <div>Tổng giá trị phải thanh toán</div>
-                <div>1.500.000đ</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>Số dư hiện tại</div>
-                <div>200.000đ</div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>Số tiền cần nạp thêm</div>
-                <div>1.300.000đ</div>
-              </div>
-              <motion.div
-                {...buttonClick}
-                className="bg-primary text-white p-2 rounded-lg no-underline
-              cursor-pointer hover:bg-heroPrimary transition-colors duration-300
-              text-center text-lg "
-              >
-                Nạp thêm vào tài khoản
-              </motion.div>
-              <div className="flex items-center justify-between gap-16">
-                <div className="w-16 h-[1px] rounded-md bg-slate-400"></div>
-                <p className="text-slate-400">Quét mã thanh toán</p>
-                <div className="w-16 h-[1px] rounded-md bg-slate-400"></div>
-              </div>
-              <motion.div
-                {...buttonClick}
-                className="bg-blue-600 text-white p-2 rounded-lg no-underline
-              cursor-pointer hover:bg-blue-700 transition-colors duration-300
-              text-lg flex items-center space-x-4 justify-center"
-              >
-                <LuScanLine />
-                <div>Thanh toán với Mobile Banking</div>
-              </motion.div>
-              <motion.div
-                {...buttonClick}
-                className="bg-[#A50064] text-white p-2 rounded-lg no-underline
-              cursor-pointer hover:bg-[#8d0562] transition-colors duration-300
-              text-lg flex items-center space-x-4 justify-center"
-              >
-                <img src={Momo} alt="momo" className="w-6" />
-                <div>Thanh toán với Momo</div>
-              </motion.div>
-            </div>
-          </div>
+          <PaymentForm
+            selectedVoucher={[]}
+            cartData={cartData}
+            totalPrice={cartData?.balance}
+            selectedItems={selectedItems}
+          />
         </div>
       </div>
+
+      <VoucherModal
+        isModalVisible={isVoucherModalVisible}
+        onClose={() => setIsVoucherModalVisible(false)}
+        seller={selectedSeller}
+        selectedPromotions={selectedPromotions}
+        setSelectedPromotions={setSelectedPromotions}
+      />
     </div>
   );
 };

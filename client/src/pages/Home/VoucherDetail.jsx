@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Carousel, Image, Rate } from "antd";
+import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
+
 import { FaChevronRight } from "react-icons/fa";
 import { MdVerified, MdGpsFixed } from "react-icons/md";
+
+import { Spinner } from "../../components/Spinner";
 import { buttonClick } from "../../animations";
-import { getVoucherByID } from "../../api/voucher";
 import { Logo } from "../../assets/img";
 
+import { getVoucherByID } from "../../api/voucher";
+import { addModalToCart, getCart } from "../../api/cart";
+import { SET_CART } from "../../context/actions/cartActions";
+
 const VoucherDetail = () => {
+  const dispatch = useDispatch();
+
   const { id } = useParams();
   const [voucher, setVoucher] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -36,13 +46,37 @@ const VoucherDetail = () => {
     setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
+  const refreshCart = async () => {
+    const cartData = await getCart();
+    dispatch(SET_CART(cartData));
+  };
+
   const handleAddressClick = (lon, lat) => {
     const url = `https://www.google.com/maps?q=${lat},${lon}`;
     window.open(url, "_blank");
   };
 
+  const handleAddToCart = async () => {
+    if (!selectedModal) {
+      toast.error("Vui lòng chọn phân loại");
+      return;
+    }
+
+    try {
+      await addModalToCart(selectedModal.id, quantity);
+      toast.success("Thêm vào giỏ hàng thành công");
+      await refreshCart();
+    } catch (error) {
+      toast.error("Thêm vào giỏ hàng thất bại");
+    }
+  };
+
   if (!voucher) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
+        <Spinner />
+      </div>
+    );
   }
 
   return (
@@ -200,6 +234,7 @@ const VoucherDetail = () => {
             </motion.div>
             <motion.div
               {...buttonClick}
+              onClick={handleAddToCart}
               className="flex bg-primary text-white py-2 rounded-xl cursor-pointer text-nowrap items-center justify-center"
             >
               Thêm vào giỏ hàng

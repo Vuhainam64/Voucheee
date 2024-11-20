@@ -1,29 +1,34 @@
-[
-  {
-    "id": "b1a38693-1bb1-476c-bcdf-70739e9a4880",
-    "title": "The Coffee House",
-    "image": "https://firebasestorage.googleapis.com/v0/b/vouchee-504da.appspot.com/o/IMAGE%2FVOUCHER%2Ftest.png?alt=media&token=11650450-ca07-45b1-a5d5-abbd90495d7a",
-    "originalPrice": 177307.0,
-    "salePrice": null,
-    "percentDiscount": null,
-    "categories": [],
-    "addresses": [
-      {
-        "distance": null,
-        "id": "a90bc5f1-538d-4e0d-8e6b-00b2a3af65b5",
-        "addressName": "Số 1 Lê Hồng Phong, P.Lạc Viên, Q.Ngô Quyền, TP.Hải Phòng",
-        "lon": 106.696908,
-        "lat": 20.860399
+{
+  "buyerId": "7259352f-ee08-48af-9984-653b054cfd83",
+  "balance": 1000000,
+  "vPoint": 1000,
+  "sellers": [
+    {
+      "sellerId": "44518619-bd86-4f57-9a8a-05c3ffeab66c",
+      "promotions": {
+        "id": "5d7ab3f7-1daf-4577-b34d-033c70f7108c",
+        "name": "PROMOTION 1",
+        "description": "string",
+        "percentDiscount": 10,
+        "moneyDiscount": null,
+        "requiredQuantity": null,
+        "maxMoneyToDiscount": null,
+        "minMoneyToApply": null
       },
-      {
-        "distance": null,
-        "id": "8fabecff-e1a4-496c-a09a-03cf387bacc0",
-        "addressName": "494 V.I. Lê Nin, P.Hà Huy Tập, TP.Vinh, T.Nghệ An",
-        "lon": null,
-        "lat": null
-      },
-      {}
-    ]
-  },
-  {}
-]
+
+      "modals": [
+        {
+          "quantity": 1,
+          "id": "f429c085-f6a2-4a02-b862-548c40f0bc55",
+          "salePrice": 70000
+        },
+        {
+          "quantity": 1,
+          "id": "fe992cbb-976a-4cb0-90b0-692512a0f971",
+          "sellPrice": 60000
+        }
+      ]
+    },
+    {}
+  ]
+}

@@ -1,11 +1,11 @@
 import React from "react";
 import { Steps } from "antd";
 
-const CartStep = () => {
+const CartStep = ({ current }) => {
   return (
     <div className="py-2">
       <Steps
-        current={1}
+        current={current}
         items={[
           {
             title: "Giỏ hàng",
