@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { InputNumber, Switch, Tooltip } from "antd";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -9,6 +8,8 @@ import { FaPercent } from "react-icons/fa";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 import { buttonClick } from "../../../../animations";
+import { checkout } from "../../../../api/cart";
+import { useNavigate } from "react-router-dom";
 
 const PaymentForm = ({
   selectedItems,
@@ -24,6 +25,12 @@ const PaymentForm = ({
   const [balanceToUse, setBalanceToUse] = useState(0);
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [giftEmail, setGiftEmail] = useState("");
+
+  console.log("selectedItems: ", selectedItems);
+  console.log("selectedPromotions: ", selectedPromotions);
+  console.log("giftEmail: ", giftEmail);
+  console.log("vpointToUse: ", vpointToUse);
+  console.log("balanceToUse: ", balanceToUse);
 
   // State for computed values
   const [discountsBySeller, setDiscountsBySeller] = useState({});
@@ -147,7 +154,9 @@ const PaymentForm = ({
       };
 
       // Gọi API checkout
-      localStorage.setItem("checkoutResponse", JSON.stringify(requestData));
+      const res = await checkout(requestData);
+      localStorage.setItem("checkoutResponse", JSON.stringify(res));
+      localStorage.setItem("checkoutData", JSON.stringify(requestData));
       navigate("/cart/checkout");
     } catch (err) {
       console.error("Lỗi khi thanh toán:", err);

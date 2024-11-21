@@ -14,6 +14,7 @@ import {
   Cart,
   Checkout,
   Home,
+  Payment,
   SearchProduct,
   VoucherDetail,
 } from "../pages/Home";
@@ -94,6 +95,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         children: [
           { path: "select", element: <Cart /> },
           { path: "checkout", element: <Checkout /> },
+          { path: "payment", element: <Payment /> },
         ],
       },
       {
