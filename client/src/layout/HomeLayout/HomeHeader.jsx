@@ -71,7 +71,7 @@ const HomeHeader = () => {
           <SearchInput placeholder="Tìm kiếm voucher..." />
 
           <Link
-            to={"/cart"}
+            to={"/cart/select"}
             {...buttonClick}
             className="relative cursor-pointer"
           >

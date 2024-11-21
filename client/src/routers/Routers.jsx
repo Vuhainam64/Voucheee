@@ -10,7 +10,13 @@ import {
   UserLayout,
 } from "../layout";
 
-import { Cart, Home, SearchProduct, VoucherDetail } from "../pages/Home";
+import {
+  Cart,
+  Checkout,
+  Home,
+  SearchProduct,
+  VoucherDetail,
+} from "../pages/Home";
 import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
@@ -85,7 +91,10 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       {
         path: "/cart",
         element: <CartLayout />,
-        children: [{ path: "", element: <Cart /> }],
+        children: [
+          { path: "select", element: <Cart /> },
+          { path: "checkout", element: <Checkout /> },
+        ],
       },
       {
         path: "/user",

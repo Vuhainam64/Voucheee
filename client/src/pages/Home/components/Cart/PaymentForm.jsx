@@ -1,21 +1,81 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
 import { InputNumber, Switch, Tooltip } from "antd";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 
 import { FiGift } from "react-icons/fi";
 import { FaPercent } from "react-icons/fa";
-import { LuScanLine } from "react-icons/lu";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
-import { Momo } from "../../../../assets/img";
 import { buttonClick } from "../../../../animations";
 
-const PaymentForm = ({ cartData, totalPrice }) => {
+const PaymentForm = ({
+  selectedItems,
+  selectedPromotions,
+  cartData,
+  totalPrice,
+}) => {
+  const navigate = useNavigate();
+
   const [useVpoint, setUseVpoint] = useState(false);
   const [useBalance, setUseBalance] = useState(false);
   const [vpointToUse, setVpointToUse] = useState(0);
   const [balanceToUse, setBalanceToUse] = useState(0);
   const [showEmailInput, setShowEmailInput] = useState(false);
+  const [giftEmail, setGiftEmail] = useState("");
+
+  // State for computed values
+  const [discountsBySeller, setDiscountsBySeller] = useState({});
+  const [totalDiscount, setTotalDiscount] = useState(0);
+  const [totalPriceAfterDiscount, setTotalPriceAfterDiscount] =
+    useState(totalPrice);
+
+  // Compute discounts by seller
+  useEffect(() => {
+    const sellerDiscounts = selectedItems.reduce((acc, item) => {
+      const sellerId = item.sellerId;
+      const modals = item.modals;
+      const promotion = selectedPromotions.find(
+        (promo) => promo.sellerId === sellerId
+      );
+      const percentDiscount = promotion?.percentDiscount || 0;
+
+      const totalDiscount =
+        modals.reduce(
+          (sum, modal) => sum + modal.salePrice * modal.quantity,
+          0
+        ) *
+        (percentDiscount / 100);
+
+      if (!acc[sellerId]) {
+        acc[sellerId] = { sellerId, totalDiscount };
+      } else {
+        acc[sellerId].totalDiscount += totalDiscount;
+      }
+
+      return acc;
+    }, {});
+
+    setDiscountsBySeller(sellerDiscounts);
+
+    // Calculate total discount
+    const total = Object.values(sellerDiscounts).reduce(
+      (sum, { totalDiscount }) => sum + totalDiscount,
+      0
+    );
+
+    setTotalDiscount(total);
+  }, [selectedItems, selectedPromotions]);
+
+  // Calculate total price after discounts
+  useEffect(() => {
+    setTotalPriceAfterDiscount(
+      useVpoint
+        ? Math.max(totalPrice - totalDiscount - vpointToUse, 0)
+        : totalPrice - totalDiscount
+    );
+  }, [totalPrice, totalDiscount, vpointToUse, useVpoint]);
 
   const handleVpointSwitch = (checked) => {
     setUseVpoint(checked);
@@ -25,30 +85,27 @@ const PaymentForm = ({ cartData, totalPrice }) => {
   };
 
   const handleVpointChange = (value) => {
-    // Làm tròn giá trị nhập vào xuống bội số của 1000
     const roundedValue = Math.floor(value / 1000) * 1000;
-
-    // Kiểm tra xem giá trị đã làm tròn có vượt quá tổng giá trị sản phẩm không
     if (roundedValue > totalPrice) {
-      setVpointToUse(totalPrice); // Nếu vượt quá, gán số VPoint = totalPrice
+      setVpointToUse(totalPrice);
     } else if (roundedValue < 0) {
-      setVpointToUse(0); // Kiểm tra giá trị không âm
+      setVpointToUse(0);
     } else {
-      setVpointToUse(roundedValue); // Nếu hợp lệ, cập nhật giá trị VPoint
+      setVpointToUse(roundedValue);
     }
   };
 
   const handleBalanceSwitch = (checked) => {
     setUseBalance(checked);
     if (!checked) {
-      setUseBalance(0);
+      setBalanceToUse(0);
     }
   };
 
   const handleBalanceChange = (value) => {
     const roundedValue = Math.floor(value / 1000) * 1000;
-    if (roundedValue > totalPrice) {
-      setBalanceToUse(totalPrice);
+    if (roundedValue > totalPriceAfterDiscount) {
+      setBalanceToUse(totalPriceAfterDiscount);
     } else if (roundedValue < 0) {
       setBalanceToUse(0);
     } else {
@@ -57,12 +114,51 @@ const PaymentForm = ({ cartData, totalPrice }) => {
   };
 
   const handleGiftClick = () => {
+    if (showEmailInput) {
+      setGiftEmail("");
+    }
     setShowEmailInput(!showEmailInput);
+  };
+
+  const handleCheckout = async () => {
+    try {
+      // Chuẩn bị dữ liệu item_brief
+      const itemBrief = selectedItems.map((item) => {
+        const promotion = selectedPromotions.find(
+          (promo) => promo.sellerId === item.sellerId
+        );
+        return {
+          modalId: item.modals.map((modal) => modal.id),
+          promotionId: promotion ? promotion.id : null,
+        };
+      });
+
+      // Chuẩn bị dữ liệu gửi đi
+      const requestData = {
+        totalPrice,
+        totalDiscount,
+        totalPriceBeforeDiscount: totalPrice - totalDiscount,
+        use_VPoint: vpointToUse,
+        totalPriceAfterDiscount,
+        use_balance: balanceToUse,
+        totalPay: totalPriceAfterDiscount - balanceToUse,
+        item_brief: itemBrief,
+        gift_email: giftEmail,
+      };
+
+      // Gọi API checkout
+      localStorage.setItem("checkoutResponse", JSON.stringify(requestData));
+      navigate("/cart/checkout");
+    } catch (err) {
+      console.error("Lỗi khi thanh toán:", err);
+      toast.error("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.");
+    }
   };
 
   return (
     <div className="sticky top-4">
       <div className="bg-white p-4 rounded-lg space-y-4">
+        {/* Mã ưu đãi và tặng quà */}
         <div className="flex items-center justify-between">
           <div className="font-semibold">Bạn có mã ưu đãi?</div>
           <FaPercent />
@@ -83,14 +179,33 @@ const PaymentForm = ({ cartData, totalPrice }) => {
               type="email"
               placeholder="Nhập email người nhận quà"
               className="border p-2 rounded w-full"
+              value={giftEmail}
+              onChange={(e) => setGiftEmail(e.target.value)}
             />
           </div>
         )}
+        {/* Thông tin thanh toán */}
         <div className="font-semibold">Thanh toán</div>
         <div className="flex items-center justify-between">
-          <div>Tổng giá trị sản phẩm</div>
-          <div>{totalPrice ? totalPrice : "0"}đ</div>
+          <div>Tổng số tiền sản phẩm</div>
+          <div>{totalPrice.toLocaleString()}đ</div>
         </div>
+        {Object.values(discountsBySeller)
+          .filter(({ totalDiscount }) => totalDiscount > 0) // Lọc các seller có giảm giá > 0
+          .map(({ sellerId, totalDiscount }) => (
+            <div key={sellerId} className="flex items-center justify-between">
+              <div>Giảm giá từ seller</div>
+              <div>- {totalDiscount.toLocaleString()}đ</div>
+            </div>
+          ))}
+
+        <div className="border-b"></div>
+        <div className="flex items-center justify-between">
+          <div>Tổng số tiền trước thanh toán</div>
+          <div>{(totalPrice - totalDiscount).toLocaleString()}đ</div>
+        </div>
+
+        {/* VPoint */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div>Sử dụng VPoint</div>
@@ -102,7 +217,7 @@ const PaymentForm = ({ cartData, totalPrice }) => {
         </div>
         {useVpoint && (
           <div className="flex items-center justify-between">
-            <Tooltip title="Số vpoint có thể sử dụng là bội số của 1000 ví dụ 2000,10000">
+            <Tooltip title="Số VPoint có thể sử dụng là bội số của 1000">
               <div className="flex items-center space-x-1">
                 <div>Nhập số VPoint muốn dùng</div>
                 <IoMdInformationCircleOutline />
@@ -114,16 +229,20 @@ const PaymentForm = ({ cartData, totalPrice }) => {
               value={vpointToUse}
               onChange={handleVpointChange}
               style={{ width: 120 }}
-              step={1000} // Đảm bảo nhập số theo bội số của 1000
+              step={1000}
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              } // Thêm dấu phẩy mỗi 3 chữ số
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
             />
           </div>
         )}
-
-        <div className="border-b"></div>
+        {/* Tổng tiền thanh toán */}
         <div className="flex items-center justify-between">
-          <div>Tổng giá trị phải thanh toán</div>
-          <div>{useVpoint ? totalPrice - vpointToUse : totalPrice}đ</div>
+          <div>Tổng số tiền thanh toán</div>
+          <div>{totalPriceAfterDiscount.toLocaleString()}đ</div>
         </div>
+
         <div className="flex items-center justify-between">
           <Tooltip title="VPoint = Tổng tiền thanh toán / 1000">
             <div className="flex items-center space-x-1">
@@ -132,7 +251,17 @@ const PaymentForm = ({ cartData, totalPrice }) => {
             </div>
           </Tooltip>
           <div>
-            {(useVpoint ? totalPrice - cartData?.vPoint : totalPrice) / 1000}
+            <div>
+              {useVpoint
+                ? totalPrice - totalDiscount - vpointToUse > 0
+                  ? ((totalPrice - totalDiscount - vpointToUse) / 1000)
+                      .toFixed(0)
+                      .toLocaleString()
+                  : 0
+                : ((totalPrice - totalDiscount) / 1000)
+                    .toFixed(0)
+                    .toLocaleString()}
+            </div>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -158,14 +287,21 @@ const PaymentForm = ({ cartData, totalPrice }) => {
               value={balanceToUse}
               onChange={handleBalanceChange}
               style={{ width: 120 }}
-              step={1000} // Đảm bảo nhập số theo bội số của 1000
+              step={1000}
+              formatter={(value) =>
+                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+              } // Thêm dấu phẩy mỗi 3 chữ số
+              parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
+              addonAfter="đ"
             />
           </div>
         )}
 
         <div className="flex items-center justify-between">
           <div>Số tiền cần nạp thêm</div>
-          <div>0đ</div>
+          <div>
+            {(totalPriceAfterDiscount - balanceToUse).toLocaleString()}đ
+          </div>
         </div>
         <motion.div
           {...buttonClick}
@@ -175,28 +311,14 @@ const PaymentForm = ({ cartData, totalPrice }) => {
         >
           Nạp thêm vào tài khoản
         </motion.div>
-        <div className="flex items-center justify-between gap-16">
-          <div className="w-16 h-[1px] rounded-md bg-slate-400"></div>
-          <p className="text-slate-400">Quét mã thanh toán</p>
-          <div className="w-16 h-[1px] rounded-md bg-slate-400"></div>
-        </div>
         <motion.div
           {...buttonClick}
-          className="bg-blue-600 text-white p-2 rounded-lg no-underline
-    cursor-pointer hover:bg-blue-700 transition-colors duration-300
-    text-lg flex items-center space-x-4 justify-center"
+          onClick={handleCheckout}
+          className="bg-blue-500 text-white p-2 rounded-lg no-underline
+    cursor-pointer hover:bg-blue-600  transition-colors duration-300
+    text-center text-lg "
         >
-          <LuScanLine />
-          <div>Thanh toán với Mobile Banking</div>
-        </motion.div>
-        <motion.div
-          {...buttonClick}
-          className="bg-[#A50064] text-white p-2 rounded-lg no-underline
-    cursor-pointer hover:bg-[#8d0562] transition-colors duration-300
-    text-lg flex items-center space-x-4 justify-center"
-        >
-          <img src={Momo} alt="momo" className="w-6" />
-          <div>Thanh toán với Momo</div>
+          Tiến hành Thanh toán
         </motion.div>
       </div>
     </div>

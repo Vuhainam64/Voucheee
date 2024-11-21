@@ -10,8 +10,11 @@ const CartLayout = () => {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.pathname === "/checkout") {
+    if (location.pathname === "/cart/checkout") {
       setCurrent(1);
+    }
+    if (location.pathname === "/cart/payment") {
+      setCurrent(2);
     }
   }, [location]);
 

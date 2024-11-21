@@ -1,5 +1,6 @@
 import { Button, Checkbox, Image, InputNumber, Space } from "antd";
 import React, { useEffect, useState } from "react";
+
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -17,9 +18,6 @@ const Cart = () => {
   const [isVoucherModalVisible, setIsVoucherModalVisible] = useState(false);
   const [selectedSeller, setSelectedSeller] = useState(null);
   const [selectedPromotions, setSelectedPromotions] = useState([]);
-
-  console.log(selectedItems);
-  console.log(selectedPromotions);
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -52,16 +50,6 @@ const Cart = () => {
         if (sellerIndex === -1) {
           updatedItems.push({
             sellerId: sellerId,
-            promotions: {
-              id: null,
-              name: null,
-              description: null,
-              percentDiscount: null,
-              moneyDiscount: null,
-              requiredQuantity: null,
-              maxMoneyToDiscount: null,
-              minMoneyToApply: null,
-            },
             modals: [selectedItem],
           });
         } else {
@@ -91,6 +79,16 @@ const Cart = () => {
 
       return updatedItems;
     });
+  };
+
+  const calculateTotalPrice = () => {
+    return selectedItems.reduce((total, seller) => {
+      const sellerTotal = seller.modals.reduce(
+        (sum, modal) => sum + modal.salePrice * modal.quantity,
+        0
+      );
+      return total + sellerTotal;
+    }, 0);
   };
 
   const renderSellers = () => {
@@ -199,10 +197,10 @@ const Cart = () => {
           </div>
 
           <PaymentForm
-            selectedVoucher={[]}
-            cartData={cartData}
-            totalPrice={cartData?.balance}
             selectedItems={selectedItems}
+            selectedPromotions={selectedPromotions}
+            cartData={cartData}
+            totalPrice={calculateTotalPrice()}
           />
         </div>
       </div>
