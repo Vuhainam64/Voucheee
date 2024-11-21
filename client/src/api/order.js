@@ -17,3 +17,20 @@ export const createOrder = async (data) => {
         throw err;
     }
 };
+
+export const getOrder = async (orderID) => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/order/get_order/${orderID}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error get order:", err);
+        throw err;
+    }
+};
