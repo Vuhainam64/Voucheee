@@ -9,7 +9,7 @@ import { MdMessage } from "react-icons/md";
 import { HiOutlineTicket } from "react-icons/hi";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-import { getCart } from "../../api/cart";
+import { getCart, removeModal, updateModalQuantity } from "../../api/cart";
 import { PaymentForm, VoucherModal } from "./components/Cart";
 
 const Cart = () => {
@@ -91,6 +91,50 @@ const Cart = () => {
     }, 0);
   };
 
+  const handleQuantityChange = async (modalId, quantity, sellerId, type) => {
+    try {
+      let updatedQuantity = quantity;
+
+      // Xử lý số lượng dựa trên loại hành động
+      if (type === "increment") {
+        updatedQuantity += 1;
+      } else if (type === "decrement") {
+        updatedQuantity = Math.max(0, quantity - 1);
+      }
+
+      // Gửi yêu cầu cập nhật số lượng
+      await updateModalQuantity(modalId, updatedQuantity);
+
+      // Fetch lại cart sau khi cập nhật thành công
+      const updatedCartData = await getCart();
+      setCartData(updatedCartData);
+    } catch (error) {
+      // Hiển thị thông báo lỗi
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to update quantity. Please try again.";
+      toast.error(errorMessage);
+      console.error(error);
+    }
+  };
+
+  const handleRemoveModal = async (modalId, sellerId) => {
+    try {
+      // Gọi API để xóa modal khỏi giỏ hàng
+      await removeModal(modalId);
+
+      // Fetch lại cart sau khi xóa thành công
+      const updatedCartData = await getCart();
+      setCartData(updatedCartData);
+
+      // Hiển thị thông báo thành công
+      toast.success("Item removed successfully.");
+    } catch (error) {
+      toast.error("Failed to remove item. Please try again.");
+      console.error(error);
+    }
+  };
+
   const renderSellers = () => {
     return cartData?.sellers.map((seller) => (
       <div key={seller.sellerId} className="bg-white rounded-lg">
@@ -135,14 +179,52 @@ const Cart = () => {
               </div>
               <div>{modal.sellPrice}</div>
               <Space.Compact>
-                <Button>-</Button>
-                <InputNumber min={1} max={10} value={modal.quantity} />
-                <Button>+</Button>
+                <Button
+                  onClick={() =>
+                    handleQuantityChange(
+                      modal.id,
+                      modal.quantity,
+                      seller.sellerId,
+                      "decrement"
+                    )
+                  }
+                >
+                  -
+                </Button>
+                <InputNumber
+                  min={1}
+                  max={10}
+                  value={modal.quantity}
+                  onChange={(value) =>
+                    handleQuantityChange(
+                      modal.id,
+                      value,
+                      seller.sellerId,
+                      "manual"
+                    )
+                  }
+                />
+                <Button
+                  onClick={() =>
+                    handleQuantityChange(
+                      modal.id,
+                      modal.quantity,
+                      seller.sellerId,
+                      "increment"
+                    )
+                  }
+                >
+                  +
+                </Button>
               </Space.Compact>
+
               <div className="text-primary text-lg font-semibold">
                 {modal.totalFinalPrice}
               </div>
-              <motion.div className="hover:text-red-600 cursor-pointer">
+              <motion.div
+                onClick={() => handleRemoveModal(modal.id, seller.sellerId)}
+                className="hover:text-red-600 cursor-pointer"
+              >
                 <FaRegTrashAlt />
               </motion.div>
             </div>

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Spin, Modal } from "antd"; // Import Modal từ antd
+import { Spin, Modal } from "antd";
 
 import { FaMoneyBill } from "react-icons/fa";
 import { FaMoneyCheck } from "react-icons/fa";
 import { RiQrScanLine } from "react-icons/ri";
 import { LoadingOutlined } from "@ant-design/icons";
 
-import { Logo, Momo, Sepay } from "../../assets/img";
+import { Logo, MBBank, Sepay } from "../../assets/img";
 import { getOrder } from "../../api/order";
 
 const Payment = () => {
@@ -114,8 +114,8 @@ const Payment = () => {
             <div>
               <img src={Sepay} alt="sepay" className="w-14" />
             </div>
-            <div className="bg-[#A50064] p-2 rounded-md">
-              <img src={Momo} alt="momo" className="w-10 h-10" />
+            <div className="">
+              <img src={MBBank} alt="MBBank Logo" className="w-12 h-12" />
             </div>
           </div>
           <div className="flex flex-col items-center justify-center p-4 space-y-8 pb-12">
