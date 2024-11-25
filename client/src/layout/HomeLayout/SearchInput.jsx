@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Select } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Select, Spin } from "antd";
 
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { getMiniSearch } from "../../api/voucher";
 
 let timeout;
 let currentValue;
@@ -15,52 +16,49 @@ const fetchSuggestions = async (value, callback) => {
   currentValue = value;
 
   const search = async () => {
-    const query = new URLSearchParams({
-      query: value,
-    }).toString();
-
     try {
-      const response = await fetch(
-        `https://us-central1-get-feedback-a0119.cloudfunctions.net/app/api/shopee/search-test?${query}`
-      );
-      const data = await response.json();
+      const results = await getMiniSearch(value);
+      console.log("Results:", results);
 
       if (currentValue === value) {
-        const results = data.data.map((item) => ({
-          value: item.value,
-          text: item.value,
-          avatar: item.avatar,
-          category: item.category,
-          url: item.url,
+        const formattedResults = results.map((item) => ({
+          value: item.id,
+          text: item.title,
+          avatar: item.image,
         }));
-        callback(results);
+        callback(formattedResults);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      callback([]); // Return an empty array on error
+      callback([]); // Return empty array on error
     }
   };
 
   if (value) {
     timeout = setTimeout(search, 300);
   } else {
-    callback([]);
+    callback([]); // Return empty when input is empty
   }
 };
 
 const SearchInput = ({ placeholder }) => {
   const navigate = useNavigate();
-
   const [data, setData] = useState([]);
-  const [value, setValue] = useState();
+  const [value, setValue] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = (newValue) => {
-    fetchSuggestions(newValue, setData);
+    setLoading(true);
+    fetchSuggestions(newValue, (results) => {
+      setData(results);
+      setLoading(false);
+    });
+    setValue(newValue);
   };
 
   const handleChange = (newValue) => {
     setValue(newValue);
-    navigate(`/search?q=${newValue}`);
+    navigate(`/detail/${newValue}`);
   };
 
   return (
@@ -73,13 +71,13 @@ const SearchInput = ({ placeholder }) => {
       filterOption={false}
       onSearch={handleSearch}
       onChange={handleChange}
-      notFoundContent={null}
+      notFoundContent={loading ? <Spin size="small" /> : null}
       options={data.map((d) => ({
         value: d.value,
         label: (
           <div className="flex items-center">
             <img
-              src={`https:${d.avatar}`}
+              src={d.avatar}
               alt={d.text}
               className="w-6 h-6 rounded-full mr-2"
             />
@@ -88,6 +86,9 @@ const SearchInput = ({ placeholder }) => {
         ),
       }))}
       className="w-full rounded-md border bg-gray-200 min-w-620"
+      onKeyDown={(e) =>
+        e.key === "Enter" ? navigate(`/search?q=${value}`) : ""
+      }
     />
   );
 };

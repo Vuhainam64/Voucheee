@@ -115,3 +115,14 @@ export const createVoucherCode = async (modalId, data) => {
         throw err;
     }
 };
+
+export const getMiniSearch = async (q) => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/voucher/get_mini_vouchers?title=${q}`
+        );
+        return res.data;
+    } catch (err) {
+        return null;
+    }
+};

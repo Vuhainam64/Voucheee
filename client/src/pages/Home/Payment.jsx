@@ -17,7 +17,7 @@ const Payment = () => {
   const orderCode = queryParams.get("value");
 
   const [orderDetails, setOrderDetails] = useState(null);
-  const navigate = useNavigate(); // Hook để điều hướng trang
+  const navigate = useNavigate();
 
   useEffect(() => {
     let intervalId;
@@ -30,10 +30,10 @@ const Payment = () => {
           Modal.success({
             title: "Thanh toán thành công",
             content: "Đơn hàng của bạn đã được thanh toán thành công!",
-            onOk: () => navigate("/home"),
+            onOk: () => navigate("/user/listVoucher"),
           });
           setTimeout(() => {
-            navigate("/home");
+            navigate("/user/listVoucher");
           }, 5000);
         }
       } catch (err) {
