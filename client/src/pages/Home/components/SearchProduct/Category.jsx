@@ -3,7 +3,7 @@ import { Tree } from "antd";
 
 import { getAllCategory } from "../../../../api/category";
 
-const Category = () => {
+const Category = ({ onCategoryChange }) => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -43,6 +43,7 @@ const Category = () => {
 
   const onCheck = (checkedKeys) => {
     console.log("Checked keys:", checkedKeys);
+    onCategoryChange(checkedKeys);
   };
 
   return (

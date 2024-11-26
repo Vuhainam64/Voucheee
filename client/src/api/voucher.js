@@ -128,25 +128,40 @@ export const getMiniSearch = async (q) => {
 };
 
 export const searchProduct = async (params) => {
+    console.log("params: ", params);
     try {
-        const res = await axios.get(`${BACKEND_API_URL}/v1/voucher/get_all_voucher`, {
-            params: {
+        // Lọc bỏ các giá trị undefined hoặc null
+        const filteredParams = Object.fromEntries(
+            Object.entries({
                 page: params.page,
                 pageSize: params.pageSize,
                 title: params.title,
                 status: params.status,
                 isActive: params.isActive,
                 isInStock: params.isInStock,
-                categoryIDs: params.categoryIDs, // Array
-                supplierIDs: params.supplierIDs, // Array
                 minPrice: params.minPrice,
                 maxPrice: params.maxPrice,
                 sortVoucherEnum: params.sortVoucherEnum,
-            },
+            }).filter(([_, value]) => value !== undefined && value !== null)
+        );
+
+        // Xử lý categoryIDs để lặp lại tham số
+        const queryString = new URLSearchParams({
+            ...filteredParams,
         });
+
+        if (params.categoryIDs && params.categoryIDs.length) {
+            params.categoryIDs.forEach((id) => queryString.append("categoryIDs", id));
+        }
+
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/voucher/get_all_voucher?${queryString.toString()}`
+        );
+
         return res.data;
     } catch (err) {
         console.error("Error fetching vouchers:", err);
         return null;
     }
 };
+

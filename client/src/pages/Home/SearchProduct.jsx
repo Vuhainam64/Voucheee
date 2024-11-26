@@ -16,6 +16,7 @@ const SearchProduct = () => {
   const [products, setProducts] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
   const [sortVoucherEnum, setSortVoucherEnum] = useState(0);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   console.log("q: ", q);
@@ -28,6 +29,7 @@ const SearchProduct = () => {
         const params = {
           title: q,
           sortVoucherEnum,
+          categoryIDs: selectedCategories,
         };
 
         const response = await searchProduct(params);
@@ -41,10 +43,14 @@ const SearchProduct = () => {
     };
 
     fetchProducts();
-  }, [q, sortVoucherEnum]);
+  }, [q, sortVoucherEnum, selectedCategories]);
 
   const handleSortChange = (value) => {
     setSortVoucherEnum(value);
+  };
+
+  const handleCategoryChange = (categories) => {
+    setSelectedCategories(categories);
   };
 
   return (
@@ -52,7 +58,7 @@ const SearchProduct = () => {
       <div className="max-w-[1400px] w-full mx-auto grid grid-cols-4 gap-4 py-4">
         <div className="space-y-4">
           {/* Danh mục */}
-          <Category />
+          <Category onCategoryChange={handleCategoryChange} />
 
           {/* Thương hiệu */}
           <Supplier />
