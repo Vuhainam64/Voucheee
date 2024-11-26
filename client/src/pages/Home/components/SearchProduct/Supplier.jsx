@@ -3,8 +3,7 @@ import { Checkbox } from "antd";
 
 import { getAllSupplier } from "../../../../api/supplier";
 
-const Supplier = () => {
-  const [selectedBrands, setSelectedBrands] = useState([]);
+const Supplier = ({ selectedBrands, setSelectedBrands }) => {
   const [suppliers, setSuppliers] = useState([]);
 
   useEffect(() => {

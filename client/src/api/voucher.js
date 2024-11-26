@@ -128,7 +128,6 @@ export const getMiniSearch = async (q) => {
 };
 
 export const searchProduct = async (params) => {
-    console.log("params: ", params);
     try {
         // Lọc bỏ các giá trị undefined hoặc null
         const filteredParams = Object.fromEntries(
@@ -152,6 +151,10 @@ export const searchProduct = async (params) => {
 
         if (params.categoryIDs && params.categoryIDs.length) {
             params.categoryIDs.forEach((id) => queryString.append("categoryIDs", id));
+        }
+
+        if (params.supplierIDs && params.supplierIDs.length) {
+            params.supplierIDs.forEach((id) => queryString.append("supplierIDs", id));
         }
 
         const res = await axios.get(

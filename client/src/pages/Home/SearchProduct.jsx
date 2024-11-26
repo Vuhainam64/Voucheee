@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Spin } from "antd";
 
@@ -20,16 +20,11 @@ const SearchProduct = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [sortVoucherEnum, setSortVoucherEnum] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [priceRange, setPriceRange] = useState([5000, 5000000]);
   const [debouncedPriceRange, setDebouncedPriceRange] = useState([
     5000, 5000000,
-  ]);
+  ]); // Giá trị debounce
+  const [selectedBrands, setSelectedBrands] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  console.log("q: ", q);
-  console.log("sortVoucherEnum: ", sortVoucherEnum);
-  console.log("priceRange: ", priceRange);
-  console.log("debouncedPriceRange: ", debouncedPriceRange);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -39,6 +34,7 @@ const SearchProduct = () => {
           title: q,
           sortVoucherEnum,
           categoryIDs: selectedCategories,
+          supplierIDs: selectedBrands,
           minPrice: debouncedPriceRange[0],
           maxPrice: debouncedPriceRange[1],
         };
@@ -54,7 +50,13 @@ const SearchProduct = () => {
     };
 
     fetchProducts();
-  }, [q, sortVoucherEnum, selectedCategories, debouncedPriceRange]);
+  }, [
+    q,
+    sortVoucherEnum,
+    selectedCategories,
+    debouncedPriceRange,
+    selectedBrands,
+  ]);
 
   const handleSortChange = (value) => {
     setSortVoucherEnum(value);
@@ -65,8 +67,7 @@ const SearchProduct = () => {
   };
 
   const handlePriceRangeChange = (range) => {
-    setPriceRange(range);
-    // Reset debounce timer mỗi khi thay đổi
+    // Set lại giá trị priceRange và debounce
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       setDebouncedPriceRange(range); // Cập nhật giá trị debounce sau 1 giây
@@ -74,14 +75,20 @@ const SearchProduct = () => {
   };
 
   return (
-    <div className="bg-gray-100 flex-grow">
+    <div
+      className="bg-gray-100 flex-grow h-screen"
+      style={{ maxHeight: "calc(100vh - 186px)" }}
+    >
       <div className="max-w-[1400px] w-full mx-auto grid grid-cols-4 gap-4 py-4">
         <div className="space-y-4">
           {/* Danh mục */}
           <Category onCategoryChange={handleCategoryChange} />
 
           {/* Thương hiệu */}
-          <Supplier />
+          <Supplier
+            selectedBrands={selectedBrands}
+            setSelectedBrands={setSelectedBrands}
+          />
 
           {/* Khoảng giá */}
           <PriceRange onPriceRangeChange={handlePriceRangeChange} />
@@ -105,10 +112,7 @@ const SearchProduct = () => {
               <Spin size="large" />
             </div>
           ) : (
-            <div
-              className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none"
-              style={{ maxHeight: "calc(100vh - 298px)" }}
-            >
+            <div className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none">
               {products.map((product) => (
                 <Link
                   to={`/detail/${product.id}`}
