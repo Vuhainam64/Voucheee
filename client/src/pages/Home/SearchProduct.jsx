@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-
+import { Spin } from "antd"; // Import Spin
 import {
   Category,
   PriceRange,
@@ -15,20 +15,37 @@ const SearchProduct = () => {
 
   const [products, setProducts] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
+  const [sortVoucherEnum, setSortVoucherEnum] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log("q: ", q);
+  console.log("sortVoucherEnum: ", sortVoucherEnum);
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setIsLoading(true);
       try {
-        const response = await searchProduct(q);
+        const params = {
+          title: q,
+          sortVoucherEnum,
+        };
+
+        const response = await searchProduct(params);
         setProducts(response.results);
         setTotalResults(response.metaData.total);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchProducts();
-  }, [q]);
+  }, [q, sortVoucherEnum]);
+
+  const handleSortChange = (value) => {
+    setSortVoucherEnum(value);
+  };
 
   return (
     <div className="bg-gray-100 flex-grow">
@@ -53,53 +70,59 @@ const SearchProduct = () => {
               </div>
               <div>{q}</div>
             </div>
-            <SortBy />
+            <SortBy onSortChange={handleSortChange} />
           </div>
 
-          {/* Card sản phẩm */}
-          <div
-            className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none"
-            style={{ maxHeight: "calc(100vh - 298px)" }}
-          >
-            {products.map((product) => (
-              <Link
-                to={`/detail/${product.id}`}
-                key={product.id}
-                className="bg-white rounded-lg shadow-lg flex flex-col hover:no-underline"
-              >
-                <div className="relative">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="h-40 w-full object-cover rounded-t-lg"
-                  />
-                  <div className="bg-black h-full w-full rounded-t-lg opacity-10 absolute top-0 left-0"></div>
-                  <div className="absolute px-2 py-1 rounded-xl bg-primary text-white top-2 left-2">
-                    Giảm {product.shopDiscount}%
-                  </div>
-                  <div className="absolute px-2 py-1 rounded-xl bottom-2 left-2">
-                    <div className="flex items-center justify-center text-white">
-                      <img
-                        src={product.brandImage}
-                        alt={product.brandName}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <div className="ml-2">{product.brandName}</div>
+          {/* Hiển thị Spin nếu đang tải */}
+          {isLoading ? (
+            <div className="flex justify-center items-center h-[calc(100vh-298px)]">
+              <Spin size="large" /> {/* Hiển thị Spin */}
+            </div>
+          ) : (
+            <div
+              className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none"
+              style={{ maxHeight: "calc(100vh - 298px)" }}
+            >
+              {products.map((product) => (
+                <Link
+                  to={`/detail/${product.id}`}
+                  key={product.id}
+                  className="bg-white rounded-lg shadow-lg flex flex-col hover:no-underline"
+                >
+                  <div className="relative">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="h-40 w-full object-cover rounded-t-lg"
+                    />
+                    <div className="bg-black h-full w-full rounded-t-lg opacity-10 absolute top-0 left-0"></div>
+                    <div className="absolute px-2 py-1 rounded-xl bg-primary text-white top-2 left-2">
+                      Giảm {product.shopDiscount}%
+                    </div>
+                    <div className="absolute px-2 py-1 rounded-xl bottom-2 left-2">
+                      <div className="flex items-center justify-center text-white">
+                        <img
+                          src={product.brandImage}
+                          alt={product.brandName}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <div className="ml-2">{product.brandName}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="p-4 flex-1">
-                  <div className="text-gray-800">{product.title}</div>
-                  <div className="font-semibold text-lg text-primary">
-                    {product.salePrice
-                      ? product.salePrice.toLocaleString()
-                      : product.salePrice}
-                    đ
+                  <div className="p-4 flex-1">
+                    <div className="text-gray-800">{product.title}</div>
+                    <div className="font-semibold text-lg text-primary">
+                      {product.salePrice
+                        ? product.salePrice.toLocaleString()
+                        : product.salePrice}
+                      đ
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
