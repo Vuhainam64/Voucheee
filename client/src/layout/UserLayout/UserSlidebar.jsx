@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 import { FiUser } from "react-icons/fi";
@@ -8,6 +9,8 @@ import { GrTransaction } from "react-icons/gr";
 import { HiOutlineTicket } from "react-icons/hi";
 
 const UserSlidebar = () => {
+  const cart = useSelector((state) => state.cart?.cart);
+
   return (
     <div
       className="space-y-4 overflow-y-auto scrollbar-none"
@@ -69,7 +72,7 @@ const UserSlidebar = () => {
           <div className="flex items-center justify-between w-full">
             <div>Vouchee Coin</div>
             <div className="flex items-center space-x-2">
-              <div>1.500</div>
+              <div>{cart?.vPoint ? cart?.vPoint.toLocaleString() : 0}</div>
               <RiCoinLine />
             </div>
           </div>
