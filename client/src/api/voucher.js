@@ -126,3 +126,27 @@ export const getMiniSearch = async (q) => {
         return null;
     }
 };
+
+export const searchProduct = async (params) => {
+    try {
+        const res = await axios.get(`${BACKEND_API_URL}/v1/voucher/get_all_voucher`, {
+            params: {
+                page: params.page,
+                pageSize: params.pageSize,
+                title: params.title,
+                status: params.status,
+                isActive: params.isActive,
+                isInStock: params.isInStock,
+                categoryIDs: params.categoryIDs, // Array
+                supplierIDs: params.supplierIDs, // Array
+                minPrice: params.minPrice,
+                maxPrice: params.maxPrice,
+                sortVoucherEnum: params.sortVoucherEnum,
+            },
+        });
+        return res.data;
+    } catch (err) {
+        console.error("Error fetching vouchers:", err);
+        return null;
+    }
+};
