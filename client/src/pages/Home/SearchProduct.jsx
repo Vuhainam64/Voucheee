@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Spin } from "antd"; // Import Spin
+import { Spin } from "antd";
+
 import {
   Category,
   PriceRange,
@@ -8,6 +9,8 @@ import {
   Supplier,
 } from "./components/SearchProduct";
 import { searchProduct } from "../../api/voucher";
+
+let debounceTimer = null;
 
 const SearchProduct = () => {
   const [searchParams] = useSearchParams();
@@ -17,10 +20,16 @@ const SearchProduct = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [sortVoucherEnum, setSortVoucherEnum] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState([5000, 5000000]);
+  const [debouncedPriceRange, setDebouncedPriceRange] = useState([
+    5000, 5000000,
+  ]);
   const [isLoading, setIsLoading] = useState(false);
 
   console.log("q: ", q);
   console.log("sortVoucherEnum: ", sortVoucherEnum);
+  console.log("priceRange: ", priceRange);
+  console.log("debouncedPriceRange: ", debouncedPriceRange);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,6 +39,8 @@ const SearchProduct = () => {
           title: q,
           sortVoucherEnum,
           categoryIDs: selectedCategories,
+          minPrice: debouncedPriceRange[0],
+          maxPrice: debouncedPriceRange[1],
         };
 
         const response = await searchProduct(params);
@@ -43,7 +54,7 @@ const SearchProduct = () => {
     };
 
     fetchProducts();
-  }, [q, sortVoucherEnum, selectedCategories]);
+  }, [q, sortVoucherEnum, selectedCategories, debouncedPriceRange]);
 
   const handleSortChange = (value) => {
     setSortVoucherEnum(value);
@@ -51,6 +62,15 @@ const SearchProduct = () => {
 
   const handleCategoryChange = (categories) => {
     setSelectedCategories(categories);
+  };
+
+  const handlePriceRangeChange = (range) => {
+    setPriceRange(range);
+    // Reset debounce timer mỗi khi thay đổi
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      setDebouncedPriceRange(range); // Cập nhật giá trị debounce sau 1 giây
+    }, 1000);
   };
 
   return (
@@ -64,7 +84,7 @@ const SearchProduct = () => {
           <Supplier />
 
           {/* Khoảng giá */}
-          <PriceRange />
+          <PriceRange onPriceRangeChange={handlePriceRangeChange} />
         </div>
 
         {/* Kết quả tìm kiếm */}
@@ -82,7 +102,7 @@ const SearchProduct = () => {
           {/* Hiển thị Spin nếu đang tải */}
           {isLoading ? (
             <div className="flex justify-center items-center h-[calc(100vh-298px)]">
-              <Spin size="large" /> {/* Hiển thị Spin */}
+              <Spin size="large" />
             </div>
           ) : (
             <div
