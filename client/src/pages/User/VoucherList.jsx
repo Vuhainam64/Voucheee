@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  DatePicker,
-  Dropdown,
-  Input,
-  Select,
-  Menu,
-  Image,
-  Modal,
-  Button,
-} from "antd";
+import { Input, Select, DatePicker, Dropdown, Menu, Image } from "antd";
+
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
+
 import { getMyVoucher } from "../../api/myvoucher";
+import { VoucherDetail } from "./components/VoucherList";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
@@ -20,8 +14,9 @@ const VoucherList = () => {
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [selectedVoucherIndex, setSelectedVoucherIndex] = useState(0);
 
-  const [status, setStatus] = useState("all");
+  const [status, setStatus] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -53,12 +48,37 @@ const VoucherList = () => {
   // Function to handle menu actions
   const handleMenuClick = (voucher) => {
     setSelectedVoucher(voucher);
+    setSelectedVoucherIndex(0); // Reset to the first voucher code
     setIsModalVisible(true);
   };
 
   // Function để đóng modal
   const handleCancel = () => {
     setIsModalVisible(false);
+  };
+
+  // Navigate to the next voucher code
+  const goNextVoucher = () => {
+    if (selectedVoucher && selectedVoucher.voucherCodes) {
+      const nextIndex =
+        (selectedVoucherIndex + 1) % selectedVoucher.voucherCodes.length;
+      setSelectedVoucherIndex(nextIndex);
+    }
+  };
+
+  // Navigate to the previous voucher code
+  const goPrevVoucher = () => {
+    if (selectedVoucher && selectedVoucher.voucherCodes) {
+      const prevIndex =
+        (selectedVoucherIndex - 1 + selectedVoucher.voucherCodes.length) %
+        selectedVoucher.voucherCodes.length;
+      setSelectedVoucherIndex(prevIndex);
+    }
+  };
+
+  const formatVoucherCode = (code) => {
+    if (!code) return "";
+    return code.replace(/(.{3})(?=.)/g, "$1-");
   };
 
   return (
@@ -85,10 +105,10 @@ const VoucherList = () => {
           optionFilterProp="label"
           onChange={onChange}
           options={[
-            { value: "all", label: "Tất cả" },
-            { value: "unused", label: "Chưa sử dụng" },
-            { value: "used", label: "Đã sử dụng" },
-            { value: "expired", label: "Hết hạn" },
+            { value: "", label: "Tất cả" },
+            { value: "UNUSED", label: "Chưa sử dụng" },
+            { value: "USED", label: "Đã sử dụng" },
+            { value: "EXPIRED", label: "Hết hạn" },
           ]}
           className="flex-1 h-10"
         />
@@ -115,7 +135,10 @@ const VoucherList = () => {
                     width={80}
                     className="rounded-lg"
                   />
-                  <div className="flex justify-between items-center ml-4">
+                  <div
+                    className="flex justify-between items-center ml-4 cursor-pointer"
+                    onClick={() => handleMenuClick(voucher)}
+                  >
                     <div>
                       <h3 className="text-lg font-semibold">{voucher.title}</h3>
                       <p className="text-gray-500">
@@ -127,21 +150,21 @@ const VoucherList = () => {
                 </div>
                 <Dropdown
                   overlay={
-                    <Menu>
-                      <Menu.Item
-                        key="0"
-                        onClick={() => handleMenuClick(voucher)}
-                      >
-                        Chi tiết
-                      </Menu.Item>
-                      <Menu.Item key="1">Đã sử dụng</Menu.Item>
-                      <Menu.Item key="2">Mua lại</Menu.Item>
-                    </Menu>
+                    <Menu
+                      items={[
+                        {
+                          label: "Sửa",
+                          key: "edit",
+                        },
+                        {
+                          label: "Xóa",
+                          key: "delete",
+                        },
+                      ]}
+                    />
                   }
-                  trigger={["click"]}
-                  className="cursor-pointer"
                 >
-                  <HiOutlineDotsHorizontal />
+                  <HiOutlineDotsHorizontal className="cursor-pointer" />
                 </Dropdown>
               </div>
             ))
@@ -149,32 +172,16 @@ const VoucherList = () => {
         </div>
       </div>
 
-      {/* Modal để hiển thị voucher code */}
-      <Modal
-        title="Voucher Details"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            Đóng
-          </Button>,
-        ]}
-      >
-        {selectedVoucher && (
-          <div>
-            <h3>{selectedVoucher.title}</h3>
-            <p>
-              Voucher Code:{" "}
-              {selectedVoucher.voucherCodes[0]?.code || "Chưa có mã"}
-            </p>
-            <Image
-              src={selectedVoucher.voucherCodes[0]?.image || ""}
-              alt="Voucher Code"
-              width={150}
-            />
-          </div>
-        )}
-      </Modal>
+      {/* Modal */}
+      <VoucherDetail
+        isModalVisible={isModalVisible}
+        handleCancel={handleCancel}
+        selectedVoucher={selectedVoucher}
+        selectedVoucherIndex={selectedVoucherIndex}
+        goPrevVoucher={goPrevVoucher}
+        goNextVoucher={goNextVoucher}
+        formatVoucherCode={formatVoucherCode}
+      />
     </div>
   );
 };

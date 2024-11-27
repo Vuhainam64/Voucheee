@@ -6,3 +6,4 @@ export { default as Avatar } from "./avatar.png";
 export { default as Momo } from "./momo.svg";
 export { default as Sepay } from "./sepay.png";
 export { default as MBBank } from "./MBBank.webp";
+export { default as IconLogo } from "./IconLogo.svg";
