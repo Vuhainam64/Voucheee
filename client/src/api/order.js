@@ -34,3 +34,25 @@ export const getOrder = async (orderID) => {
         throw err;
     }
 };
+
+export const getAllOrder = async (status, startDate, endDate) => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/order/get_buyer_order`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+                params: {
+                    status,
+                    startDate,
+                    endDate,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error fetching vouchers:", err);
+        throw err;
+    }
+};

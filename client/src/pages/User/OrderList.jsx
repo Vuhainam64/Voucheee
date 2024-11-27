@@ -1,128 +1,50 @@
-import React, { useState } from "react";
-import { DatePicker, Input, Select, Table, Button } from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+import { DatePicker, Input, Select, Table, Button, message } from "antd";
+import { getAllOrder } from "../../api/order";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
 
 const OrderList = () => {
-  const onChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState();
+  const [dateRange, setDateRange] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(0);
 
-  const onSearch = (value) => {
-    console.log("search:", value);
-  };
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    try {
+      const startDate = dateRange[0]?.toISOString();
+      const endDate = dateRange[1]?.toISOString();
+      const data = await getAllOrder(statusFilter, startDate, endDate);
+      setOrders(
+        data.results.map((order) => ({
+          key: order.id,
+          time: new Date(order.createDate).toLocaleString(),
+          orderId: order.id,
+          total: `${order.finalPrice.toLocaleString()}đ`,
+          status:
+            order.status === "PAID"
+              ? "Đã xử lý"
+              : order.status === "PENDING"
+              ? "Đang xử lý"
+              : "Đã hủy",
+        }))
+      );
+      setTotalOrders(data.metaData.total);
+    } catch (error) {
+      message.error("Không thể tải danh sách đơn hàng!");
+      console.error(error);
+    }
+    setLoading(false);
+  }, [statusFilter, dateRange]);
 
-  // Data for the table
-  const dataSource = [
-    {
-      key: "1",
-      time: "2023-11-24 11:48:07",
-      orderId: "6663836",
-      product: "Steam Wallet Code 40 HKD (~123.880 VNĐ) x1",
-      total: "130.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "2",
-      time: "2021-06-08 17:17:54",
-      orderId: "4662750",
-      product: "Steam Wallet Code 80 HKD (~236.000 VNĐ) x1",
-      total: "409.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "3",
-      time: "2021-06-03 17:03:41",
-      orderId: "4642268",
-      product: "Gói nạp Steam Wallet 50$ (Nạp chậm) x1",
-      total: "1.080.000đ",
-      status: "Đã xử lý",
-    },
-    // Additional rows
-    {
-      key: "4",
-      time: "2023-09-12 09:22:31",
-      orderId: "8723947",
-      product: "Amazon Gift Card 100 USD x1",
-      total: "2.300.000đ",
-      status: "Đang xử lý",
-    },
-    {
-      key: "5",
-      time: "2023-07-28 15:45:10",
-      orderId: "3487324",
-      product: "Netflix Subscription 1 Month x1",
-      total: "199.000đ",
-      status: "Đã hủy",
-    },
-    {
-      key: "6",
-      time: "2023-06-11 13:30:05",
-      orderId: "9834756",
-      product: "Google Play Gift Card 50 USD x2",
-      total: "1.600.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "7",
-      time: "2023-05-22 17:12:58",
-      orderId: "1238476",
-      product: "Steam Wallet Code 20 USD x1",
-      total: "480.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "8",
-      time: "2023-03-14 11:07:19",
-      orderId: "7832645",
-      product: "PlayStation Network Card 50 USD x1",
-      total: "1.100.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "9",
-      time: "2023-01-25 08:44:30",
-      orderId: "4536729",
-      product: "Spotify Premium Subscription 1 Month x1",
-      total: "149.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "10",
-      time: "2022-12-14 16:39:44",
-      orderId: "8972641",
-      product: "Steam Wallet Code 100 USD x1",
-      total: "2.200.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "11",
-      time: "2022-10-10 10:27:02",
-      orderId: "7463289",
-      product: "Apple Gift Card 50 USD x1",
-      total: "1.300.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "12",
-      time: "2022-09-06 14:19:33",
-      orderId: "5748392",
-      product: "Nintendo eShop Card 25 USD x1",
-      total: "590.000đ",
-      status: "Đã xử lý",
-    },
-    {
-      key: "13",
-      time: "2022-07-01 09:35:50",
-      orderId: "3846293",
-      product: "Google Play Gift Card 100 USD x1",
-      total: "2.400.000đ",
-      status: "Đã xử lý",
-    },
-  ];
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
-  // Columns for the table
   const columns = [
     {
       title: "Thời gian",
@@ -133,11 +55,6 @@ const OrderList = () => {
       title: "Mã đơn hàng",
       dataIndex: "orderId",
       key: "orderId",
-    },
-    {
-      title: "Sản phẩm",
-      dataIndex: "product",
-      key: "product",
     },
     {
       title: "Tổng tiền",
@@ -161,12 +78,8 @@ const OrderList = () => {
   ];
 
   const handleDetailsClick = (orderId) => {
-    console.log(`Chi tiết for order ${orderId}`);
-    // Add functionality for viewing details here
+    message.info(`Chi tiết đơn hàng ${orderId}`);
   };
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
 
   const handleTableChange = (pagination) => {
     setCurrentPage(pagination.current);
@@ -174,42 +87,46 @@ const OrderList = () => {
 
   return (
     <div className="bg-white p-4 rounded-lg">
-      {/* Search, Date Picker, and Status Selector in one row */}
       <div className="flex space-x-4 mb-10">
         <Search
           placeholder="Mã đơn hàng / Sản phẩm"
           allowClear
           enterButton="Tìm kiếm"
           size="large"
-          onSearch={onSearch}
+          onSearch={(value) => console.log("search:", value)}
           className="flex-1"
         />
-        <RangePicker className="flex-1" />
+        <RangePicker
+          className="flex-1"
+          onChange={(dates) => setDateRange(dates || [])}
+        />
         <Select
           showSearch
           placeholder="Trạng thái"
           optionFilterProp="label"
-          onChange={onChange}
+          onChange={(value) => setStatusFilter(value)}
           options={[
-            { value: "all", label: "Tất cả" },
-            { value: "finish", label: "Hoàn thành" },
-            { value: "cancel", label: "Huỷ bỏ" },
+            { value: "", label: "Tất cả" },
+            { value: 1, label: "Đang xử lý" },
+            { value: 2, label: "Đã xử lý" },
+            { value: 6, label: "Chờ thanh toán" },
+            { value: "CANCELLED", label: "Đã hủy" },
           ]}
-          className="flex-1 h-10"
+          allowClear
+          className="flex-1"
         />
       </div>
-
-      {/* Table for order data */}
       <Table
-        dataSource={dataSource}
         columns={columns}
+        dataSource={orders}
+        loading={loading}
         pagination={{
           current: currentPage,
-          pageSize: 7,
-          total: dataSource.length, // Adjust this based on your full data size
+          pageSize: 8,
+          total: totalOrders,
+          showSizeChanger: false,
         }}
         onChange={handleTableChange}
-        rowKey="orderId"
       />
     </div>
   );
