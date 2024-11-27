@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useRef } from "react";
 import Barcode from "react-barcode";
+import { toPng } from "html-to-image";
 import { Modal, Button, QRCode } from "antd";
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
@@ -15,12 +16,30 @@ const VoucherDetail = ({
   goNextVoucher,
   formatVoucherCode,
 }) => {
+  const modalRef = useRef();
+
+  const handleScreenshot = async () => {
+    if (!modalRef.current) return;
+    try {
+      const dataUrl = await toPng(modalRef.current);
+      const link = document.createElement("a");
+      link.download = "voucher-detail.png";
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Chụp màn hình thất bại:", error);
+    }
+  };
+
   return (
     <Modal
       title="Chi tiết voucher"
       open={isModalVisible}
       onCancel={handleCancel}
       footer={[
+        <Button key="screenshot" onClick={handleScreenshot}>
+          Lưu voucher
+        </Button>,
         <Button key="back" onClick={handleCancel}>
           Đóng
         </Button>,
@@ -28,6 +47,7 @@ const VoucherDetail = ({
     >
       {selectedVoucher && (
         <div
+          ref={modalRef} // Gắn ref vào container của modal
           className="flex flex-col items-center space-y-6 bg-gray-100 py-6 
           rounded-lg shadow-md bg-opacity-80"
         >
