@@ -25,7 +25,7 @@ function App() {
     try {
       const userInfo = await getUserInfo(userCred.accessToken);
       if (userInfo) {
-        const { email, accessToken, roleId, roleName } = userInfo;
+        const { email, accessToken, role } = userInfo;
         // Cập nhật thông tin người dùng vào Redux
         localStorage.setItem("access_token", accessToken);
 
@@ -37,12 +37,11 @@ function App() {
           creationTime: userCred.metadata.creationTime,
           lastSignInTime: userCred.metadata.lastSignInTime,
           photoURL: userInfo.image,
-          roleId,
           accessToken,
         };
         dispatch(SET_USER(userData));
-        setUserRole(roleName);
-        dispatch(SET_ROLE(roleName));
+        setUserRole(role);
+        dispatch(SET_ROLE(role));
 
         // Gọi API để lấy giỏ hàng
         const cartData = await getCart(userCred.accessToken);

@@ -38,7 +38,12 @@ import {
   IncomeOverview,
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
-import { DepositHistory, OrderList, VoucherList } from "../pages/User";
+import {
+  DepositHistory,
+  OrderList,
+  UserBalance,
+  VoucherList,
+} from "../pages/User";
 import { SupplierDashboard } from "../pages/Supplier";
 import {
   AdminDashboard,
@@ -107,6 +112,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "listVoucher", element: <VoucherList /> },
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },
+          { path: "balance", element: <UserBalance /> },
         ],
       },
       {
