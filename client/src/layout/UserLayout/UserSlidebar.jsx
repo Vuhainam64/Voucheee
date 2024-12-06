@@ -59,7 +59,7 @@ const UserSlidebar = () => {
           <div className="text-2xl">
             <BiCoinStack />
           </div>
-          <div className="text-xl font-semibold">Vcoin của tôi</div>
+          <div className="text-xl font-semibold">Số dư của tôi</div>
         </div>
         <NavLink
           to={"/user/vcoin"}
@@ -73,6 +73,22 @@ const UserSlidebar = () => {
             <div>Vouchee Coin</div>
             <div className="flex items-center space-x-2">
               <div>{cart?.vPoint ? cart?.vPoint.toLocaleString() : 0}</div>
+              <RiCoinLine />
+            </div>
+          </div>
+        </NavLink>
+        <NavLink
+          to={"/user/balance"}
+          className={({ isActive }) =>
+            isActive
+              ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"
+              : "flex p-4 px-14 hover:text-cyan-600 hover:no-underline"
+          }
+        >
+          <div className="flex items-center justify-between w-full">
+            <div>Số dư tài khoản</div>
+            <div className="flex items-center space-x-2">
+              <div>{cart?.balance ? cart?.balance.toLocaleString() : 0}</div>
               <RiCoinLine />
             </div>
           </div>
