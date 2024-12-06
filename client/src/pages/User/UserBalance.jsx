@@ -1,5 +1,7 @@
-import React from "react";
-import { Tooltip, Timeline } from "antd";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Tooltip, Timeline, Dropdown, Space } from "antd";
+
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -19,7 +21,8 @@ import {
 } from "react-icons/fa6";
 import { PiMoneyThin } from "react-icons/pi";
 import { TbActivityHeartbeat } from "react-icons/tb";
-import { Link } from "react-router-dom";
+
+import { Deposit } from "./components/UserBalance";
 
 ChartJS.register(
   CategoryScale,
@@ -100,10 +103,38 @@ const options = {
 };
 
 const UserBalance = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const items = [
+    {
+      label: <div onClick={() => setIsModalOpen(true)}>Nạp tiền</div>,
+      key: "0",
+    },
+    {
+      label: <Link to="https://www.aliyun.com">Rút tiền</Link>,
+      key: "1",
+    },
+  ];
   return (
     <div className="space-y-4">
-      <div className="bg-white p-4 rounded-md">
+      <div className="bg-white p-4 rounded-md flex items-center justify-between">
         <div className="text-2xl font-semibold">Tổng quan</div>
+        <Dropdown
+          menu={{
+            items,
+          }}
+          trigger={["click"]}
+        >
+          <div
+            onClick={(e) => e.preventDefault()}
+            className="text-primary cursor-pointer"
+          >
+            <Space>
+              Nạp rút
+              <FaChevronRight />
+            </Space>
+          </div>
+        </Dropdown>
       </div>
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-md relative space-y-4">
@@ -270,6 +301,8 @@ const UserBalance = () => {
           </div>
         </div>
       </div>
+
+      <Deposit isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </div>
   );
 };
