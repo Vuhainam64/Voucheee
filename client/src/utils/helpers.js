@@ -15,13 +15,14 @@ import {
   RiRefundFill,
 } from "react-icons/ri";
 import { CiBank } from "react-icons/ci";
-import { SiZalo } from "react-icons/si";
+import { SiSecurityscorecard, SiZalo } from "react-icons/si";
 import { BsShop } from "react-icons/bs";
 import { FaBoxes } from "react-icons/fa";
 import { PiCoinThin } from "react-icons/pi";
 import { GrTransaction } from "react-icons/gr";
 import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
+import { AiOutlineUserSwitch } from "react-icons/ai";
 import { IoShareSocial, IoWallet } from "react-icons/io5";
 import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
 
@@ -55,6 +56,12 @@ export const Menus = [
     icon: <BsShop />,
     name: <div className="text-nowrap">Trang người bán</div>,
     uri: "/seller/productlist",
+  },
+  {
+    id: uuidv4(),
+    icon: <AiOutlineUserSwitch />,
+    name: <div className="text-nowrap">Trang nhà cung cấp</div>,
+    uri: "/supplier/dashboard",
   },
   {
     id: uuidv4(),
@@ -205,5 +212,39 @@ export const DashboardMenus = [
     menu: "Cài đặt",
     uri: "/admin/users",
     isAdmin: true,
+  },
+];
+
+export const SupplierMenus = [
+  {
+    title: "Trung tâm Hoạt động",
+    Icon: SiSecurityscorecard,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Trang chủ",
+        Icon: MdOutlineDashboard,
+        uri: "/supplier/dashboard",
+      },
+    ],
+  },
+  {
+    title: "Hỗ Trợ",
+    Icon: RiCustomerService2Fill,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Zalo",
+        Icon: SiZalo,
+        uri: "/dash/zalo",
+      },
+      {
+        title: "Social",
+        Icon: IoShareSocial,
+        uri: "/dash/social",
+      },
+    ],
   },
 ];

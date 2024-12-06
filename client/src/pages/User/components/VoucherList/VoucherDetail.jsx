@@ -1,11 +1,12 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Barcode from "react-barcode";
 import { toPng } from "html-to-image";
-import { Modal, Button, QRCode } from "antd";
+import { Modal, Button, QRCode, message } from "antd";
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 
 import { IconLogo } from "../../../../assets/img";
+import { updateStatusVoucherCode } from "../../../../api/vouchercode";
 
 const VoucherDetail = ({
   isModalVisible,
@@ -17,6 +18,8 @@ const VoucherDetail = ({
   formatVoucherCode,
 }) => {
   const modalRef = useRef();
+  const [isUsed, setIsUsed] = useState(false); // Trạng thái đã sử dụng
+  const [loading, setLoading] = useState(false); // Trạng thái nút Sử dụng
 
   const handleScreenshot = async () => {
     if (!modalRef.current) return;
@@ -31,12 +34,39 @@ const VoucherDetail = ({
     }
   };
 
+  const handleUseVoucher = async () => {
+    const voucherCodeId =
+      selectedVoucher.voucherCodes[selectedVoucherIndex]?.id; // ID của mã voucher
+
+    if (!voucherCodeId) return;
+
+    try {
+      setLoading(true); // Hiển thị trạng thái loading
+      await updateStatusVoucherCode(voucherCodeId, 1); // Gọi API
+      setIsUsed(true); // Cập nhật trạng thái
+      message.success("Voucher đã được sử dụng thành công!");
+    } catch (error) {
+      console.error("Sử dụng voucher thất bại:", error);
+      message.error("Không thể sử dụng voucher, vui lòng thử lại!");
+    } finally {
+      setLoading(false); // Tắt trạng thái loading
+    }
+  };
+
   return (
     <Modal
       title="Chi tiết voucher"
       open={isModalVisible}
       onCancel={handleCancel}
       footer={[
+        <Button
+          key="use"
+          onClick={handleUseVoucher}
+          loading={loading}
+          disabled={isUsed}
+        >
+          {isUsed ? "Đã sử dụng" : "Sử dụng"}
+        </Button>,
         <Button key="screenshot" onClick={handleScreenshot}>
           Lưu voucher
         </Button>,
@@ -104,10 +134,10 @@ const VoucherDetail = ({
 
           {/* Nội dung bổ sung hoặc hình ảnh */}
           <div className="w-full text-center mt-4">
-            {/* Placeholder for additional content */}
             <p className="text-sm text-primary italic">
-              Sử dụng trước ngày{" "}
-              {selectedVoucher.voucherCodes[selectedVoucherIndex]?.startDate}
+              {isUsed
+                ? "Đã sử dụng"
+                : `Sử dụng trước ngày ${selectedVoucher.voucherCodes[selectedVoucherIndex]?.startDate}`}
             </p>
           </div>
         </div>

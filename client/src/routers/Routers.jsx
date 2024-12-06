@@ -7,6 +7,7 @@ import {
   HomeLayout,
   SellerLayout,
   SettingLayout,
+  SupplierLayout,
   UserLayout,
 } from "../layout";
 
@@ -38,6 +39,7 @@ import {
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
 import { DepositHistory, OrderList, VoucherList } from "../pages/User";
+import { SupplierDashboard } from "../pages/Supplier";
 import {
   AdminDashboard,
   AdminTransactions,
@@ -106,6 +108,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },
         ],
+      },
+      {
+        path: "/supplier",
+        element: <SupplierLayout />,
+        children: [{ path: "dashboard", element: <SupplierDashboard /> }],
       },
       {
         path: "/seller",
