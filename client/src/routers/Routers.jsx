@@ -39,6 +39,8 @@ import {
   IncomeStatement,
 } from "../pages/Seller/components/SellerIncome";
 import {
+  BankAccount,
+  ChangePassword,
   DepositHistory,
   MyProfile,
   OrderList,
@@ -111,6 +113,8 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         element: <UserLayout />,
         children: [
           { path: "myProfile", element: <MyProfile /> },
+          { path: "myPayment", element: <BankAccount /> },
+          { path: "changePassword", element: <ChangePassword /> },
           { path: "listVoucher", element: <VoucherList /> },
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },

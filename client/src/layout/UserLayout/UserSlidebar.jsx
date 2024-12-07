@@ -34,7 +34,7 @@ const UserSlidebar = () => {
           <div>Thông Tin Cá Nhân</div>
         </NavLink>
         <NavLink
-          to={"/user/banking"}
+          to={"/user/myPayment"}
           className={({ isActive }) =>
             isActive
               ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"
@@ -44,7 +44,7 @@ const UserSlidebar = () => {
           <div>Tài Khoản Ngân Hàng</div>
         </NavLink>
         <NavLink
-          to={"/user/password"}
+          to={"/user/changePassword"}
           className={({ isActive }) =>
             isActive
               ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"
