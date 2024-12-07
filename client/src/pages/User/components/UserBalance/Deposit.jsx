@@ -45,14 +45,8 @@ const Deposit = ({ isModalOpen, setIsModalOpen }) => {
         console.log(topupRes);
 
         if (topupRes.status === "PAID") {
-          Modal.success({
-            title: "Thanh toán thành công",
-            content: "Đơn hàng của bạn đã được thanh toán thành công!",
-            onOk: () => navigate("/user/listVoucher"),
-          });
-          setTimeout(() => {
-            navigate("/user/listVoucher");
-          }, 5000);
+          toast.success("Thanh toán thành công: ", topupRes.amount);
+          setOpenQRCode(false);
 
           // Clear interval sau khi thanh toán thành công
           clearInterval(intervalId);

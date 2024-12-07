@@ -24,7 +24,7 @@ const UserSlidebar = () => {
           <div className="text-xl font-semibold">Thông Tin Tài Khoản</div>
         </div>
         <NavLink
-          to={"/user/account"}
+          to={"/user/myProfile"}
           className={({ isActive }) =>
             isActive
               ? "flex bg-slate-200 text-cyan-600 p-4 px-14 hover:text-cyan-700 hover:no-underline"

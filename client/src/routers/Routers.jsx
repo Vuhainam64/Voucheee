@@ -6,7 +6,7 @@ import {
   CartLayout,
   HomeLayout,
   SellerLayout,
-  SettingLayout,
+  // SettingLayout,
   SupplierLayout,
   UserLayout,
 } from "../layout";
@@ -19,7 +19,7 @@ import {
   SearchProduct,
   VoucherDetail,
 } from "../pages/Home";
-import { Account, Password, Profile } from "../pages/Setting";
+// import { Account, Password, Profile } from "../pages/Setting";
 import { PageNotFound } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
@@ -40,6 +40,7 @@ import {
 } from "../pages/Seller/components/SellerIncome";
 import {
   DepositHistory,
+  MyProfile,
   OrderList,
   UserBalance,
   VoucherList,
@@ -109,6 +110,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         path: "/user",
         element: <UserLayout />,
         children: [
+          { path: "myProfile", element: <MyProfile /> },
           { path: "listVoucher", element: <VoucherList /> },
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },
@@ -147,15 +149,15 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "myBank", element: <SellerBank /> },
         ],
       },
-      {
-        path: "/setting",
-        element: <SettingLayout />,
-        children: [
-          { path: "profile", element: <Profile /> },
-          { path: "password", element: <Password /> },
-          { path: "account", element: <Account /> },
-        ],
-      },
+      // {
+      //   path: "/setting",
+      //   element: <SettingLayout />,
+      //   children: [
+      //     { path: "profile", element: <Profile /> },
+      //     { path: "password", element: <Password /> },
+      //     { path: "account", element: <Account /> },
+      //   ],
+      // },
       {
         path: "/admin",
         element: <AdminLayout />,

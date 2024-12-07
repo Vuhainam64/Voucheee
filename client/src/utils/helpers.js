@@ -47,6 +47,12 @@ export const signOutAction = async () => {
 export const Menus = [
   {
     id: uuidv4(),
+    icon: <MdOutlineSettings />,
+    name: <div className="text-nowrap">Thông tin cá nhân</div>,
+    uri: "/user/myProfile",
+  },
+  {
+    id: uuidv4(),
     icon: <RiAdminLine />,
     name: <div className="text-nowrap">Trang quản trị</div>,
     uri: "/admin/dashboard",
@@ -69,12 +75,7 @@ export const Menus = [
     name: <div className="text-nowrap">Voucher của tôi</div>,
     uri: "/user/listVoucher",
   },
-  {
-    id: uuidv4(),
-    icon: <MdOutlineSettings />,
-    name: <div className="text-nowrap">Cài đặt</div>,
-    uri: "/setting/profile",
-  },
+
 ];
 
 export const ClientMenus = [
