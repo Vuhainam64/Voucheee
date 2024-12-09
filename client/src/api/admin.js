@@ -13,3 +13,24 @@ export const getAllUser = async () => {
     return null;
   }
 };
+export const updateUserRole = async (userID, role) => {
+  try {
+    const res = await axios.put(
+      `${BACKEND_API_URL}/v1/user/update_user_role`,
+
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: {
+          userId: userID,
+          role: role,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    console.error("Error to update user:", err);
+    throw err;
+  }
+};

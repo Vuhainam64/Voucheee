@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-no-undef */
 import React from "react";
-import { Button, Input, Select, Table, Tag } from "antd";
+import { Button, Input, Select, Table, Spin, Modal } from "antd";
 import { FaUserPlus } from "react-icons/fa6";
-import { getAllUser } from "../../api/admin";
+import { getAllUser, updateUserRole } from "../../api/admin";
 import { useEffect, useState } from "react";
 
 const { Search } = Input;
@@ -11,7 +12,14 @@ const UserManagerment = () => {
   const [loading, setLoading] = useState(false); // Loading state for data fetching
   const [searchText, setSearchText] = useState(""); // For search input
   const [filterRole, setFilterRole] = useState("all"); // For filtering roles
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [loadingUpdate, setLoadingUpdate] = useState(false);
 
+  const handleTableChange = (pagination) => {
+    setCurrentPage(pagination.current);
+  };
   useEffect(() => {
     const fetchAllUser = async () => {
       setLoading(true);
@@ -46,13 +54,47 @@ const UserManagerment = () => {
 
     return isRoleMatch && isSearchMatch;
   });
+  const handleRowClick = (record) => {
+    setSelectedUser(record);
+    setIsModalVisible(true); // Show the modal
+  };
 
+  // Close modal
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+    setSelectedUser(null);
+  };
+  const handleUpdateRole = async () => {
+    if (!selectedUser) return;
+
+    setLoadingUpdate(true); // Set loading state for updating
+
+    const { userId, role } = selectedUser;
+
+    // Call the API to update the role
+    const { success, result, error } = await updateUserRole(userId, role);
+
+    if (success) {
+      console.log("User role updated successfully!");
+      // Update the users list with the updated role
+      setUsers(
+        users.map((user) =>
+          user.id === userId ? { ...user, role: result.role } : user
+        )
+      );
+      setIsModalVisible(false); // Close the modal
+    } else {
+      console.log(error || "Failed to update user role.");
+    }
+
+    setLoadingUpdate(false); // Stop loading
+  };
   // Columns for the table
   const columns = [
     {
       title: "Name",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "Email",
@@ -76,8 +118,8 @@ const UserManagerment = () => {
     },
     {
       title: "Date Added",
-      dataIndex: "dateAdded",
-      key: "dateAdded",
+      dataIndex: "createDate",
+      key: "createDate",
     },
     {
       title: "Operation",
@@ -129,9 +171,64 @@ const UserManagerment = () => {
           dataSource={filteredUsers}
           columns={columns}
           loading={loading}
-          rowKey={(record) => record._id} // Make sure your data has a unique id field
+          rowKey={(record) => record._id}
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record), // Handle row click
+          })}
+          rowClassName="table-row"
+          // pagination={{
+          //   current: filteredUsers,
+          //   pageSize: 7,
+          //   total: filteredUsers.length,
+          // }}
         />
       </div>
+      <Modal
+        title="Edit User Role"
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setIsModalVisible(false)}>
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleUpdateRole}
+            loading={loadingUpdate}
+          >
+            Update Role
+          </Button>,
+        ]}
+      >
+        {selectedUser ? (
+          <div>
+            <p>
+              <strong>Name:</strong> {selectedUser.name}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUser.email}
+            </p>
+
+            <div>
+              <strong>Role:</strong>
+              <Select
+                value={selectedUser.role}
+                onChange={(value) =>
+                  setSelectedUser({ ...selectedUser, role: value })
+                }
+                style={{ width: "100%" }}
+              >
+                <Option value="admin">Admin</Option>
+                <Option value="user">User</Option>
+                <Option value="supplier">supplier</Option>
+              </Select>
+            </div>
+          </div>
+        ) : (
+          <Spin size="small" />
+        )}
+      </Modal>
     </div>
   );
 };
