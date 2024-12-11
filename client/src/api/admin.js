@@ -32,3 +32,23 @@ export const updateUserRole = async (userID, role) => {
     return { success: false, message: "Failed to update user role" };
   }
 };
+
+export const banUser = async (userID) => {
+  try {
+    // Ensure the full URL is correctly formed
+    const res = await axios.put(
+      `${BACKEND_API_URL}/v1/user/ban_user?userId=${userID}=ban`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err) {
+    console.error("Error ban user :", err);
+    return { success: false, message: "Failed to ban user" };
+  }
+};

@@ -8,9 +8,13 @@ import {
   Modal,
   Divider,
   message,
+  Tabs,
 } from "antd";
+
 import { FaUserPlus } from "react-icons/fa6";
-import { getAllUser, updateUserRole } from "../../api/admin";
+import { banUser, getAllUser, updateUserRole } from "../../api/admin";
+import { red } from "@mui/material/colors";
+import { TextField } from "@mui/material";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -24,7 +28,7 @@ const UserManagerment = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
-
+  const { TabPane } = Tabs;
   useEffect(() => {
     const fetchAllUser = async () => {
       setLoading(true);
@@ -94,14 +98,7 @@ const UserManagerment = () => {
     try {
       await updateUserRole(id, role);
       await fetchAllUser();
-      // setUsers((prevUsers) => {
-      //   console.log("Previous Users:", prevUsers); // Log previous users state
-      //   return prevUsers.map(
-      //     (user) =>
-      //       user.id === id ? { ...user, role: result.result.role } : user,
-      //     console.log(role)
-      //   );
-      // });
+
       setIsModalVisible(false);
     } catch (error) {
       console.error("API call failed", error); // Log the error for debugging
@@ -109,7 +106,9 @@ const UserManagerment = () => {
       setLoadingUpdate(false);
     }
   };
-
+  const handleBanUser = async (userID) => {
+    await banUser(userID);
+  };
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -120,7 +119,11 @@ const UserManagerment = () => {
       title: "Operation",
       key: "operation",
       render: (_, record) => (
-        <Button type="link" onClick={() => handleRowClick(record)}>
+        <Button
+          type="link"
+          onClick={() => handleRowClick(record)}
+          style={{ position: "relative" }}
+        >
           Edit
         </Button>
       ),
@@ -164,13 +167,10 @@ const UserManagerment = () => {
           columns={columns}
           loading={loading}
           rowKey={(record) => record._id}
-          onRow={(record) => ({
-            onClick: () => handleRowClick(record),
-          })}
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 7,
+            pageSize: 4,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}
@@ -190,38 +190,55 @@ const UserManagerment = () => {
             onClick={handleUpdateRole}
             loading={loadingUpdate}
           >
-            Update Role
+            Update
           </Button>,
         ]}
       >
-        {selectedUser ? (
-          <div>
-            <p>
-              <strong>image:</strong>
-              <img src={selectedUser.image} alt="" />
-            </p>
-            <p>
-              <strong>Name:</strong> {selectedUser.name}
-            </p>
-            <p>
-              <strong>Phone Number:</strong> {selectedUser.phoneNumber}
-            </p>
-            <Divider />
-            <div>
-              <strong>Role:</strong>
-              <Select
-                value={selectedUser.role}
-                onChange={(value) =>
-                  setSelectedUser({ ...selectedUser, role: value })
-                }
-                style={{ width: "100%" }}
-              >
-                <Option value="admin">Admin</Option>
-                <Option value="user">User</Option>
-                <Option value="supplier">Supplier</Option>
-              </Select>
-            </div>
-            <Divider />
+        <Tabs defaultActiveKey="1">
+          <TabPane tab="Infomation" key="1">
+            {selectedUser ? (
+              <div>
+                <p>
+                  <strong>image:</strong>
+                  <img src={selectedUser.image} alt="" />
+                </p>
+                <p>
+                  <strong>Name:</strong> {selectedUser.name}
+                </p>
+                <p>
+                  <strong>Phone Number:</strong> {selectedUser.phoneNumber}
+                </p>
+                <Divider />
+                <div>
+                  <strong>Role:</strong>
+                  <Select
+                    value={selectedUser.role}
+                    onChange={(value) =>
+                      setSelectedUser({ ...selectedUser, role: value })
+                    }
+                    style={{ width: "100%" }}
+                  >
+                    <Option value="admin">Admin</Option>
+                    <Option value="user">User</Option>
+                    <Option value="supplier">Supplier</Option>
+                  </Select>
+                </div>
+                <Divider />
+                <p>
+                  <strong>Created By:</strong> {selectedUser.createBy}
+                </p>
+                <p>
+                  <strong>Updated By:</strong> {selectedUser.updateBy}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedUser.email}
+                </p>
+              </div>
+            ) : (
+              <Spin size="small" />
+            )}
+          </TabPane>
+          <TabPane tab="Banking" key="2">
             <p>
               <strong>Bank:</strong> {selectedUser.bankAccount}
             </p>
@@ -231,20 +248,12 @@ const UserManagerment = () => {
             <p>
               <strong>Bank Number:</strong> {selectedUser.bankNumber}
             </p>
-            <Divider />
-            <p>
-              <strong>Created By:</strong> {selectedUser.createBy}
-            </p>
-            <p>
-              <strong>Updated By:</strong> {selectedUser.updateBy}
-            </p>
-            <p>
-              <strong>Email:</strong> {selectedUser.email}
-            </p>
-          </div>
-        ) : (
-          <Spin size="small" />
-        )}
+          </TabPane>
+          <TabPane tab="Service" key="3">
+            <p>Ban Reason</p>
+            <TextField></TextField>
+          </TabPane>
+        </Tabs>
       </Modal>
     </div>
   );
