@@ -1,47 +1,65 @@
-/* eslint-disable react/jsx-no-undef */
-import React from "react";
-import { Button, Input, Select, Table, Spin, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Input,
+  Select,
+  Table,
+  Spin,
+  Modal,
+  Divider,
+  message,
+} from "antd";
 import { FaUserPlus } from "react-icons/fa6";
 import { getAllUser, updateUserRole } from "../../api/admin";
-import { useEffect, useState } from "react";
 
 const { Search } = Input;
+const { Option } = Select;
 
 const UserManagerment = () => {
-  const [users, setUsers] = useState([]); // State for users
-  const [loading, setLoading] = useState(false); // Loading state for data fetching
-  const [searchText, setSearchText] = useState(""); // For search input
-  const [filterRole, setFilterRole] = useState("all"); // For filtering roles
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [filterRole, setFilterRole] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
 
-  const handleTableChange = (pagination) => {
-    setCurrentPage(pagination.current);
-  };
   useEffect(() => {
     const fetchAllUser = async () => {
       setLoading(true);
       try {
-        const data = await getAllUser(); // Assume this function fetches the user data
-        setUsers(data?.results || []); // Set user data
+        const data = await getAllUser();
+        setUsers(data?.results || []);
       } catch (error) {
-        console.log("Failed to fetch users.");
+        message.error("Failed to fetch users.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchAllUser();
   }, []);
+  const fetchAllUser = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllUser();
+      setUsers(data?.results || []); // Update the users state
+    } catch (error) {
+      message.error("Failed to fetch users.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleTableChange = (pagination) => {
+    setCurrentPage(pagination.current);
+  };
 
   const handleChange = (value) => {
-    setFilterRole(value); // Update the selected filter role
+    setFilterRole(value);
   };
 
   const onSearch = (value) => {
-    setSearchText(value); // Update search text
+    setSearchText(value);
   };
 
   const filteredUsers = users.filter((user) => {
@@ -51,81 +69,58 @@ const UserManagerment = () => {
     const isSearchMatch =
       user.email.toLowerCase().includes(searchText.toLowerCase()) ||
       user.name.toLowerCase().includes(searchText.toLowerCase());
-
     return isRoleMatch && isSearchMatch;
   });
+
   const handleRowClick = (record) => {
     setSelectedUser(record);
-    setIsModalVisible(true); // Show the modal
+    setIsModalVisible(true);
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setIsModalVisible(false);
     setSelectedUser(null);
   };
   const handleUpdateRole = async () => {
     if (!selectedUser) return;
+    setLoadingUpdate(true);
 
-    setLoadingUpdate(true); // Set loading state for updating
-
-    const { userId, role } = selectedUser;
-
-    // Call the API to update the role
-    const { success, result, error } = await updateUserRole(userId, role);
-
-    if (success) {
-      console.log("User role updated successfully!");
-      // Update the users list with the updated role
-      setUsers(
-        users.map((user) =>
-          user.id === userId ? { ...user, role: result.role } : user
-        )
-      );
-      setIsModalVisible(false); // Close the modal
-    } else {
-      console.log(error || "Failed to update user role.");
+    const { id, role } = selectedUser;
+    if (!id || !role) {
+      setLoadingUpdate(false);
+      return;
     }
 
-    setLoadingUpdate(false); // Stop loading
+    try {
+      await updateUserRole(id, role);
+      await fetchAllUser();
+      // setUsers((prevUsers) => {
+      //   console.log("Previous Users:", prevUsers); // Log previous users state
+      //   return prevUsers.map(
+      //     (user) =>
+      //       user.id === id ? { ...user, role: result.result.role } : user,
+      //     console.log(role)
+      //   );
+      // });
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("API call failed", error); // Log the error for debugging
+    } finally {
+      setLoadingUpdate(false);
+    }
   };
-  // Columns for the table
+
   const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      // render: (status) => (
-      //   <Tag color={status === "active" ? "green" : "volcano"}>
-      //     {status.toUpperCase()}
-      //   </Tag>
-      // ),
-    },
-    {
-      title: "Permission",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Date Added",
-      dataIndex: "createDate",
-      key: "createDate",
-    },
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Status", dataIndex: "status", key: "status" },
+    { title: "Permission", dataIndex: "role", key: "role" },
+    { title: "Date Added", dataIndex: "createDate", key: "createDate" },
     {
       title: "Operation",
       key: "operation",
       render: (_, record) => (
-        <Button type="link" onClick={() => console.log("Edit", record.name)}>
+        <Button type="link" onClick={() => handleRowClick(record)}>
           Edit
         </Button>
       ),
@@ -140,9 +135,7 @@ const UserManagerment = () => {
           <div className="flex items-center space-x-4">
             <Select
               value={filterRole}
-              style={{
-                width: 120,
-              }}
+              style={{ width: 120 }}
               onChange={handleChange}
               options={[
                 { value: "all", label: "All" },
@@ -166,29 +159,29 @@ const UserManagerment = () => {
         className="bg-white p-4 rounded-md h-screen"
         style={{ maxHeight: "calc(100vh - 275px)" }}
       >
-        {/* Table displaying user data */}
         <Table
           dataSource={filteredUsers}
           columns={columns}
           loading={loading}
           rowKey={(record) => record._id}
           onRow={(record) => ({
-            onClick: () => handleRowClick(record), // Handle row click
+            onClick: () => handleRowClick(record),
           })}
           rowClassName="table-row"
-          // pagination={{
-          //   current: filteredUsers,
-          //   pageSize: 7,
-          //   total: filteredUsers.length,
-          // }}
+          pagination={{
+            current: currentPage,
+            pageSize: 7,
+            total: filteredUsers.length,
+            onChange: (page) => setCurrentPage(page),
+          }}
         />
       </div>
       <Modal
         title="Edit User Role"
         visible={isModalVisible}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={handleCloseModal}
         footer={[
-          <Button key="cancel" onClick={() => setIsModalVisible(false)}>
+          <Button key="cancel" onClick={handleCloseModal}>
             Cancel
           </Button>,
           <Button
@@ -204,12 +197,16 @@ const UserManagerment = () => {
         {selectedUser ? (
           <div>
             <p>
+              <strong>image:</strong>
+              <img src={selectedUser.image} alt="" />
+            </p>
+            <p>
               <strong>Name:</strong> {selectedUser.name}
             </p>
             <p>
-              <strong>Email:</strong> {selectedUser.email}
+              <strong>Phone Number:</strong> {selectedUser.phoneNumber}
             </p>
-
+            <Divider />
             <div>
               <strong>Role:</strong>
               <Select
@@ -221,9 +218,29 @@ const UserManagerment = () => {
               >
                 <Option value="admin">Admin</Option>
                 <Option value="user">User</Option>
-                <Option value="supplier">supplier</Option>
+                <Option value="supplier">Supplier</Option>
               </Select>
             </div>
+            <Divider />
+            <p>
+              <strong>Bank:</strong> {selectedUser.bankAccount}
+            </p>
+            <p>
+              <strong>Bank Name:</strong> {selectedUser.bankName}
+            </p>
+            <p>
+              <strong>Bank Number:</strong> {selectedUser.bankNumber}
+            </p>
+            <Divider />
+            <p>
+              <strong>Created By:</strong> {selectedUser.createBy}
+            </p>
+            <p>
+              <strong>Updated By:</strong> {selectedUser.updateBy}
+            </p>
+            <p>
+              <strong>Email:</strong> {selectedUser.email}
+            </p>
           </div>
         ) : (
           <Spin size="small" />
