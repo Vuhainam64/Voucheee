@@ -47,13 +47,18 @@ import {
   UserBalance,
   VoucherList,
 } from "../pages/User";
-import { SupplierDashboard } from "../pages/Supplier";
+import {
+  SupplierDashboard,
+  SupplierIncome,
+  SupplierTransaction,
+} from "../pages/Supplier";
 import {
   AdminDashboard,
   AdminTransactions,
   FinancialOverview,
   UserManagerment,
 } from "../pages/Admin";
+import SupplierBank from "../pages/Supplier/SupplierBank";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [
@@ -124,7 +129,12 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
       {
         path: "/supplier",
         element: <SupplierLayout />,
-        children: [{ path: "dashboard", element: <SupplierDashboard /> }],
+        children: [
+          { path: "dashboard", element: <SupplierDashboard /> },
+          { path: "myIncome", element: <SupplierIncome /> },
+          { path: "myTransaction", element: <SupplierTransaction /> },
+          { path: "myBank", element: <SupplierBank /> },
+        ],
       },
       {
         path: "/seller",

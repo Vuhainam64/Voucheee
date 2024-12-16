@@ -231,6 +231,29 @@ export const SupplierMenus = [
     ],
   },
   {
+    title: "Tài Chính",
+    Icon: IoWallet,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Thu nhập của tôi",
+        Icon: PiCoinThin,
+        uri: "/supplier/myIncome",
+      },
+      {
+        title: "Ví của tôi",
+        Icon: LuWallet,
+        uri: "/supplier/myTransaction",
+      },
+      {
+        title: "Tài khoản ngân hàng",
+        Icon: CiBank,
+        uri: "/supplier/myBank",
+      }
+    ],
+  },
+  {
     title: "Hỗ Trợ",
     Icon: RiCustomerService2Fill,
     spacing: true,
