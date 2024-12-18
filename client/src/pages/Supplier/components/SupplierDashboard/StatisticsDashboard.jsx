@@ -19,10 +19,10 @@ const StatisticsDashboard = () => {
         </div>
       </div>
       <div className="space-y-2 text-center">
-        <div>Tổng Voucher cần xử lí</div>
+        <div>Tổng Voucher </div>
         <div className="font-bold text-xl text-primary">12588</div>
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2 text-center">
           <div>Số voucher đã duyệt</div>
           <div className="font-bold text-xl text-primary">1000</div>
@@ -30,6 +30,10 @@ const StatisticsDashboard = () => {
         <div className="space-y-2 text-center">
           <div>Đang chờ xử lí</div>
           <div className="font-bold text-xl text-primary">3</div>
+        </div>
+        <div className="space-y-2 text-center">
+          <div>Đang chuyển đổi</div>
+          <div className="font-bold text-xl text-primary">5</div>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">

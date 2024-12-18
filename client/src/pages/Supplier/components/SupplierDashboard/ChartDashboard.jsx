@@ -94,7 +94,7 @@ const ChartDashboard = () => {
         <div className="text-gray-400">Đến GMT+7 10:14:37</div>
       </div>
       <div>
-        <Bar data={data} options={options} />
+        <Bar data={data} options={options} height={100} />
       </div>
     </div>
   );

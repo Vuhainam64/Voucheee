@@ -1,16 +1,24 @@
 import React from "react";
 
 import { FaChevronRight } from "react-icons/fa";
+import { MdOutlineDashboard } from "react-icons/md";
 
 import { Avatar } from "../../assets/img";
 import {
   ChartDashboard,
   StatisticsDashboard,
+  CheckVouchers,
 } from "./components/SupplierDashboard";
 
 const SupplierDashboard = () => {
   return (
     <div className="w-full h-screen p-6 space-y-4">
+      <div className="flex items-center space-x-2">
+        <MdOutlineDashboard className="text-xl" />
+        <div>Tài Chính</div>
+        <FaChevronRight />
+        <div>Trang chủ</div>
+      </div>
       <div className="grid grid-cols-3 gap-4">
         <div className="flex bg-white p-4 rounded-xl space-x-4">
           <img src={Avatar} alt="logo" className="w-16 h-16 rounded-full" />
@@ -46,7 +54,7 @@ const SupplierDashboard = () => {
         <ChartDashboard />
         <StatisticsDashboard />
       </div>
-      <div></div>
+      <CheckVouchers />
     </div>
   );
 };
