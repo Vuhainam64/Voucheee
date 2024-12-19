@@ -15,6 +15,7 @@ import {
   Avatar,
   Space,
   Tooltip,
+  Form,
 } from "antd";
 import {
   PhoneOutlined,
@@ -28,6 +29,9 @@ import {
   getAllUser,
   updateUserRole,
   getCurrentUser,
+  unBanUser,
+  createUser,
+  reActiveUser,
 } from "../../api/admin";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
@@ -43,10 +47,18 @@ const UserManagerment = () => {
   const [filterRole, setFilterRole] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isUserModalVisible, setisUserModalVisible] = useState(false);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [currentUser, setCurrentUser] = useState();
   const { TabPane } = Tabs;
+  const [form] = Form.useForm();
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   useEffect(() => {
     const fetchAllUser = async () => {
       setLoading(true);
@@ -109,12 +121,25 @@ const UserManagerment = () => {
 
   const handleRowClick = (record) => {
     setSelectedUser(record);
-    setIsModalVisible(true);
+    setisUserModalVisible(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalVisible(false);
+    setisUserModalVisible(false);
     setSelectedUser(null);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalVisible(false);
+    setUserData({ username: "", email: "", password: "" });
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setUserData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
   const handleUpdateRole = async () => {
     if (!selectedUser) return;
@@ -130,7 +155,7 @@ const UserManagerment = () => {
       await updateUserRole(id, role);
       await fetchAllUser();
 
-      setIsModalVisible(false);
+      setisUserModalVisible(false);
       toast.success("Cập nhật thành công");
     } catch (error) {
       console.error("API call failed", error); // Log the error for debugging
@@ -138,9 +163,62 @@ const UserManagerment = () => {
       setLoadingUpdate(false);
     }
   };
+
+  const handleUnBanUser = async () => {
+    const { id } = selectedUser;
+    await unBanUser(id);
+    await reActiveUser(id);
+    await fetchAllUser();
+    setisUserModalVisible(false);
+    toast.success("Cập nhật thành công");
+  };
   const handleBanUser = async () => {
     const { id } = selectedUser;
     await banUser(id, "adsad");
+    await fetchAllUser();
+    setisUserModalVisible(false);
+    toast.success("Cập nhật thành công");
+  };
+  // const handleCreateUSer = async (event) => {
+  //   event.preventDefault();
+  //   try {
+  //     const response = await createUser(userData);
+  //     console.log("User created:", response);
+  //     handleCloseCreateModal();
+  //     setUserData({ username: "", email: "", password: "" }); // Reset form
+  //   } catch (error) {
+  //     console.error("Error in creating user:", error);
+  //     // Handle error, maybe show it to the user
+  //   }
+  // };
+  const handleCreateUSer = async (values) => {
+    setLoading(true);
+
+    // Map role to numeric value as required by the API
+    // const roleMapping = {
+    //   admin: 0,
+    //   supplier: 1,
+    //   user: 2,
+    // };
+
+    const payload = {
+      name: values.name,
+      email: values.email,
+      hashPassword: values.password,
+      role: values.role,
+    };
+
+    try {
+      await createUser(payload);
+      toast.success("User created successfully!");
+      await fetchAllUser();
+      form.resetFields();
+      handleCloseCreateModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create user.");
+    } finally {
+      setLoading(false);
+    }
   };
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
@@ -193,7 +271,12 @@ const UserManagerment = () => {
               enterButton
             />
           </div>
-          <Button type="primary" size="large" icon={<FaUserPlus />}>
+          <Button
+            type="primary"
+            size="large"
+            icon={<FaUserPlus />}
+            onClick={() => setIsCreateModalVisible(true)}
+          >
             Thêm mới
           </Button>
         </div>
@@ -218,7 +301,7 @@ const UserManagerment = () => {
       </div>
       <Modal
         title="Edit User Role"
-        visible={isModalVisible}
+        visible={isUserModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
@@ -291,7 +374,7 @@ const UserManagerment = () => {
                 <Divider />
 
                 {/* Created and Updated By Section */}
-                <Row gutter={[16, 16]}>
+                {/* <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Space direction="vertical" size="small">
                       <Text strong>Created By:</Text>
@@ -304,7 +387,7 @@ const UserManagerment = () => {
                       <Text>{selectedUser.updateBy}</Text>
                     </Space>
                   </Col>
-                </Row>
+                </Row> */}
                 <Row>
                   <Button key="cancel" onClick={handleCloseModal}>
                     Cancel
@@ -332,10 +415,73 @@ const UserManagerment = () => {
               <Button type="primary" danger onClick={handleBanUser}>
                 Ban
               </Button>
+              <Button type="primary" success onClick={handleUnBanUser}>
+                Un-Ban
+              </Button>
             </Row>
           </TabPane>
           <TabPane tab="Delete" key="3"></TabPane>
         </Tabs>
+      </Modal>
+      <Modal
+        title="Create User"
+        visible={isCreateModalVisible}
+        onCancel={handleCloseCreateModal}
+        footer={null}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCreateUSer}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="User name"
+            name="Name"
+            rules={[{ required: true, message: "Please enter the name!" }]}
+          >
+            <Input placeholder="Enter name" />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              { required: true, message: "Please enter the email!" },
+              { type: "email", message: "Please enter a valid email!" },
+            ]}
+          >
+            <Input placeholder="Enter email" />
+          </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[{ required: true, message: "Please enter the password!" }]}
+          >
+            <Input.Password placeholder="Enter password" />
+          </Form.Item>
+          <Form.Item
+            label="Role"
+            name="role"
+            rules={[{ required: true, message: "Please select a role!" }]}
+          >
+            <Select placeholder="Select role">
+              <Option value="admin">Admin</Option>
+              <Option value="supplier">Supplier</Option>
+              <Option value="user">User</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Create User
+            </Button>
+            <Button
+              onClick={handleCloseCreateModal}
+              style={{ marginLeft: "10px" }}
+            >
+              Cancel
+            </Button>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
