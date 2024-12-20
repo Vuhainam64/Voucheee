@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_API_URL } from ".";
+import { access_token, BACKEND_API_URL } from ".";
 
 export const getBestSupplier = async () => {
     try {
@@ -20,5 +20,22 @@ export const getAllSupplier = async () => {
         return res.data;
     } catch (err) {
         return null;
+    }
+};
+
+export const getSupplierDashboard = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/supplier/get_supplier_dashboard`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error get modal:", err);
+        throw err;
     }
 };

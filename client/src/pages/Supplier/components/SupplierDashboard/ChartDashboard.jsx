@@ -9,7 +9,6 @@ import {
   Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
-
 import { FaChevronRight } from "react-icons/fa";
 
 ChartJS.register(
@@ -21,66 +20,50 @@ ChartJS.register(
   Legend
 );
 
-const data = {
-  labels: [
-    "Tháng 1",
-    "Tháng 2",
-    "Tháng 3",
-    "Tháng 4",
-    "Tháng 5",
-    "Tháng 6",
-    "Tháng 7",
-    "Tháng 8",
-    "Tháng 9",
-    "Tháng 10",
-    "Tháng 11",
-    "Tháng 12",
-  ],
-  datasets: [
-    {
-      label: "Lợi nhuận",
-      data: [
-        12000, 19000, 3000, 5000, 20000, 15000, 18000, 22000, 24000, 10000,
-        30000, 25000,
-      ],
-      backgroundColor: "rgba(54, 162, 235, 0.6)",
-      borderColor: "rgba(54, 162, 235, 1)",
-      borderWidth: 1,
-    },
-  ],
-};
+const ChartDashboard = ({ monthData }) => {
+  const chartData = {
+    labels: monthData.map((data) => `Tháng ${data.month}`),
+    datasets: [
+      {
+        label: "Lợi nhuận (VND)",
+        data: monthData.map((data) => data.totalAmount),
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Dòng tiền hàng tháng (VND)",
-    },
-  },
-  scales: {
-    x: {
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
       title: {
         display: true,
-        text: "Tháng",
+        text: "Dòng tiền hàng tháng (VND)",
       },
     },
-    y: {
-      title: {
-        display: true,
-        text: "Số tiền (VND)",
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "Tháng",
+        },
       },
-      ticks: {
-        beginAtZero: true,
+      y: {
+        title: {
+          display: true,
+          text: "Số tiền (VND)",
+        },
+        ticks: {
+          beginAtZero: true,
+        },
       },
     },
-  },
-};
+  };
 
-const ChartDashboard = () => {
   return (
     <div className="bg-white p-4 rounded-xl space-y-2">
       <div className="flex items-center justify-between">
@@ -94,7 +77,7 @@ const ChartDashboard = () => {
         <div className="text-gray-400">Đến GMT+7 10:14:37</div>
       </div>
       <div>
-        <Bar data={data} options={options} height={100} />
+        <Bar data={chartData} options={options} height={100} />
       </div>
     </div>
   );

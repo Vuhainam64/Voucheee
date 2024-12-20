@@ -1,16 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { FaChevronRight } from "react-icons/fa";
 import { MdOutlineDashboard } from "react-icons/md";
 
 import { Avatar } from "../../assets/img";
+
 import {
   ChartDashboard,
   StatisticsDashboard,
   CheckVouchers,
 } from "./components/SupplierDashboard";
+import { Spinner } from "../../components/Spinner";
+import { getSupplierDashboard } from "../../api/supplier";
 
 const SupplierDashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getSupplierDashboard();
+        if (data) {
+          setDashboardData(data);
+        } else {
+          setError("Failed to fetch data");
+        }
+      } catch (err) {
+        setError("An error occurred while fetching data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="w-full h-screen p-6 space-y-4">
       <div className="flex items-center space-x-2">
@@ -24,12 +62,17 @@ const SupplierDashboard = () => {
           <img src={Avatar} alt="logo" className="w-16 h-16 rounded-full" />
           <div className="space-y-4">
             <div>
-              <div className="text-2xl font-bold">GiftPop</div>
+              <div className="text-2xl font-bold">
+                {dashboardData.suppliernameandamount.name}
+              </div>
               <div className="text-gray-400">Duyệt đơn hàng và tăng cấp độ</div>
             </div>
             <div className="text-2xl font-bold text-primary flex items-center space-x-2">
               <div>Doanh số:</div>
-              <div>3.000.000 VND</div>
+              <div>
+                {dashboardData.suppliernameandamount.amount.toLocaleString()}{" "}
+                VND
+              </div>
             </div>
           </div>
         </div>
@@ -51,10 +94,23 @@ const SupplierDashboard = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <ChartDashboard />
-        <StatisticsDashboard />
+        <ChartDashboard monthData={dashboardData.monthDashboard} />
+        <StatisticsDashboard
+          statisticsData={{
+            totalVouchers: dashboardData.totalVouchers,
+            approvedVouchers: dashboardData.approvedVouchers,
+            pendingVouchers: dashboardData.pendingVouchers,
+            convertingVouchers: dashboardData.convertingVouchers,
+            convertedVouchers: dashboardData.convertedVouchers,
+            usedorexpireVouchers: dashboardData.usedorexpireVouchers,
+          }}
+        />
       </div>
-      <CheckVouchers />
+      <CheckVouchers
+        pendingVouchers={dashboardData.pendingVouchers}
+        approvedVouchers={dashboardData.approvedVouchers}
+        totalVouchers={dashboardData.totalVouchers}
+      />
     </div>
   );
 };
