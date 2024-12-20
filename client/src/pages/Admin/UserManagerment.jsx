@@ -206,6 +206,7 @@ const UserManagerment = () => {
       email: values.email,
       hashPassword: values.password,
       role: values.role,
+      supplierId: values.supplierId,
     };
 
     try {
@@ -437,7 +438,7 @@ const UserManagerment = () => {
         >
           <Form.Item
             label="User name"
-            name="Name"
+            name="name"
             rules={[{ required: true, message: "Please enter the name!" }]}
           >
             <Input placeholder="Enter name" />
@@ -469,6 +470,29 @@ const UserManagerment = () => {
               <Option value="supplier">Supplier</Option>
               <Option value="user">User</Option>
             </Select>
+          </Form.Item>
+          <Form.Item label="Supplier " name="supplierId">
+            <Select
+              style={{ width: 120 }}
+              options={[
+                {
+                  value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                  label: "Ubox",
+                },
+                {
+                  value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                  label: "GiftTOP",
+                },
+                {
+                  value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                  label: "Dealtoday",
+                },
+                {
+                  value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                  label: "GoTIT",
+                },
+              ]}
+            />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>

@@ -91,6 +91,7 @@ export const getCurrentUser = async () => {
 };
 
 export const createUser = async (userData) => {
+  console.log(userData);
   try {
     const response = await axios.post(
       `${BACKEND_API_URL}/v1/user/create_user`,
