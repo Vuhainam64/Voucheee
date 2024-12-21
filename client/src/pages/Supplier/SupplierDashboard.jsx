@@ -22,8 +22,8 @@ const SupplierDashboard = () => {
     const fetchData = async () => {
       try {
         const data = await getSupplierDashboard();
-        if (data) {
-          setDashboardData(data);
+        if (data.result) {
+          setDashboardData(data.value);
         } else {
           setError("Failed to fetch data");
         }
@@ -39,7 +39,7 @@ const SupplierDashboard = () => {
 
   if (loading) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center overflow-hidden">
+      <div className="w-full h-screen flex items-center justify-center overflow-hidden">
         <Spinner />
       </div>
     );
@@ -63,14 +63,14 @@ const SupplierDashboard = () => {
           <div className="space-y-4">
             <div>
               <div className="text-2xl font-bold">
-                {dashboardData.suppliernameandamount.name}
+                {dashboardData.supplierNameAndAmount.name}
               </div>
               <div className="text-gray-400">Duyệt đơn hàng và tăng cấp độ</div>
             </div>
             <div className="text-2xl font-bold text-primary flex items-center space-x-2">
               <div>Doanh số:</div>
               <div>
-                {dashboardData.suppliernameandamount.amount.toLocaleString()}{" "}
+                {dashboardData.supplierNameAndAmount.amountofyear.toLocaleString()}{" "}
                 VND
               </div>
             </div>
@@ -94,7 +94,7 @@ const SupplierDashboard = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <ChartDashboard monthData={dashboardData.monthDashboard} />
+        <ChartDashboard dayDashboard={dashboardData.dayDashboard} />
         <StatisticsDashboard
           statisticsData={{
             totalVouchers: dashboardData.totalVouchers,

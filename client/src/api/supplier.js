@@ -39,3 +39,20 @@ export const getSupplierDashboard = async () => {
         throw err;
     }
 };
+
+export const getSupplierTransaction = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/supplier/get_supplier_transaction`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error get modal:", err);
+        throw err;
+    }
+};
