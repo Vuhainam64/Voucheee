@@ -48,6 +48,7 @@ import {
   VoucherList,
 } from "../pages/User";
 import {
+  ConvertVoucher,
   SupplierDashboard,
   SupplierIncome,
   SupplierTransaction,
@@ -131,6 +132,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         element: <SupplierLayout />,
         children: [
           { path: "dashboard", element: <SupplierDashboard /> },
+          { path: "convertVoucher", element: <ConvertVoucher /> },
           { path: "myIncome", element: <SupplierIncome /> },
           { path: "myTransaction", element: <SupplierTransaction /> },
           { path: "myBank", element: <SupplierBank /> },

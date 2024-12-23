@@ -19,7 +19,7 @@ import { SiSecurityscorecard, SiZalo } from "react-icons/si";
 import { BsShop } from "react-icons/bs";
 import { FaBoxes } from "react-icons/fa";
 import { PiCoinThin } from "react-icons/pi";
-import { GrTransaction } from "react-icons/gr";
+import { GrDocumentUpdate, GrTransaction } from "react-icons/gr";
 import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
 import { AiOutlineUserSwitch } from "react-icons/ai";
@@ -227,6 +227,11 @@ export const SupplierMenus = [
         title: "Trang chủ",
         Icon: MdOutlineDashboard,
         uri: "/supplier/dashboard",
+      },
+      {
+        title: "Cập nhật voucher",
+        Icon: GrDocumentUpdate,
+        uri: "/supplier/convertVoucher",
       },
     ],
   },

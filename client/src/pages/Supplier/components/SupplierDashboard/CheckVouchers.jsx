@@ -17,7 +17,7 @@ const CheckVouchers = () => {
     setLoading(true);
     try {
       const vouchersData = await getAllVoucherConvert();
-      setVouchers(vouchersData);
+      setVouchers(vouchersData.results);
     } catch (error) {
       console.error("Failed to fetch vouchers:", error);
     } finally {
