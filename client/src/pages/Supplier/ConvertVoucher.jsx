@@ -43,6 +43,7 @@ const ConvertVoucher = () => {
           name: item.firstItem.name,
           brand: item.firstItem.brand,
           count: item.count,
+          status: item.status,
         }));
         setVouchers(data);
         setFilteredVouchers(data);
@@ -96,6 +97,7 @@ const ConvertVoucher = () => {
       items={[
         { key: "details", label: "Xem chi tiết" },
         { key: "export", label: "Xuất Excel" },
+        { key: "import", label: "Nhập Excel" },
         { key: "cancel", label: "Huỷ" },
       ]}
     />
@@ -127,6 +129,11 @@ const ConvertVoucher = () => {
       title: "Số lượng",
       dataIndex: "count",
       key: "count",
+    },
+    {
+      title: "Trạng Thái",
+      dataIndex: "status",
+      key: "status",
     },
     {
       title: "Chức năng",
@@ -177,6 +184,7 @@ const ConvertVoucher = () => {
       {selectedVoucher && (
         <ConvertingDetail
           visible={isModalVisible}
+          setVisible={setIsModalVisible}
           voucherId={selectedVoucher.id}
           onCancel={() => setIsModalVisible(false)}
         />

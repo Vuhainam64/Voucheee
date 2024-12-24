@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Modal, Spin, message, Table, Button } from "antd";
 import * as XLSX from "xlsx";
 
-import { getVoucherConvertingByID } from "../../../../api/vouchercode";
+import {
+  convertNewCode,
+  getVoucherConvertingByID,
+} from "../../../../api/vouchercode";
 
-const ConvertingDetail = ({ visible, voucherId, onCancel }) => {
+const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
   const [vouchers, setVouchers] = useState([]); // Use an array for multiple vouchers
   const [loading, setLoading] = useState(false);
 
@@ -87,11 +90,13 @@ const ConvertingDetail = ({ visible, voucherId, onCancel }) => {
       modalname: voucher.modalname,
       modalId: voucher.modalId,
       status: voucher.status,
-      newCode: voucher.newCode || "Chưa có mã mới",
-      code: voucher.code,
       image: voucher.image,
       startDate: voucher.startDate,
       endDate: voucher.endDate,
+      code: voucher.code,
+      newCode: null,
+      comment: null,
+      updateStatus: null,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
@@ -107,12 +112,32 @@ const ConvertingDetail = ({ visible, voucherId, onCancel }) => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       const binaryStr = evt.target.result;
       const wb = XLSX.read(binaryStr, { type: "binary" });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(ws);
-      setVouchers(data); // Set data from the imported Excel
+
+      // Map data to API structure
+      const mappedData = data.map((row) => ({
+        id: row.id,
+        newCode: row.newCode,
+        comment: row.comment,
+        updateStatus: row.updateStatus,
+      }));
+
+      try {
+        setLoading(true);
+        await convertNewCode(mappedData);
+        message.success("Dữ liệu đã được nhập và cập nhật thành công.");
+        setVisible(false);
+        setVouchers([]);
+      } catch (error) {
+        message.error("Lỗi khi nhập dữ liệu từ Excel.");
+        console.error("Error importing data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     reader.readAsBinaryString(file);
   };

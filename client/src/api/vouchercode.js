@@ -87,3 +87,20 @@ export const getVoucherConvertingByID = async (ID) => {
         throw err;
     }
 };
+
+export const convertNewCode = async (data) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/voucherCode/update_code_voucher_code`,
+            data, {
+            headers: {
+                Authorization: `Bearer ${access_token}`,
+            },
+        }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error change active voucher:", err);
+        throw err;
+    }
+};
