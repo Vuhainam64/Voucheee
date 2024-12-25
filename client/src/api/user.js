@@ -1,10 +1,10 @@
 import axios from "axios";
 import { access_token, BACKEND_API_URL } from ".";
 
-export const updateUserBank = async (bankAccount, bankNumber, bankName) => {
+export const updateUserBank = async (bankAccount, bankNumber, bankName, walletTypeEnum) => {
     try {
         const res = await axios.put(
-            `${BACKEND_API_URL}/v1/user/update_user_bank`,
+            `${BACKEND_API_URL}/v1/user/update_user_bank?walletTypeEnum=${walletTypeEnum}`,
             {
                 bankAccount,
                 bankNumber,

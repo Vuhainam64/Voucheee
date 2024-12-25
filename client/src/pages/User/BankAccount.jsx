@@ -23,10 +23,12 @@ const BankAccount = () => {
     // Fetch the user details to pre-fill the form
     const loadUserData = async () => {
       const user = await getUser();
-      if (user && user.bankAccount) {
-        setBankAccount(user.bankAccount);
-        setBankNumber(user.bankNumber);
-        const bank = bankList.find((bank) => bank.name === user.bankName);
+      if (user && user.buyerWallet.bankAccount) {
+        setBankAccount(user.buyerWallet.bankAccount);
+        setBankNumber(user.buyerWallet.bankNumber);
+        const bank = bankList.find(
+          (bank) => bank.name === user.buyerWallet.bankName
+        );
         if (bank) {
           setSelectedBank(bank);
         }
@@ -58,7 +60,8 @@ const BankAccount = () => {
       const response = await updateUserBank(
         normalizedBankAccount, // Use the normalized bank account
         values.bankNumber,
-        selectedBank.name
+        selectedBank.name,
+        0
       );
       if (response.result) {
         message.success("Cập nhật thông tin tài khoản ngân hàng thành công!");
