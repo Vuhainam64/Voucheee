@@ -40,10 +40,10 @@ export const getSupplierDashboard = async () => {
     }
 };
 
-export const getSupplierTransaction = async () => {
+export const getSupplierTransaction = async (status) => {
     try {
         const res = await axios.get(
-            `${BACKEND_API_URL}/v1/supplier/get_supplier_transaction`,
+            `${BACKEND_API_URL}/v1/supplier/get_supplier_transaction?status=${status}`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
