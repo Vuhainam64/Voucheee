@@ -2,9 +2,10 @@ import { v4 as uuidv4 } from "uuid";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import {
+  MdCampaign,
   MdDashboard,
+  MdHistory,
   MdOutlineDashboard,
-  MdOutlinePayments,
   MdOutlineRateReview,
   MdOutlineSettings,
 } from "react-icons/md";
@@ -14,17 +15,18 @@ import {
   RiInboxArchiveFill,
   RiRefundFill,
 } from "react-icons/ri";
-import { CiBank } from "react-icons/ci";
-import { SiSecurityscorecard, SiZalo } from "react-icons/si";
+import { CiBank, CiBoxList } from "react-icons/ci";
 import { BsShop } from "react-icons/bs";
-import { FaBoxes } from "react-icons/fa";
+import { FaBoxes, FaBullhorn } from "react-icons/fa";
 import { PiCoinThin } from "react-icons/pi";
-import { GrDocumentUpdate, GrTransaction } from "react-icons/gr";
+import { BiTransferAlt } from "react-icons/bi";
 import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlineUserSwitch } from "react-icons/ai";
+import { AiOutlinePieChart, AiOutlineUserSwitch } from "react-icons/ai";
 import { IoShareSocial, IoWallet } from "react-icons/io5";
+import { SiSecurityscorecard, SiZalo } from "react-icons/si";
 import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
+import { GrDocumentUpdate, GrUploadOption } from "react-icons/gr";
 
 import { auth } from "../config/firebase.config";
 import { FaUserGear } from "react-icons/fa6";
@@ -152,12 +154,12 @@ export const ClientMenus = [
       {
         title: "Zalo",
         Icon: SiZalo,
-        uri: "/dash/zalo",
+        uri: "/seller/zalo",
       },
       {
         title: "Social",
         Icon: IoShareSocial,
-        uri: "/dash/social",
+        uri: "/seller/social",
       },
     ],
   },
@@ -183,19 +185,61 @@ export const AdminMenus = [
     ],
   },
   {
-    title: "Quản lí thanh toán",
-    Icon: MdOutlinePayments,
+    title: "Giải ngân",
+    Icon: BiTransferAlt,
     spacing: true,
     submenu: true,
     subMenuItems: [
       {
-        title: "Tổng quan",
-        Icon: MdOutlineDashboard,
-        uri: "/admin/financial-overview",
-      }, {
-        title: "Giao dịch",
-        Icon: GrTransaction,
-        uri: "/admin/transactions",
+        title: "Danh sách giải ngân",
+        Icon: CiBoxList,
+        uri: "/admin/disbursementList",
+      },
+      {
+        title: "Cập nhật giải ngân",
+        Icon: GrUploadOption,
+        uri: "/admin/disbursementUpdate",
+      },
+      {
+        title: "Lịch sử giải ngân",
+        Icon: MdHistory,
+        uri: "/admin/disbursementHistory",
+      },
+    ],
+  },
+  {
+    title: "Quảng cáo",
+    Icon: FaBullhorn,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Phân tích",
+        Icon: AiOutlinePieChart,
+        uri: "/admin/analysis",
+      },
+      {
+        title: "Chiến dịch",
+        Icon: MdCampaign,
+        uri: "/admin/campaign",
+      },
+    ],
+  },
+  {
+    title: "Hỗ Trợ",
+    Icon: RiCustomerService2Fill,
+    spacing: true,
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Zalo",
+        Icon: SiZalo,
+        uri: "/admin/zalo",
+      },
+      {
+        title: "Social",
+        Icon: IoShareSocial,
+        uri: "/admin/social",
       },
     ],
   },
@@ -267,12 +311,12 @@ export const SupplierMenus = [
       {
         title: "Zalo",
         Icon: SiZalo,
-        uri: "/dash/zalo",
+        uri: "/supplier/zalo",
       },
       {
         title: "Social",
         Icon: IoShareSocial,
-        uri: "/dash/social",
+        uri: "/supplier/social",
       },
     ],
   },

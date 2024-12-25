@@ -20,7 +20,7 @@ import {
   VoucherDetail,
 } from "../pages/Home";
 // import { Account, Password, Profile } from "../pages/Setting";
-import { PageNotFound } from "../pages/Other";
+import { PageNotFound, ZaloPage } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
   SellerBank,
@@ -125,6 +125,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },
           { path: "balance", element: <UserBalance /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       {
@@ -136,6 +137,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "myIncome", element: <SupplierIncome /> },
           { path: "myTransaction", element: <SupplierTransaction /> },
           { path: "myBank", element: <SupplierBank /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       {
@@ -163,6 +165,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           },
           { path: "myTransaction", element: <SellerTransaction /> },
           { path: "myBank", element: <SellerBank /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       // {
@@ -182,6 +185,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "financial-overview", element: <FinancialOverview /> },
           { path: "transactions", element: <AdminTransactions /> },
           { path: "permission", element: <UserManagerment /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       }
     );
