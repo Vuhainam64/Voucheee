@@ -56,3 +56,25 @@ export const getSupplierTransaction = async () => {
         throw err;
     }
 };
+
+export const updateSupplierBank = async (bankAccount, bankNumber, bankName) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/user/update_supplier_bank`,
+            {
+                bankAccount,
+                bankNumber,
+                bankName
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error change active voucher:", err);
+        throw err;
+    }
+};
