@@ -112,12 +112,12 @@ const SearchProduct = () => {
               <Spin size="large" />
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none">
+            <div className="grid grid-cols-4 gap-4 overflow-y-auto scrollbar-none h-[calc(100vh-298px)]">
               {products.map((product) => (
                 <Link
                   to={`/detail/${product.id}`}
                   key={product.id}
-                  className="bg-white rounded-lg shadow-lg flex flex-col hover:no-underline"
+                  className="bg-white rounded-lg shadow-lg flex flex-col hover:no-underline max-h-[270px]"
                 >
                   <div className="relative">
                     <img

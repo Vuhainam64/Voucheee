@@ -15,7 +15,7 @@ export const getNewestVoucher = async () => {
 export const getBestSold = async () => {
   try {
     const res = await axios.get(
-      `${BACKEND_API_URL}/v1/voucher/get_best_sold_vouchers?page=1&pageSize=8`
+      `${BACKEND_API_URL}/v1/voucher/get_best_sold_vouchers?numberOfVoucher=9`
     );
     return res.data;
   } catch (err) {
