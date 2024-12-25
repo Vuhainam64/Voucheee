@@ -1,5 +1,61 @@
 export const bankList = [
     {
+        "id": 39,
+        "name": "Tiên Phong (TPB)",
+        "code": "TPB",
+        "bin": "970423",
+        "shortName": "TPBank",
+        "logo": "https://api.vietqr.io/img/TPB.png",
+        "transferSupported": 1,
+        "lookupSupported": 1,
+        "short_name": "TPBank",
+        "support": 3,
+        "isTransfer": 1,
+        "swift_code": "TPBVVNVX"
+    },
+    {
+        "id": 21,
+        "name": "Quân đội (MB)",
+        "code": "MB",
+        "bin": "970422",
+        "shortName": "MBBank",
+        "logo": "https://api.vietqr.io/img/MB.png",
+        "transferSupported": 1,
+        "lookupSupported": 1,
+        "short_name": "MBBank",
+        "support": 3,
+        "isTransfer": 1,
+        "swift_code": "MSCBVNVX"
+    },
+    {
+        "id": 44,
+        "name": "BVBank – Ngân hàng TMCP Bản Việt",
+        "code": "VCCB",
+        "bin": "970454",
+        "shortName": "VietCapitalBank",
+        "logo": "https://api.vietqr.io/img/VCCB.png",
+        "transferSupported": 1,
+        "lookupSupported": 1,
+        "short_name": "VietCapitalBank",
+        "support": 3,
+        "isTransfer": 1,
+        "swift_code": "VCBCVNVX"
+    },
+    {
+        "id": 58,
+        "name": "Ngân hàng số Timo by Ban Viet Bank (Timo by Ban Viet Bank)",
+        "code": "TIMO",
+        "bin": "963388",
+        "shortName": "Timo",
+        "logo": "https://vietqr.net/portal-service/resources/icons/TIMO.png",
+        "transferSupported": 1,
+        "lookupSupported": 0,
+        "short_name": "Timo",
+        "support": 0,
+        "isTransfer": 1,
+        "swift_code": null
+    },
+    {
         "id": 17,
         "name": "Công Thương Việt Nam (VIETINBANK)",
         "code": "ICB",
@@ -70,20 +126,6 @@ export const bankList = [
         "swift_code": "ORCOVNVX"
     },
     {
-        "id": 21,
-        "name": "Quân đội (MB)",
-        "code": "MB",
-        "bin": "970422",
-        "shortName": "MBBank",
-        "logo": "https://api.vietqr.io/img/MB.png",
-        "transferSupported": 1,
-        "lookupSupported": 1,
-        "short_name": "MBBank",
-        "support": 3,
-        "isTransfer": 1,
-        "swift_code": "MSCBVNVX"
-    },
-    {
         "id": 38,
         "name": "Kỹ Thương (TCB)",
         "code": "TCB",
@@ -126,20 +168,6 @@ export const bankList = [
         "swift_code": "VPBKVNVX"
     },
     {
-        "id": 39,
-        "name": "Tiên Phong (TPB)",
-        "code": "TPB",
-        "bin": "970423",
-        "shortName": "TPBank",
-        "logo": "https://api.vietqr.io/img/TPB.png",
-        "transferSupported": 1,
-        "lookupSupported": 1,
-        "short_name": "TPBank",
-        "support": 3,
-        "isTransfer": 1,
-        "swift_code": "TPBVVNVX"
-    },
-    {
         "id": 36,
         "name": "Sacombank (STB)",
         "code": "STB",
@@ -166,20 +194,6 @@ export const bankList = [
         "support": 3,
         "isTransfer": 1,
         "swift_code": "HDBCVNVX"
-    },
-    {
-        "id": 44,
-        "name": "BVBank – Ngân hàng TMCP Bản Việt",
-        "code": "VCCB",
-        "bin": "970454",
-        "shortName": "VietCapitalBank",
-        "logo": "https://api.vietqr.io/img/VCCB.png",
-        "transferSupported": 1,
-        "lookupSupported": 1,
-        "short_name": "VietCapitalBank",
-        "support": 3,
-        "isTransfer": 1,
-        "swift_code": "VCBCVNVX"
     },
     {
         "id": 31,
@@ -276,20 +290,6 @@ export const bankList = [
         "lookupSupported": 1,
         "short_name": "Ubank",
         "support": 3,
-        "isTransfer": 1,
-        "swift_code": null
-    },
-    {
-        "id": 58,
-        "name": "Ngân hàng số Timo by Ban Viet Bank (Timo by Ban Viet Bank)",
-        "code": "TIMO",
-        "bin": "963388",
-        "shortName": "Timo",
-        "logo": "https://vietqr.net/portal-service/resources/icons/TIMO.png",
-        "transferSupported": 1,
-        "lookupSupported": 0,
-        "short_name": "Timo",
-        "support": 0,
         "isTransfer": 1,
         "swift_code": null
     },
