@@ -7,39 +7,56 @@ import {
   Input,
   Upload,
   Image,
-  Progress,
+  Tabs,
+  Spin,
+  DatePicker,
+  message,
 } from "antd";
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { toast } from "react-toastify";
-import { PlusOutlined } from "@ant-design/icons";
-
 import { getModal } from "../../../../../../api/modal";
-import { storage } from "../../../../../../config/firebase.config";
 import { createVoucherCode } from "../../../../../../api/voucher";
+import { storage } from "../../../../../../config/firebase.config";
+
+const { TabPane } = Tabs;
 
 const ModalPopup = ({ isVisible, onClose, modalId }) => {
   const [modalData, setModalData] = useState(null);
-  const [voucherCodes, setVoucherCodes] = useState([]);
+  const [unusedVoucherCodes, setUnusedVoucherCodes] = useState([]);
+  const [pendingVoucherCodes, setPendingVoucherCodes] = useState([]);
+  const [convertingVoucherCodes, setConvertingVoucherCodes] = useState([]);
   const [isAddCodeModalVisible, setIsAddCodeModalVisible] = useState(false);
   const [imageFiles, setImageFiles] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState({});
-  const [images, setImages] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("1"); // Track the active tab
 
   useEffect(() => {
     const fetchModalData = async () => {
       if (modalId) {
         try {
+          setLoading(true);
           const data = await getModal(modalId);
           setModalData(data.results);
-          setVoucherCodes(data.results.voucherCodes);
+
+          setUnusedVoucherCodes(
+            data.results.voucherCodes.filter((code) => code.status === "UNUSED")
+          );
+          setPendingVoucherCodes(
+            data.results.voucherCodes.filter(
+              (code) => code.status === "PENDING"
+            )
+          );
+          setConvertingVoucherCodes(
+            data.results.voucherCodes.filter(
+              (code) => code.status === "CONVERTING"
+            )
+          );
         } catch (error) {
           console.error("Error loading modal data:", error);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -62,17 +79,45 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
     setIsAddCodeModalVisible(false);
   };
 
+  const copyToClipboard = (id) => {
+    navigator.clipboard
+      .writeText(id)
+      .then(() => {
+        message.success(`ID ${id} copied to clipboard!`);
+      })
+      .catch((error) => {
+        message.error("Failed to copy ID.");
+        console.error("Copy error:", error);
+      });
+  };
+
   const modalPopupColumns = [
     {
-      title: "Số thứ tự",
-      dataIndex: "index",
-      key: "index",
-      render: (_, __, index) => index + 1,
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (text) => (
+        <div>
+          {text}{" "}
+          <CopyOutlined
+            onClick={() => copyToClipboard(text)} // Trigger the copy function
+            style={{ cursor: "pointer", marginLeft: 8 }}
+          />
+        </div>
+      ),
     },
     {
       title: "Code",
       dataIndex: "code",
       key: "code",
+    },
+    {
+      // Conditionally render the "NewCode" column only in the "Đang Bán" tab
+      title: "NewCode",
+      key: "newCode",
+      render: () => <div className="text-xl">*********</div>,
+      // Only render if the active tab is "1" (Đang Bán)
+      visible: activeTab === "1",
     },
     {
       title: "Image",
@@ -86,108 +131,74 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
         ),
     },
     {
+      title: "Start Date",
+      dataIndex: "startDate",
+      key: "startDate",
+    },
+    {
+      title: "End Date",
+      dataIndex: "endDate",
+      key: "endDate",
+    },
+    {
       title: "Operation",
       dataIndex: "operation",
       key: "operation",
-      render: (_, record) => (
-        <div>
-          <Button type="link" onClick={() => handleEdit(record)}>
-            Edit
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record)}>
-            Delete
-          </Button>
-        </div>
-      ),
+      render: (_, record) =>
+        pendingVoucherCodes.some((code) => code.id === record.id) && (
+          <div>
+            <Button type="link" onClick={() => handleEdit(record)}>
+              Edit
+            </Button>
+            <Button type="link" danger onClick={() => handleDelete(record)}>
+              Delete
+            </Button>
+          </div>
+        ),
     },
   ];
 
-  const handleFileChange = (fileList) => {
-    setImageFiles(fileList);
-    fileList.forEach((file) => {
-      if (file.status === "done") {
-        setUploadProgress((prev) => ({ ...prev, [file.uid]: undefined }));
-      }
-    });
-  };
+  const handleAddVoucherCode = (values) => {
+    const { code, startDate, endDate } = values;
+    const image = imageFiles.length > 0 ? imageFiles[0] : null;
+    if (!image) {
+      toast.error("Please upload an image for the voucher code.");
+      return;
+    }
 
-  const uploadFile = (file) => {
-    const storageRef = ref(storage, `portfolio/${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const formattedEndDate = endDate.format("YYYY-MM-DD");
+
+    const storageRef = ref(storage, `vouchers/${image.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, image.originFileObj);
 
     uploadTask.on(
       "state_changed",
-      (snapshot) => {
-        const progress = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setUploadProgress((prev) => ({ ...prev, [file.uid]: progress }));
-      },
+      null,
       (error) => {
-        console.error("Upload error:", error);
-        toast.error("Upload failed.");
+        toast.error("Failed to upload image.");
+        console.error("Image upload error:", error);
       },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((downloadURL) => {
-            setImageFiles((prev) =>
-              prev.map((f) =>
-                f.uid === file.uid
-                  ? { ...f, status: "done", url: downloadURL }
-                  : f
-              )
-            );
-            setImages((prevImages) => [...prevImages, downloadURL]);
-            toast.success("File uploaded successfully!");
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        createVoucherCode(modalId, {
+          code,
+          image: downloadURL,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+        })
+          .then(() => {
+            toast.success("Voucher code added successfully!");
+            setRefreshKey((prevKey) => prevKey + 1);
+            setIsAddCodeModalVisible(false);
+            setImageFiles([]);
           })
           .catch((error) => {
-            console.error("Error getting download URL:", error);
-            toast.error("Failed to get download URL.");
+            toast.error("Failed to add voucher code.");
+            console.error("Error adding voucher code:", error);
           });
       }
     );
-  };
-
-  const handleBeforeUpload = (file) => {
-    const isValidSize = file.size / 1024 / 1024 < 20; // 20 MB
-
-    if (!isValidSize) {
-      toast.error("Invalid file size!");
-      return false;
-    }
-
-    uploadFile(file);
-    return false;
-  };
-
-  const deleteFile = (file) => {
-    const fileRef = ref(storage, `portfolio/${file.name}`);
-
-    deleteObject(fileRef)
-      .then(() => {
-        toast.success("File deleted successfully!");
-        setImageFiles((prev) => prev.filter((f) => f.uid !== file.uid));
-        setImages((prevImages) => prevImages.filter((url) => url !== file.url));
-      })
-      .catch((error) => {
-        console.error("Delete error:", error);
-        toast.error("Failed to delete file.");
-      });
-  };
-
-  const handleAddVoucherCode = (values) => {
-    const { code } = values;
-    const image = images[0];
-    createVoucherCode(modalId, { code, image })
-      .then(() => {
-        toast.success("Voucher code added successfully!");
-        setRefreshKey((prevKey) => prevKey + 1);
-        setIsAddCodeModalVisible(false);
-      })
-      .catch((error) => {
-        toast.error("Failed to add voucher code.");
-        console.error("Error adding voucher code:", error);
-      });
   };
 
   return (
@@ -197,22 +208,57 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
         open={isVisible}
         onCancel={onClose}
         footer={null}
+        width={1200}
       >
-        {modalData && (
-          <>
-            <div className="flex items-center justify-between">
-              <div className="font-bold mb-4">{modalData.title}</div>
-              <Button type="primary" onClick={handleAddCode}>
-                Thêm code
-              </Button>
-            </div>
-            <Table
-              columns={modalPopupColumns}
-              dataSource={voucherCodes}
-              rowKey={(record) => record.id}
-              pagination={{ pageSize: 5 }}
-            />
-          </>
+        {loading ? (
+          <Spin size="large" />
+        ) : (
+          modalData && (
+            <>
+              <div className="flex items-center justify-between">
+                <div className="font-bold mb-4">{modalData.title}</div>
+                <Button type="primary" onClick={handleAddCode}>
+                  Thêm code
+                </Button>
+              </div>
+              <Tabs
+                defaultActiveKey="1"
+                activeKey={activeTab}
+                onChange={setActiveTab} // Set active tab
+              >
+                <TabPane tab="Đang Bán" key="1">
+                  <Table
+                    columns={modalPopupColumns.filter(
+                      (column) => column.visible !== false
+                    )}
+                    dataSource={unusedVoucherCodes} // Updated here
+                    rowKey={(record) => record.id}
+                    pagination={{ pageSize: 5 }}
+                  />
+                </TabPane>
+                <TabPane tab="Đang Chờ Xử Lý" key="2">
+                  <Table
+                    columns={modalPopupColumns.filter(
+                      (column) => column.visible !== false
+                    )}
+                    dataSource={pendingVoucherCodes}
+                    rowKey={(record) => record.id}
+                    pagination={{ pageSize: 5 }}
+                  />
+                </TabPane>
+                <TabPane tab="Đang Chuyển Đổi" key="3">
+                  <Table
+                    columns={modalPopupColumns.filter(
+                      (column) => column.visible !== false
+                    )}
+                    dataSource={convertingVoucherCodes}
+                    rowKey={(record) => record.id}
+                    pagination={{ pageSize: 5 }}
+                  />
+                </TabPane>
+              </Tabs>
+            </>
+          )
         )}
       </Modal>
 
@@ -234,29 +280,38 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
             <Input />
           </Form.Item>
 
-          <Form.Item label="Image" name="image">
-            <div className="flex space-x-2">
-              <Upload
-                listType="picture-card"
-                fileList={imageFiles}
-                onChange={({ fileList }) => handleFileChange(fileList)}
-                beforeUpload={(file) => handleBeforeUpload(file)}
-                onRemove={(file) => deleteFile(file)}
-              >
-                {imageFiles.length < 1 && (
-                  <button type="button">
-                    <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
-                  </button>
-                )}
-              </Upload>
-            </div>
-            {imageFiles.map(
-              (file) =>
-                uploadProgress[file.uid] !== undefined && (
-                  <Progress key={file.uid} percent={uploadProgress[file.uid]} />
-                )
-            )}
+          <Form.Item
+            label="Start Date"
+            name="startDate"
+            rules={[
+              { required: true, message: "Please select the start date!" },
+            ]}
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item
+            label="End Date"
+            name="endDate"
+            rules={[{ required: true, message: "Please select the end date!" }]}
+          >
+            <DatePicker style={{ width: "100%" }} />
+          </Form.Item>
+
+          <Form.Item label="Image">
+            <Upload
+              listType="picture-card"
+              fileList={imageFiles}
+              onChange={({ fileList }) => setImageFiles(fileList)}
+              beforeUpload={() => false}
+            >
+              {imageFiles.length < 1 && (
+                <button type="button">
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </button>
+              )}
+            </Upload>
           </Form.Item>
 
           <Form.Item>

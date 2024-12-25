@@ -1,7 +1,7 @@
 export const bankList = [
     {
         "id": 17,
-        "name": "Ngân hàng TMCP Công thương Việt Nam",
+        "name": "Công Thương Việt Nam (VIETINBANK)",
         "code": "ICB",
         "bin": "970415",
         "shortName": "VietinBank",
@@ -15,7 +15,7 @@ export const bankList = [
     },
     {
         "id": 43,
-        "name": "Ngân hàng TMCP Ngoại Thương Việt Nam",
+        "name": "Ngoại thương Việt Nam (VCB)",
         "code": "VCB",
         "bin": "970436",
         "shortName": "Vietcombank",
@@ -29,7 +29,7 @@ export const bankList = [
     },
     {
         "id": 4,
-        "name": "Ngân hàng TMCP Đầu tư và Phát triển Việt Nam",
+        "name": "Đầu tư và phát triển (BIDV)",
         "code": "BIDV",
         "bin": "970418",
         "shortName": "BIDV",
@@ -43,7 +43,7 @@ export const bankList = [
     },
     {
         "id": 42,
-        "name": "Ngân hàng Nông nghiệp và Phát triển Nông thôn Việt Nam",
+        "name": "Nông nghiệp và Phát triển nông thôn (VBA)",
         "code": "VBA",
         "bin": "970405",
         "shortName": "Agribank",
@@ -57,7 +57,7 @@ export const bankList = [
     },
     {
         "id": 26,
-        "name": "Ngân hàng TMCP Phương Đông",
+        "name": "Phương Đông (OCB)",
         "code": "OCB",
         "bin": "970448",
         "shortName": "OCB",
@@ -71,7 +71,7 @@ export const bankList = [
     },
     {
         "id": 21,
-        "name": "Ngân hàng TMCP Quân đội",
+        "name": "Quân đội (MB)",
         "code": "MB",
         "bin": "970422",
         "shortName": "MBBank",
@@ -85,7 +85,7 @@ export const bankList = [
     },
     {
         "id": 38,
-        "name": "Ngân hàng TMCP Kỹ thương Việt Nam",
+        "name": "Kỹ Thương (TCB)",
         "code": "TCB",
         "bin": "970407",
         "shortName": "Techcombank",
@@ -99,7 +99,7 @@ export const bankList = [
     },
     {
         "id": 2,
-        "name": "Ngân hàng TMCP Á Châu",
+        "name": "Á Châu (ACB)",
         "code": "ACB",
         "bin": "970416",
         "shortName": "ACB",
@@ -113,7 +113,7 @@ export const bankList = [
     },
     {
         "id": 47,
-        "name": "Ngân hàng TMCP Việt Nam Thịnh Vượng",
+        "name": "Việt Nam Thịnh Vượng (VPB)",
         "code": "VPB",
         "bin": "970432",
         "shortName": "VPBank",
@@ -127,7 +127,7 @@ export const bankList = [
     },
     {
         "id": 39,
-        "name": "Ngân hàng TMCP Tiên Phong",
+        "name": "Tiên Phong (TPB)",
         "code": "TPB",
         "bin": "970423",
         "shortName": "TPBank",
@@ -141,7 +141,7 @@ export const bankList = [
     },
     {
         "id": 36,
-        "name": "Ngân hàng TMCP Sài Gòn Thương Tín",
+        "name": "Sacombank (STB)",
         "code": "STB",
         "bin": "970403",
         "shortName": "Sacombank",
@@ -155,7 +155,7 @@ export const bankList = [
     },
     {
         "id": 12,
-        "name": "Ngân hàng TMCP Phát triển Thành phố Hồ Chí Minh",
+        "name": "Phát triển nhà TP HCM (HDB)",
         "code": "HDB",
         "bin": "970437",
         "shortName": "HDBank",
@@ -169,7 +169,7 @@ export const bankList = [
     },
     {
         "id": 44,
-        "name": "Ngân hàng TMCP Bản Việt",
+        "name": "BVBank – Ngân hàng TMCP Bản Việt",
         "code": "VCCB",
         "bin": "970454",
         "shortName": "VietCapitalBank",
@@ -183,7 +183,7 @@ export const bankList = [
     },
     {
         "id": 31,
-        "name": "Ngân hàng TMCP Sài Gòn",
+        "name": "Sài Gòn (SCB)",
         "code": "SCB",
         "bin": "970429",
         "shortName": "SCB",
@@ -197,7 +197,7 @@ export const bankList = [
     },
     {
         "id": 45,
-        "name": "Ngân hàng TMCP Quốc tế Việt Nam",
+        "name": "Quốc tế (VIB)",
         "code": "VIB",
         "bin": "970441",
         "shortName": "VIB",
@@ -211,7 +211,7 @@ export const bankList = [
     },
     {
         "id": 35,
-        "name": "Ngân hàng TMCP Sài Gòn - Hà Nội",
+        "name": "Sài Gòn Hà Nội (SHB)",
         "code": "SHB",
         "bin": "970443",
         "shortName": "SHB",
@@ -225,7 +225,7 @@ export const bankList = [
     },
     {
         "id": 10,
-        "name": "Ngân hàng TMCP Xuất Nhập khẩu Việt Nam",
+        "name": "Xuất nhập khẩu (EIB)",
         "code": "EIB",
         "bin": "970431",
         "shortName": "Eximbank",
@@ -239,7 +239,7 @@ export const bankList = [
     },
     {
         "id": 22,
-        "name": "Ngân hàng TMCP Hàng Hải",
+        "name": "Hàng hải (MSB)",
         "code": "MSB",
         "bin": "970426",
         "shortName": "MSB",
@@ -253,7 +253,7 @@ export const bankList = [
     },
     {
         "id": 53,
-        "name": "TMCP Việt Nam Thịnh Vượng - Ngân hàng số CAKE by VPBank",
+        "name": "Việt Nam Thịnh Vượng CAKE BANK(VPB)",
         "code": "CAKE",
         "bin": "546034",
         "shortName": "CAKE",
@@ -267,7 +267,7 @@ export const bankList = [
     },
     {
         "id": 54,
-        "name": "TMCP Việt Nam Thịnh Vượng - Ngân hàng số Ubank by VPBank",
+        "name": "Việt Nam Thịnh Vượng UBANK(VPB)",
         "code": "Ubank",
         "bin": "546035",
         "shortName": "Ubank",
@@ -323,7 +323,7 @@ export const bankList = [
     },
     {
         "id": 34,
-        "name": "Ngân hàng TMCP Sài Gòn Công Thương",
+        "name": "Sài Gòn Công thương (SGB)",
         "code": "SGICB",
         "bin": "970400",
         "shortName": "SaigonBank",
@@ -337,7 +337,7 @@ export const bankList = [
     },
     {
         "id": 3,
-        "name": "Ngân hàng TMCP Bắc Á",
+        "name": "Bắc Á (NASB)",
         "code": "BAB",
         "bin": "970409",
         "shortName": "BacABank",
@@ -351,7 +351,7 @@ export const bankList = [
     },
     {
         "id": 30,
-        "name": "Ngân hàng TMCP Đại Chúng Việt Nam",
+        "name": "Đại chúng Việt Nam (PVC)",
         "code": "PVCB",
         "bin": "970412",
         "shortName": "PVcomBank",
@@ -365,7 +365,7 @@ export const bankList = [
     },
     {
         "id": 27,
-        "name": "Ngân hàng Thương mại TNHH MTV Đại Dương",
+        "name": "Đại Dương (OJB)",
         "code": "Oceanbank",
         "bin": "970414",
         "shortName": "Oceanbank",
@@ -379,7 +379,7 @@ export const bankList = [
     },
     {
         "id": 24,
-        "name": "Ngân hàng TMCP Quốc Dân",
+        "name": "Quốc Dân (NCB)",
         "code": "NCB",
         "bin": "970419",
         "shortName": "NCB",
@@ -393,7 +393,7 @@ export const bankList = [
     },
     {
         "id": 37,
-        "name": "Ngân hàng TNHH MTV Shinhan Việt Nam",
+        "name": "MTV Shinhan Việt Nam (SHBVN)",
         "code": "SHBVN",
         "bin": "970424",
         "shortName": "ShinhanBank",
@@ -407,7 +407,7 @@ export const bankList = [
     },
     {
         "id": 1,
-        "name": "Ngân hàng TMCP An Bình",
+        "name": "An Bình (ABBANK)",
         "code": "ABB",
         "bin": "970425",
         "shortName": "ABBANK",
@@ -421,7 +421,7 @@ export const bankList = [
     },
     {
         "id": 41,
-        "name": "Ngân hàng TMCP Việt Á",
+        "name": "Việt Á (VAB)",
         "code": "VAB",
         "bin": "970427",
         "shortName": "VietABank",
@@ -435,7 +435,7 @@ export const bankList = [
     },
     {
         "id": 23,
-        "name": "Ngân hàng TMCP Nam Á",
+        "name": "Nam Á (NAMABANK)",
         "code": "NAB",
         "bin": "970428",
         "shortName": "NamABank",
@@ -449,7 +449,7 @@ export const bankList = [
     },
     {
         "id": 29,
-        "name": "Ngân hàng TMCP Xăng dầu Petrolimex",
+        "name": "Ngân hàng TMCP Thịnh vượng và Phát triển (PGBank)",
         "code": "PGB",
         "bin": "970430",
         "shortName": "PGBank",
@@ -463,7 +463,7 @@ export const bankList = [
     },
     {
         "id": 46,
-        "name": "Ngân hàng TMCP Việt Nam Thương Tín",
+        "name": "Việt Nam Thương tín (VIETBANK)",
         "code": "VIETBANK",
         "bin": "970433",
         "shortName": "VietBank",
@@ -477,7 +477,7 @@ export const bankList = [
     },
     {
         "id": 5,
-        "name": "Ngân hàng TMCP Bảo Việt",
+        "name": "Bảo Việt (BVB)",
         "code": "BVB",
         "bin": "970438",
         "shortName": "BaoVietBank",
@@ -490,8 +490,22 @@ export const bankList = [
         "swift_code": "BVBVVNVX"
     },
     {
+        "id": 99,
+        "name": "BVBank – Ngân hàng TMCP Bản Việt",
+        "code": "BVB",
+        "bin": "970441",
+        "shortName": "BanVietBank",
+        "logo": "https://api.vietqr.io/img/BVB.png",
+        "transferSupported": 1,
+        "lookupSupported": 1,
+        "short_name": "BVBank",
+        "support": 3,
+        "isTransfer": 1,
+        "swift_code": "VCBVVNVX"
+    },
+    {
         "id": 33,
-        "name": "Ngân hàng TMCP Đông Nam Á",
+        "name": "Đông Nam Á (SEAB)",
         "code": "SEAB",
         "bin": "970440",
         "shortName": "SeABank",
@@ -519,7 +533,7 @@ export const bankList = [
     },
     {
         "id": 20,
-        "name": "Ngân hàng TMCP Lộc Phát Việt Nam",
+        "name": "Ngân hàng Thương mại Cổ phần Lộc Phát Việt Nam",
         "code": "LPB",
         "bin": "970449",
         "shortName": "LPBank",
@@ -533,7 +547,7 @@ export const bankList = [
     },
     {
         "id": 19,
-        "name": "Ngân hàng TMCP Kiên Long",
+        "name": "Kiên Long (KLB)",
         "code": "KLB",
         "bin": "970452",
         "shortName": "KienLongBank",
@@ -547,7 +561,7 @@ export const bankList = [
     },
     {
         "id": 55,
-        "name": "Ngân hàng Đại chúng TNHH Kasikornbank",
+        "name": "TNHH MTV Hong Leong VN (HLB)",
         "code": "KBank",
         "bin": "668888",
         "shortName": "KBank",
@@ -659,7 +673,7 @@ export const bankList = [
     },
     {
         "id": 49,
-        "name": "Ngân hàng TNHH MTV Woori Việt Nam",
+        "name": "Woori Việt Nam (Woori)",
         "code": "WVN",
         "bin": "970457",
         "shortName": "Woori",
@@ -673,7 +687,7 @@ export const bankList = [
     },
     {
         "id": 48,
-        "name": "Ngân hàng Liên doanh Việt - Nga",
+        "name": "Liên Doanh Việt Nga (VRB)",
         "code": "VRB",
         "bin": "970421",
         "shortName": "VRB",
@@ -687,7 +701,7 @@ export const bankList = [
     },
     {
         "id": 40,
-        "name": "Ngân hàng United Overseas - Chi nhánh TP. Hồ Chí Minh",
+        "name": "United Overseas Bank Việt Nam (UOB)",
         "code": "UOB",
         "bin": "970458",
         "shortName": "UnitedOverseas",
@@ -701,7 +715,7 @@ export const bankList = [
     },
     {
         "id": 32,
-        "name": "Ngân hàng TNHH MTV Standard Chartered Bank Việt Nam",
+        "name": "TNHH MTV Standard Chartered Bank Việt Nam",
         "code": "SCVN",
         "bin": "970410",
         "shortName": "StandardChartered",
@@ -715,7 +729,7 @@ export const bankList = [
     },
     {
         "id": 28,
-        "name": "Ngân hàng TNHH MTV Public Việt Nam",
+        "name": "Liên doanh VID Public Bank (VID)",
         "code": "PBVN",
         "bin": "970439",
         "shortName": "PublicBank",
@@ -743,7 +757,7 @@ export const bankList = [
     },
     {
         "id": 18,
-        "name": "Ngân hàng TNHH Indovina",
+        "name": "Indovina (IVB)",
         "code": "IVB",
         "bin": "970434",
         "shortName": "IndovinaBank",
@@ -757,7 +771,7 @@ export const bankList = [
     },
     {
         "id": 16,
-        "name": "Ngân hàng Công nghiệp Hàn Quốc - Chi nhánh TP. Hồ Chí Minh",
+        "name": "Ngân hàng Công nghiệp Hàn Quốc - Chi nhánh TP. Hồ Chí Minh",
         "code": "IBK - HCM",
         "bin": "970456",
         "shortName": "IBKHCM",
@@ -771,7 +785,7 @@ export const bankList = [
     },
     {
         "id": 15,
-        "name": "Ngân hàng Công nghiệp Hàn Quốc - Chi nhánh Hà Nội",
+        "name": "Ngân hàng Công nghiệp Hàn Quốc - Chi nhánh Hà Nội",
         "code": "IBK - HN",
         "bin": "970455",
         "shortName": "IBKHN",
@@ -785,7 +799,7 @@ export const bankList = [
     },
     {
         "id": 14,
-        "name": "Ngân hàng TNHH MTV HSBC (Việt Nam)",
+        "name": "TNHH MTV HSBC (Việt Nam)",
         "code": "HSBC",
         "bin": "458761",
         "shortName": "HSBC",
@@ -799,7 +813,7 @@ export const bankList = [
     },
     {
         "id": 13,
-        "name": "Ngân hàng TNHH MTV Hong Leong Việt Nam",
+        "name": "TNHH MTV Hong Leong Việt Nam",
         "code": "HLBVN",
         "bin": "970442",
         "shortName": "HongLeong",
@@ -813,7 +827,7 @@ export const bankList = [
     },
     {
         "id": 11,
-        "name": "Ngân hàng Thương mại TNHH MTV Dầu Khí Toàn Cầu",
+        "name": "Dầu khí toàn cầu (GPB)",
         "code": "GPB",
         "bin": "970408",
         "shortName": "GPBank",
@@ -827,7 +841,7 @@ export const bankList = [
     },
     {
         "id": 9,
-        "name": "Ngân hàng TMCP Đông Á",
+        "name": "Đông Á (DAB)",
         "code": "DOB",
         "bin": "970406",
         "shortName": "DongABank",
@@ -855,7 +869,7 @@ export const bankList = [
     },
     {
         "id": 7,
-        "name": "Ngân hàng TNHH MTV CIMB Việt Nam",
+        "name": "TNHH MTV CIMB Việt Nam",
         "code": "CIMB",
         "bin": "422589",
         "shortName": "CIMB",
@@ -869,7 +883,7 @@ export const bankList = [
     },
     {
         "id": 6,
-        "name": "Ngân hàng Thương mại TNHH MTV Xây dựng Việt Nam",
+        "name": "Xây dựng Việt Nam (CBB)",
         "code": "CBB",
         "bin": "970444",
         "shortName": "CBBank",
@@ -881,4 +895,4 @@ export const bankList = [
         "isTransfer": 0,
         "swift_code": "GTBAVNVX"
     }
-]
+];
