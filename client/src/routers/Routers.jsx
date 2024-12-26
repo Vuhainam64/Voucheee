@@ -56,6 +56,9 @@ import {
 import {
   AdminDashboard,
   AdminTransactions,
+  DisbursementHistory,
+  DisbursementList,
+  DisbursementUpdate,
   FinancialOverview,
   UserManagerment,
 } from "../pages/Admin";
@@ -186,6 +189,9 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "transactions", element: <AdminTransactions /> },
           { path: "permission", element: <UserManagerment /> },
           { path: "zalo", element: <ZaloPage /> },
+          { path: "disbursementList", element: <DisbursementList /> },
+          { path: "disbursementUpdate", element: <DisbursementUpdate /> },
+          { path: "disbursementHistory", element: <DisbursementHistory /> },
         ],
       }
     );
