@@ -13,6 +13,7 @@ const removeAccentsAndUpperCase = (str) => {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "") // Removes accents
     .replace(/[0-9]/g, "") // Removes numbers
+    .replace(/[^a-zA-Z\s]/g, "")
     .toUpperCase(); // Converts to uppercase
 };
 
@@ -47,6 +48,11 @@ const SellerBank = () => {
     if (bank) {
       setSelectedBank(bank);
     }
+  };
+
+  const handleBankNumberChange = (e) => {
+    const sanitizedNumber = e.target.value.replace(/[^a-zA-Z0-9]/g, ""); // Loại bỏ ký hiệu đặc biệt
+    setBankNumber(sanitizedNumber);
   };
 
   const handleBankAccountChange = (e) => {
@@ -117,10 +123,7 @@ const SellerBank = () => {
                 { required: true, message: "Vui lòng điền số tài khoản!" },
               ]}
             >
-              <Input
-                value={bankNumber}
-                onChange={(e) => setBankNumber(e.target.value)}
-              />
+              <Input value={bankNumber} onChange={handleBankNumberChange} />
             </Form.Item>
             <Form.Item
               label={`Ngân hàng: ${selectedBank.name}`}
