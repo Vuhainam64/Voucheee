@@ -8,7 +8,7 @@ export const getAllUser = async () => {
         Authorization: `Bearer ${access_token}`,
       },
     });
-
+    console.log(res.data);
     return res.data;
   } catch (err) {
     return null;
@@ -34,11 +34,11 @@ export const updateUserRole = async (userID, role) => {
   }
 };
 
-export const banUser = async (userID, Reason) => {
+export const banUser = async (userID, reason) => {
   try {
     // Ensure the full URL is correctly formed
     const res = await axios.put(
-      `${BACKEND_API_URL}/v1/user/ban_user?userId=${userID}&reason=${Reason}`,
+      `${BACKEND_API_URL}/v1/user/ban_user?userId=${userID}&reason=${reason}`,
       {},
       {
         headers: {
@@ -73,6 +73,7 @@ export const unBanUser = async (userID) => {
     return { success: false, message: "Failed to ban user" };
   }
 };
+
 export const getCurrentUser = async () => {
   try {
     const res = await axios.get(
@@ -91,10 +92,33 @@ export const getCurrentUser = async () => {
 };
 
 export const createUser = async (userData) => {
-  console.log(userData);
   try {
     const response = await axios.post(
       `${BACKEND_API_URL}/v1/user/create_user`,
+      userData,
+      {
+        headers: {
+          "Content-Type": "application/json-patch+json",
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error creating user:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+export const updateUser = async (userData) => {
+  console.log(userData);
+  try {
+    const response = await axios.post(
+      `${BACKEND_API_URL}/v1/user/update_user`,
       userData,
       {
         headers: {
@@ -112,7 +136,6 @@ export const createUser = async (userData) => {
     throw error;
   }
 };
-
 export const deleteUser = async (userID) => {
   try {
     const res = await axios.put(
