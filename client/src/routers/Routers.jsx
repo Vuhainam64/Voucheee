@@ -20,7 +20,7 @@ import {
   VoucherDetail,
 } from "../pages/Home";
 // import { Account, Password, Profile } from "../pages/Setting";
-import { PageNotFound } from "../pages/Other";
+import { PageNotFound, ZaloPage } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
   SellerBank,
@@ -48,6 +48,7 @@ import {
   VoucherList,
 } from "../pages/User";
 import {
+  ConvertVoucher,
   SupplierDashboard,
   SupplierIncome,
   SupplierTransaction,
@@ -55,6 +56,9 @@ import {
 import {
   AdminDashboard,
   AdminTransactions,
+  DisbursementHistory,
+  DisbursementList,
+  DisbursementUpdate,
   FinancialOverview,
   UserManagerment,
 } from "../pages/Admin";
@@ -124,6 +128,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "orderList", element: <OrderList /> },
           { path: "depositHistory", element: <DepositHistory /> },
           { path: "balance", element: <UserBalance /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       {
@@ -131,9 +136,11 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         element: <SupplierLayout />,
         children: [
           { path: "dashboard", element: <SupplierDashboard /> },
+          { path: "convertVoucher", element: <ConvertVoucher /> },
           { path: "myIncome", element: <SupplierIncome /> },
           { path: "myTransaction", element: <SupplierTransaction /> },
           { path: "myBank", element: <SupplierBank /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       {
@@ -161,6 +168,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           },
           { path: "myTransaction", element: <SellerTransaction /> },
           { path: "myBank", element: <SellerBank /> },
+          { path: "zalo", element: <ZaloPage /> },
         ],
       },
       // {
@@ -180,6 +188,10 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "financial-overview", element: <FinancialOverview /> },
           { path: "transactions", element: <AdminTransactions /> },
           { path: "permission", element: <UserManagerment /> },
+          { path: "zalo", element: <ZaloPage /> },
+          { path: "disbursementList", element: <DisbursementList /> },
+          { path: "disbursementUpdate", element: <DisbursementUpdate /> },
+          { path: "disbursementHistory", element: <DisbursementHistory /> },
         ],
       }
     );

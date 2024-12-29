@@ -40,10 +40,10 @@ export const getSupplierDashboard = async () => {
     }
 };
 
-export const getSupplierTransaction = async () => {
+export const getSupplierTransaction = async (status) => {
     try {
         const res = await axios.get(
-            `${BACKEND_API_URL}/v1/supplier/get_supplier_transaction`,
+            `${BACKEND_API_URL}/v1/supplier/get_supplier_transaction?status=${status}`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -53,6 +53,28 @@ export const getSupplierTransaction = async () => {
         return res.data;
     } catch (err) {
         console.error("Error get modal:", err);
+        throw err;
+    }
+};
+
+export const updateSupplierBank = async (bankAccount, bankNumber, bankName) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/user/update_supplier_bank`,
+            {
+                bankAccount,
+                bankNumber,
+                bankName
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error change active voucher:", err);
         throw err;
     }
 };

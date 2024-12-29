@@ -14,7 +14,7 @@ const AdminSidebar = () => {
     <div
       className={`${
         isClose ? "w-20 px3" : "w-80"
-      } py-3 relative bg-gray-200 border-r border-secondory h-full
+      } py-3 relative bg-third border-r border-secondory h-full
         duration-200 flex flex-col items-center justify-start 
         overflow-y-auto scrollbar-none`}
     >
@@ -50,7 +50,7 @@ const AdminSidebar = () => {
             className={`font-serif text-textPrimary font-extrabold 
             uppercase tracking-[5px] ${isClose && "scale-0"} duration-200`}
           >
-            <img src={Logo} alt="logo" className="h-6 filter brightness-50" />
+            <img src={Logo} alt="logo" className="h-6 filter brightness-90" />
           </p>
         </Link>
       </div>

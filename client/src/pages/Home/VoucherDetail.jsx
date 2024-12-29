@@ -67,7 +67,25 @@ const VoucherDetail = () => {
       toast.success("Thêm vào giỏ hàng thành công");
       await refreshCart();
     } catch (error) {
-      toast.error("Thêm vào giỏ hàng thất bại");
+      // Check if the error is an instance of AxiosError
+      if (error.isAxiosError) {
+        // If the error has a response, use the message from the response
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast.error(error.response.data.message);
+        } else {
+          // Default error message for Axios errors without a specific message in the response
+          toast.error("Đã xảy ra lỗi khi thêm vào giỏ hàng.");
+        }
+      } else {
+        // Catch non-Axios errors
+        toast.error("Đã xảy ra lỗi khi thêm vào giỏ hàng.");
+      }
+
+      console.error("Error adding to cart:", error); // Optionally log the error for debugging
     }
   };
 

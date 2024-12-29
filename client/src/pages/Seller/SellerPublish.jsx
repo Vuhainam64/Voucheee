@@ -1,17 +1,21 @@
 import React, { useState } from "react";
-import { Alert, Anchor, Button, Form, Progress, Steps } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Alert, Anchor, Button, Form, message, Progress, Steps } from "antd";
+
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa6";
+
 import {
   BasicInformation,
   PriceStockVariations,
   ProductDescription,
   ProductFeatures,
 } from "./components/SellerPublish";
-
 import { createVoucher } from "../../api/voucher";
 
 const SellerPublish = () => {
+  const navigate = useNavigate();
+
   const [showStepsBasicInformation, setShowStepsBasicInformation] =
     useState(false);
   const [brandId, setBrandId] = useState("");
@@ -45,12 +49,23 @@ const SellerPublish = () => {
     try {
       const response = await createVoucher(data);
       if (response) {
-        console.log("Voucher created successfully:", response);
+        message.success(response.message || "Tạo voucher thành công");
+        navigate("/seller/productlist");
       } else {
         console.error("Failed to create voucher");
       }
     } catch (error) {
       console.error("Error creating voucher:", error);
+      if (error.response?.status === 400 && error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        Object.keys(errors).forEach((key) => {
+          errors[key].forEach((msg) => {
+            message.error(`${key}: ${msg}`);
+          });
+        });
+      } else {
+        message.error("Có lỗi xảy ra, vui lòng thử lại!");
+      }
     }
   };
 

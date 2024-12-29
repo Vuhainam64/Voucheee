@@ -1,21 +1,148 @@
-import React from "react";
-import { DatePicker, Input, Space, Table, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  DatePicker,
+  Input,
+  Space,
+  Table,
+  Button,
+  Spin,
+  message,
+  Dropdown,
+  Menu,
+  Tooltip,
+} from "antd";
+
+import {
+  CopyOutlined,
+  DownloadOutlined,
+  FileTextOutlined,
+} from "@ant-design/icons";
+
+import { getSupplierTransaction } from "../../../../api/supplier";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
 
 const PendingPayment = () => {
-  // Columns for the table
+  const [loading, setLoading] = useState(true);
+  const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const data = await getSupplierTransaction(0);
+        if (data.result) {
+          const mappedData = data.value.transasctions.results.map((item) => ({
+            key: item.id,
+            orderDetail: item.note || "Không có chi tiết",
+            creationDate: item.createDate, // Ngày gốc từ API
+            formattedDate: new Date(item.createDate).toLocaleDateString(
+              "vi-VN"
+            ), // Định dạng để hiển thị
+            orderStatus: "Chờ thanh toán",
+            estimatedPayment: `${item.amount.toLocaleString()} đ`,
+            paidAmount: `${item.afterBalance.toLocaleString()} đ`,
+            statementCode: item.id,
+          }));
+          setTransactions(mappedData);
+          setFilteredTransactions(mappedData);
+        } else {
+          message.error("Không thể lấy dữ liệu giao dịch!");
+        }
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        message.error("Đã xảy ra lỗi khi lấy dữ liệu.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
+  }, []);
+
+  const handleDateChange = (dates) => {
+    if (dates) {
+      const [start, end] = dates;
+      const filtered = transactions.filter((item) => {
+        const itemDate = new Date(item.creationDate); // Sử dụng ngày gốc
+        return itemDate >= start.toDate() && itemDate <= end.toDate();
+      });
+      setFilteredTransactions(filtered);
+    } else {
+      setFilteredTransactions(transactions);
+    }
+  };
+
+  const handleSearch = (value) => {
+    const filtered = transactions.filter(
+      (item) =>
+        item.orderDetail.toLowerCase().includes(value.toLowerCase()) ||
+        item.statementCode.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredTransactions(filtered);
+    setSearchTerm(value);
+  };
+
+  const handleDownload = (record) => {
+    console.log("Tải xuống:", record);
+    message.info(`Tải xuống sao kê: ${record.statementCode}`);
+    // Thực hiện chức năng tải xuống tại đây
+  };
+
+  const handleReport = (record) => {
+    console.log("Báo cáo:", record);
+    message.info(`Báo cáo giao dịch: ${record.statementCode}`);
+    // Thực hiện chức năng báo cáo tại đây
+  };
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text);
+    message.success("Sao chép thành công!");
+  };
+
+  const menu = (record) => (
+    <Menu>
+      <Menu.Item
+        key="download"
+        icon={<DownloadOutlined />}
+        onClick={() => handleDownload(record)}
+      >
+        Tải xuống
+      </Menu.Item>
+      <Menu.Item
+        key="report"
+        icon={<FileTextOutlined />}
+        onClick={() => handleReport(record)}
+      >
+        Báo cáo
+      </Menu.Item>
+    </Menu>
+  );
+
   const columns = [
     {
-      title: "Chi tiết Đơn hàng",
-      dataIndex: "orderDetail",
-      key: "orderDetail",
+      title: "Mã sao kê",
+      dataIndex: "statementCode",
+      key: "statementCode",
+      render: (text) => (
+        <div className="flex items-center space-x-2">
+          <span>{text}</span>
+          <Tooltip title="Sao chép">
+            <Button
+              type="text"
+              icon={<CopyOutlined />}
+              onClick={() => handleCopy(text)}
+            />
+          </Tooltip>
+        </div>
+      ),
     },
     {
       title: "Ngày tạo đơn",
-      dataIndex: "creationDate",
-      key: "creationDate",
+      dataIndex: "formattedDate",
+      key: "formattedDate", // Hiển thị ngày định dạng
     },
     {
       title: "Trạng thái Đơn hàng",
@@ -33,50 +160,21 @@ const PendingPayment = () => {
       key: "paidAmount",
     },
     {
-      title: "Mã sao kê",
-      dataIndex: "statementCode",
-      key: "statementCode",
+      title: "Nội dung thanh toán",
+      dataIndex: "orderDetail",
+      key: "orderDetail",
     },
     {
       title: "Thao tác",
-      dataIndex: "actions",
       key: "actions",
+      render: (_, record) => (
+        <Dropdown overlay={menu(record)} trigger={["click"]}>
+          <Button type="link">Xem thêm</Button>
+        </Dropdown>
+      ),
     },
   ];
 
-  // Sample data for the table
-  const tableData = [
-    {
-      key: "1",
-      orderDetail: "Chi tiết đơn hàng 1",
-      creationDate: "01/01/2023",
-      orderStatus: "Chờ thanh toán",
-      estimatedPayment: "1,000,000 đ",
-      paidAmount: "0 đ",
-      statementCode: "SKE001",
-      actions: <Button type="link">Xem</Button>,
-    },
-    {
-      key: "2",
-      orderDetail: "Chi tiết đơn hàng 2",
-      creationDate: "02/01/2023",
-      orderStatus: "Đã thanh toán",
-      estimatedPayment: "500,000 đ",
-      paidAmount: "500,000 đ",
-      statementCode: "SKE002",
-      actions: <Button type="link">Xem</Button>,
-    },
-    {
-      key: "3",
-      orderDetail: "Chi tiết đơn hàng 3",
-      creationDate: "02/01/2023",
-      orderStatus: "Đã thanh toán",
-      estimatedPayment: "500,000 đ",
-      paidAmount: "500,000 đ",
-      statementCode: "SKE002",
-      actions: <Button type="link">Xem</Button>,
-    },
-  ];
   return (
     <div>
       <div className="pt-4 flex space-x-10">
@@ -86,21 +184,29 @@ const PendingPayment = () => {
             <RangePicker
               format="DD/MM/YYYY"
               className="w-full"
-              // onChange={handleDateChange}
+              onChange={handleDateChange}
             />
           </Space>
         </div>
         <Space.Compact>
           <Search
-            addonBefore="Mã đơn hàng/ Mã sản phẩm"
-            placeholder="input search text"
+            addonBefore="Tìm theo nội dung"
+            placeholder="Nhập nội dung"
+            value={searchTerm}
+            onChange={(e) => handleSearch(e.target.value)}
             allowClear
           />
         </Space.Compact>
       </div>
 
       <div className="pt-4">
-        <Table columns={columns} dataSource={tableData} />
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Spin size="large" />
+          </div>
+        ) : (
+          <Table columns={columns} dataSource={filteredTransactions} />
+        )}
       </div>
     </div>
   );
