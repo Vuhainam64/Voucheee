@@ -1,98 +1,60 @@
-import React, { useState } from "react";
-import { Bar } from "react-chartjs-2";
-import { Table, Button, Dropdown, Menu, Checkbox } from "antd";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import {
+  Table,
+  Button,
+  Dropdown,
+  Menu,
+  Checkbox,
+  message,
+  Spin,
+  Modal,
+} from "antd";
+import * as XLSX from "xlsx";
 
 import { BiTransferAlt } from "react-icons/bi";
 import { FaChevronRight } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip as ChartTooltip,
-  Legend,
-} from "chart.js";
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  ChartTooltip,
-  Legend
-);
+  getALLWithdraw,
+  updateWithdrawStatusTransfering,
+} from "../../api/withdraw";
+import { DisbursementChart, Summary } from "./components/DisbursementList";
 
 const DisbursementList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  // Sample data
-  const data = [
-    {
-      key: "1",
-      accountNo: "1234567890",
-      beneficiary: "Nguyễn Văn A",
-      bank: "Vietcombank - Hà Nội",
-      amount: 10000000,
-      paymentDetail: "Thanh toán hợp đồng ABC",
-      role: "Member",
-      time: "2023-12-01",
-    },
-    {
-      key: "2",
-      accountNo: "0987654321",
-      beneficiary: "Trần Thị B",
-      bank: "Techcombank - Đà Nẵng",
-      amount: 5000000,
-      paymentDetail: "Thanh toán hợp đồng DEF",
-      role: "Supplier",
-      time: "2023-12-15",
-    },
-    {
-      key: "3",
-      accountNo: "1122334455",
-      beneficiary: "Lê Văn C",
-      bank: "ACB - Hồ Chí Minh",
-      amount: 20000000,
-      paymentDetail: "Thanh toán hợp đồng XYZ",
-      role: "Seller",
-      time: "2023-12-20",
-    },
-  ];
-
-  const totalAmount = data.reduce((acc, item) => acc + item.amount, 0);
-  const totalPeople = data.length;
-
-  // Chart data
-  const chartData = {
-    labels: [
-      "Tháng 1",
-      "Tháng 2",
-      "Tháng 3",
-      "Tháng 4",
-      "Tháng 5",
-      "Tháng 6",
-      "Tháng 7",
-      "Tháng 8",
-      "Tháng 9",
-      "Tháng 10",
-      "Tháng 11",
-      "Tháng 12",
-    ],
-    datasets: [
-      {
-        label: "Giải ngân mỗi tháng",
-        data: [20000000, 10000000, 0, 35000000],
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-      },
-    ],
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const withdrawData = await getALLWithdraw(0);
+      setData(
+        withdrawData.results.map((item, index) => ({
+          key: item.id,
+          bankNumber: item.withdrawWalletTransaction.bankNumber,
+          bankAccount: item.withdrawWalletTransaction.bankAccount,
+          bankName: item.withdrawWalletTransaction.bankName,
+          amount: item.withdrawWalletTransaction.amount,
+          note: item.withdrawWalletTransaction.note,
+          role: item.walletType,
+          time: item.createDate.split("T")[0],
+        }))
+      );
+    } catch (error) {
+      message.error("Không thể tải dữ liệu giải ngân.");
+      console.error("Error fetching data:", error);
+    }
+    setLoading(false);
   };
 
-  // Table columns
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const columns = [
     {
       title: <Checkbox onChange={(e) => handleSelectAll(e.target.checked)} />,
@@ -107,18 +69,18 @@ const DisbursementList = () => {
     },
     {
       title: "Số tài khoản (Account No.)",
-      dataIndex: "accountNo",
-      key: "accountNo",
+      dataIndex: "bankNumber",
+      key: "bankNumber",
     },
     {
       title: "Tên người thụ hưởng (Beneficiary)",
-      dataIndex: "beneficiary",
-      key: "beneficiary",
+      dataIndex: "bankAccount",
+      key: "bankAccount",
     },
     {
       title: "Ngân hàng thụ hưởng/Chi nhánh (Beneficiary Bank)",
-      dataIndex: "bank",
-      key: "bank",
+      dataIndex: "bankName",
+      key: "bankName",
     },
     {
       title: "Số tiền (Amount)",
@@ -128,8 +90,8 @@ const DisbursementList = () => {
     },
     {
       title: "Nội dung chuyển khoản (Payment Detail)",
-      dataIndex: "paymentDetail",
-      key: "paymentDetail",
+      dataIndex: "note",
+      key: "note",
     },
     {
       title: "Vai trò (Role)",
@@ -162,53 +124,102 @@ const DisbursementList = () => {
     },
   ];
 
-  // Handle row selection
   const handleRowSelect = (key, checked) => {
     setSelectedRows((prev) =>
       checked ? [...prev, key] : prev.filter((item) => item !== key)
     );
   };
 
-  // Handle select all
   const handleSelectAll = (checked) => {
     setSelectedRows(checked ? data.map((item) => item.key) : []);
   };
 
-  // Export to Excel
-  const exportToExcel = () => {
-    setLoading(true);
-    const selectedData = data.filter((item) => selectedRows.includes(item.key));
-    console.log("Exporting:", selectedData);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+  const exportToExcel = async () => {
+    try {
+      // Chuyển trạng thái của các giao dịch đã chọn
+      const selectedTransactions = selectedRows.map((key) => {
+        return {
+          id: key, // Chuyển "key" thành "id"
+          statusEnum: 1, // Trạng thái đã được cập nhật
+        };
+      });
+
+      // Gửi thông tin các giao dịch đã chọn để cập nhật trạng thái
+      const updateRes = await updateWithdrawStatusTransfering(
+        selectedTransactions
+      );
+
+      message.success("Dữ liệu đã được chuyển trạng thái sang chờ chuyển đổi.");
+
+      if (selectedRows.length > 0) {
+        setLoading(true);
+        const selectedData = data.filter((item) =>
+          selectedRows.includes(item.key)
+        );
+
+        const sheetData = [
+          ["DANH SÁCH GIAO DỊCH", "", "", "", "", ""],
+          [
+            "STT (Ord. No.)",
+            "Số tài khoản (Account No.)",
+            "Tên người thụ hưởng (Beneficiary)",
+            "Ngân hàng thụ hưởng/Chi nhánh (Beneficiary Bank)",
+            "Số tiền (Amount)",
+            "Nội dung chuyển khoản (Payment Detail)",
+          ],
+        ];
+
+        // Duyệt qua dữ liệu và thêm các dòng vào sheet
+        selectedData.forEach((item) => {
+          sheetData.push([
+            item.key, // STT
+            item.bankNumber, // Số tài khoản
+            item.bankAccount, // Tên người thụ hưởng
+            item.bankName, // Ngân hàng thụ hưởng
+            item.amount, // Số tiền
+            item.note, // Nội dung chuyển khoản
+          ]);
+        });
+
+        // Tạo workbook và sheet từ dữ liệu
+        const ws = XLSX.utils.aoa_to_sheet(sheetData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Danh Sách Giao Dịch");
+
+        // Xuất ra file Excel
+        XLSX.writeFile(wb, `${updateRes.value}.xlsx`);
+
+        setLoading(false);
+        message.success("Dữ liệu đã được xuất thành công!");
+      }
+      setIsModalVisible(false);
+      await fetchData();
+      setSelectedRows([]);
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi cập nhật trạng thái voucher.");
+      console.error("Error updating voucher status:", error);
+    }
   };
 
   return (
     <div className="w-full h-full p-4 flex flex-col space-y-4">
-      {/* Header */}
-      <div className="flex items-center space-x-2">
-        <BiTransferAlt className="text-xl" />
-        <div>Giải ngân</div>
-        <FaChevronRight />
-        <div>Danh sách giải ngân</div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <BiTransferAlt className="text-xl" />
+          <div>Giải ngân</div>
+          <FaChevronRight />
+          <div>Danh sách giải ngân</div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Link to={"/admin/disbursementUpdate"}>Cập nhật giải ngân</Link>
+          <FaChevronRight />
+        </div>
       </div>
 
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white rounded-lg p-4 space-y-2">
-          <div className="text-gray-600">Số lượng giải ngân</div>
-          <div className="text-xl font-bold">{totalPeople}</div>
-          <div className="text-gray-600">Tổng tiền</div>
-          <div className="text-xl font-bold">
-            {totalAmount.toLocaleString()} đ
-          </div>
-          <div className="text-gray-600">Cập nhật tới</div>
-          <div className="text-xl font-bold">26/12/2024</div>
-        </div>
-        <div className="bg-white rounded-lg p-4 col-span-2">
-          <Bar data={chartData} height={80} />
-        </div>
+        <Summary />
+        <DisbursementChart />
       </div>
 
       {/* Title and Export Button */}
@@ -216,7 +227,9 @@ const DisbursementList = () => {
         <div className="text-xl font-bold">Danh sách giải ngân</div>
         <Button
           type="primary"
-          onClick={exportToExcel}
+          onClick={() => {
+            setIsModalVisible(true);
+          }}
           loading={loading}
           disabled={selectedRows.length === 0}
         >
@@ -226,13 +239,28 @@ const DisbursementList = () => {
 
       {/* Table */}
       <div className="bg-white rounded-lg p-4">
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey="key"
-          pagination={{ pageSize: 5, pageSizeOptions: ["5", "10", "20"] }}
-        />
+        <Spin spinning={loading}>
+          <Table
+            columns={columns}
+            dataSource={data}
+            rowKey="key"
+            pagination={{ pageSize: 5, pageSizeOptions: ["5", "10", "20"] }}
+          />
+        </Spin>
       </div>
+      <Modal
+        title="Xác nhận chuyển đổi trạng thái"
+        open={isModalVisible}
+        onOk={exportToExcel}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Xác nhận"
+        cancelText="Hủy"
+      >
+        <p>
+          Bạn có chắc chắn muốn chuyển trạng thái các giao dịch đã chọn sang
+          trạng thái chờ thanh toán không?
+        </p>
+      </Modal>
     </div>
   );
 };
