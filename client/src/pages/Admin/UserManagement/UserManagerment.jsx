@@ -15,6 +15,7 @@ import {
   Avatar,
   Space,
   Form,
+  Alert,
 } from "antd";
 import {
   PhoneOutlined,
@@ -38,17 +39,29 @@ import { toast } from "react-toastify";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
-
+const generateRandomPassword = (length = 12) => {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
 const UserManagerment = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
+  const [filterRole, setFilterRole] = useState("Tất cả");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState(
+    generateRandomPassword()
+  );
+  const [isPasswordGenerated, setIsPasswordGenerated] = useState(false);
   const [selectedUserRole, setSelectedUserRole] = useState({
     role: "",
     supplierId: "",
@@ -115,14 +128,16 @@ const UserManagerment = () => {
 
   const filteredUsers = users.filter((user) => {
     const isRoleMatch =
-      filterRole === "all" ||
-      user.role.toLowerCase() === filterRole.toLowerCase();
+      filterRole === "Tất cả" ||
+      user.role?.toLowerCase() === filterRole.toLowerCase();
+
     const isSearchMatch =
-      user.email.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.name.toLowerCase().includes(searchText.toLowerCase());
+      user.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+      user.name?.toLowerCase().includes(searchText.toLowerCase());
+
     return isRoleMatch && isSearchMatch;
   });
-
+  console.log("Filtered Users:", filteredUsers.length);
   const handleRowClick = (record) => {
     setSelectedUser(record);
     setisUserModalVisible(true);
@@ -195,7 +210,7 @@ const UserManagerment = () => {
     const payload = {
       name: values.name,
       email: values.email,
-      hashPassword: values.password,
+      hashPassword: generatedPassword,
       role: values.role,
       supplierId: values.supplierId,
     };
@@ -215,6 +230,13 @@ const UserManagerment = () => {
   const handleRoleChange = (value) => {
     setSelectedUserRole((prev) => ({ ...prev, role: value }));
     form.setFieldsValue({ role: value, supplierId: "" }); // Reset supplierId when role changes
+  };
+
+  const handleGeneratePassword = () => {
+    const newPassword = generateRandomPassword();
+    setGeneratedPassword(newPassword);
+    form.setFieldsValue({ password: newPassword });
+    setIsPasswordGenerated(true);
   };
   const columns = [
     { title: "Tên", dataIndex: "name", key: "name" },
@@ -283,7 +305,7 @@ const UserManagerment = () => {
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 7,
+            pageSize: 10,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}
@@ -476,7 +498,10 @@ const UserManagerment = () => {
           layout="vertical"
           onFinish={handleCreateUSer}
           autoComplete="off"
-          initialValues={selectedUserRole}
+          initialValues={{
+            role: selectedUserRole,
+            password: generatedPassword,
+          }}
         >
           <Form.Item
             label="Tên"
@@ -500,7 +525,21 @@ const UserManagerment = () => {
             name="password"
             rules={[{ required: true, message: "Xin nhập mật khẩu" }]}
           >
-            <Input.Password placeholder="Mật khẩu" />
+            {/* <Input.Password placeholder={generatedPassword} /> */}
+            <Button
+              onClick={handleGeneratePassword}
+              style={{ marginBottom: 16 }}
+            >
+              Tạo mật khẩu ngẫu nhiên
+            </Button>
+            {isPasswordGenerated && (
+              <Alert
+                message="Đã tạo mật khẩu"
+                type="success"
+                style={{ marginTop: 10 }}
+                showIcon
+              />
+            )}
           </Form.Item>
           <Form.Item
             label="Role"

@@ -3,12 +3,15 @@ import { access_token, BACKEND_API_URL } from ".";
 
 export const getAllUser = async () => {
   try {
-    const res = await axios.get(`${BACKEND_API_URL}/v1/user/get_all_user`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    console.log(res.data);
+    const res = await axios.get(
+      `${BACKEND_API_URL}/v1/user/get_all_user?pageSize=50`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log("get Users:", res.data);
     return res.data;
   } catch (err) {
     return null;
@@ -103,7 +106,6 @@ export const createUser = async (userData) => {
         },
       }
     );
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -115,7 +117,6 @@ export const createUser = async (userData) => {
 };
 
 export const updateUser = async (userData) => {
-  console.log(userData);
   try {
     const response = await axios.post(
       `${BACKEND_API_URL}/v1/user/update_user`,
