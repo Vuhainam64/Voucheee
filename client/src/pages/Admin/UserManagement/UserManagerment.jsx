@@ -14,8 +14,8 @@ import {
   Typography,
   Avatar,
   Space,
-  Tooltip,
   Form,
+  Alert,
 } from "antd";
 import {
   PhoneOutlined,
@@ -32,24 +32,41 @@ import {
   unBanUser,
   createUser,
   reActiveUser,
-} from "../../api/admin";
+  deleteUser,
+} from "../../../api/admin";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
-
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
-
+const generateRandomPassword = (length = 12) => {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
 const UserManagerment = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [filterRole, setFilterRole] = useState("all");
+  const [filterRole, setFilterRole] = useState("Tất cả");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState(
+    generateRandomPassword()
+  );
+  const [isPasswordGenerated, setIsPasswordGenerated] = useState(false);
+  const [selectedUserRole, setSelectedUserRole] = useState({
+    role: "",
+    supplierId: "",
+  });
+  const [banReason, setBanReason] = useState("");
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [currentUser, setCurrentUser] = useState();
   const { TabPane } = Tabs;
@@ -97,9 +114,9 @@ const UserManagerment = () => {
       setLoading(false);
     }
   };
-  const handleTableChange = (pagination) => {
-    setCurrentPage(pagination.current);
-  };
+  // const handleTableChange = (pagination) => {
+  //   setCurrentPage(pagination.current);
+  // };
 
   const handleChange = (value) => {
     setFilterRole(value);
@@ -111,14 +128,16 @@ const UserManagerment = () => {
 
   const filteredUsers = users.filter((user) => {
     const isRoleMatch =
-      filterRole === "all" ||
-      user.role.toLowerCase() === filterRole.toLowerCase();
+      filterRole === "Tất cả" ||
+      user.role?.toLowerCase() === filterRole.toLowerCase();
+
     const isSearchMatch =
-      user.email.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.name.toLowerCase().includes(searchText.toLowerCase());
+      user.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+      user.name?.toLowerCase().includes(searchText.toLowerCase());
+
     return isRoleMatch && isSearchMatch;
   });
-
+  console.log("Filtered Users:", filteredUsers.length);
   const handleRowClick = (record) => {
     setSelectedUser(record);
     setisUserModalVisible(true);
@@ -134,13 +153,13 @@ const UserManagerment = () => {
     setUserData({ username: "", email: "", password: "" });
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setUserData((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
   const handleUpdateRole = async () => {
     if (!selectedUser) return;
     setLoadingUpdate(true);
@@ -174,65 +193,61 @@ const UserManagerment = () => {
   };
   const handleBanUser = async () => {
     const { id } = selectedUser;
-    await banUser(id, "adsad");
+    await banUser(id, banReason);
     await fetchAllUser();
     setisUserModalVisible(false);
     toast.success("Cập nhật thành công");
   };
-  // const handleCreateUSer = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     const response = await createUser(userData);
-  //     console.log("User created:", response);
-  //     handleCloseCreateModal();
-  //     setUserData({ username: "", email: "", password: "" }); // Reset form
-  //   } catch (error) {
-  //     console.error("Error in creating user:", error);
-  //     // Handle error, maybe show it to the user
-  //   }
-  // };
+  const handleDeleteUser = async () => {
+    const { id } = selectedUser;
+    await deleteUser(id);
+    await fetchAllUser();
+    setisUserModalVisible(false);
+    toast.success("Cập nhật thành công");
+  };
   const handleCreateUSer = async (values) => {
     setLoading(true);
-
-    // Map role to numeric value as required by the API
-    // const roleMapping = {
-    //   admin: 0,
-    //   supplier: 1,
-    //   user: 2,
-    // };
-
     const payload = {
       name: values.name,
       email: values.email,
-      hashPassword: values.password,
+      hashPassword: generatedPassword,
       role: values.role,
       supplierId: values.supplierId,
     };
 
     try {
       await createUser(payload);
-      toast.success("User created successfully!");
+      toast.success("Tạo người dùng thành công!");
       await fetchAllUser();
       form.resetFields();
       handleCloseCreateModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create user.");
+      toast.error(error.response?.data?.message || "Tạo người dùng thất bại!");
     } finally {
       setLoading(false);
     }
   };
+  const handleRoleChange = (value) => {
+    setSelectedUserRole((prev) => ({ ...prev, role: value }));
+    form.setFieldsValue({ role: value, supplierId: "" }); // Reset supplierId when role changes
+  };
+
+  const handleGeneratePassword = () => {
+    const newPassword = generateRandomPassword();
+    setGeneratedPassword(newPassword);
+    form.setFieldsValue({ password: newPassword });
+    setIsPasswordGenerated(true);
+  };
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Permission", dataIndex: "role", key: "role" },
-    { title: "Date Added", dataIndex: "createDate", key: "createDate" },
+    { title: "Trạng thái", dataIndex: "status", key: "status" },
+    { title: "Phân quyền", dataIndex: "role", key: "role" },
+    { title: "Ngày tạo", dataIndex: "createDate", key: "createDate" },
     {
-      title: "Operation",
+      title: "Hành động",
       key: "operation",
       render: (_, record) => {
-        // Disable the "Edit" button if the record is the current user
-
         const isCurrentUser = record.id === currentUser;
 
         return (
@@ -240,7 +255,7 @@ const UserManagerment = () => {
             type="link"
             onClick={() => handleRowClick(record)}
             style={{ position: "relative" }}
-            disabled={isCurrentUser} // Disable if it's the current user
+            disabled={isCurrentUser}
           >
             Edit
           </Button>
@@ -260,17 +275,13 @@ const UserManagerment = () => {
               style={{ width: 120 }}
               onChange={handleChange}
               options={[
-                { value: "all", label: "All" },
+                { value: "Tất cả", label: "Tất cả" },
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
-                { value: "staff", label: "Staff" },
+                { value: "supplier", label: "Supplier" },
               ]}
             />
-            <Search
-              placeholder="Search users"
-              onSearch={onSearch}
-              enterButton
-            />
+            <Search placeholder="Tìm kiếm" onSearch={onSearch} enterButton />
           </div>
           <Button
             type="primary"
@@ -294,20 +305,19 @@ const UserManagerment = () => {
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 4,
+            pageSize: 10,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}
         />
       </div>
       <Modal
-        title="Edit User Role"
         visible={isUserModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Infomation" key="1">
+          <TabPane tab="Thông tin người dùng" key="1">
             {selectedUser ? (
               <div>
                 <Row
@@ -319,13 +329,10 @@ const UserManagerment = () => {
                   <Col span={24}>
                     <Avatar
                       src={selectedUser.image}
-                      size={120}
+                      size={60}
                       icon={<UserOutlined />}
                       style={{ border: "2px solid #1890ff" }}
                     />
-                    <Title level={4} style={{ marginTop: "10px" }}>
-                      {selectedUser.name}
-                    </Title>
                   </Col>
                 </Row>
 
@@ -335,17 +342,19 @@ const UserManagerment = () => {
                 <Row gutter={[16, 16]}>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Phone Number">
-                        <PhoneOutlined style={{ fontSize: "18px" }} />
-                      </Tooltip>
+                      <UserOutlined style={{ fontSize: "18px" }} />
+                      <Text>{selectedUser.name}</Text>
+                    </Space>
+                  </Col>
+                  <Col span={24}>
+                    <Space direction="horizontal" size="middle">
+                      <PhoneOutlined style={{ fontSize: "18px" }} />
                       <Text>{selectedUser.phoneNumber}</Text>
                     </Space>
                   </Col>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Email Address">
-                        <MailOutlined style={{ fontSize: "18px" }} />
-                      </Tooltip>
+                      <MailOutlined style={{ fontSize: "18px" }} />
                       <Text>{selectedUser.email}</Text>
                     </Space>
                   </Col>
@@ -370,6 +379,40 @@ const UserManagerment = () => {
                       <Option value="supplier">Supplier</Option>
                     </Select>
                   </Col>
+                  {selectedUser.role === "supplier" && (
+                    <Col span={24}>
+                      <Text strong>Tên supplier:</Text>
+                      <Select
+                        value={selectedUser.supplierType}
+                        onChange={(value) =>
+                          setSelectedUser({
+                            ...selectedUser,
+                            supplierType: value,
+                          })
+                        }
+                        style={{ width: "100%" }}
+                        placeholder="Tên supplier"
+                        options={[
+                          {
+                            value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                            label: "Ubox",
+                          },
+                          {
+                            value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                            label: "GiftTOP",
+                          },
+                          {
+                            value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                            label: "Dealtoday",
+                          },
+                          {
+                            value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                            label: "GoTIT",
+                          },
+                        ]}
+                      ></Select>
+                    </Col>
+                  )}
                 </Row>
 
                 <Divider />
@@ -390,42 +433,62 @@ const UserManagerment = () => {
                   </Col>
                 </Row> */}
                 <Row>
-                  <Button key="cancel" onClick={handleCloseModal}>
-                    Cancel
+                  <Button
+                    key="cancel"
+                    onClick={handleCloseModal}
+                    style={{ marginRight: 18 }}
+                  >
+                    Hủy
                   </Button>
-                  ,
+
                   <Button
                     key="submit"
                     type="primary"
                     onClick={handleUpdateRole}
                     loading={loadingUpdate}
                   >
-                    Update
+                    Cập nhật
                   </Button>
-                  ,
                 </Row>
               </div>
             ) : (
               <Spin size="small" />
             )}
           </TabPane>
-          <TabPane tab="Ban" key="2">
-            <p>Ban Reason</p>
-            <TextField></TextField>
+          <TabPane tab="Chặn người dùng" key="2">
+            <TextField
+              style={{ marginTop: 18, marginBottom: 18 }}
+              value={banReason}
+              onChange={(e) => setBanReason(e.target.value)} // Update the reason state
+              placeholder="Lí do chặn người dùng"
+              fullWidth
+            />
             <Row>
-              <Button type="primary" danger onClick={handleBanUser}>
-                Ban
+              <Button
+                type="primary"
+                danger
+                onClick={handleBanUser}
+                style={{ marginRight: 18 }}
+              >
+                Chặn
               </Button>
               <Button type="primary" success onClick={handleUnBanUser}>
-                Un-Ban
+                Bỏ chặn
               </Button>
             </Row>
           </TabPane>
-          <TabPane tab="Delete" key="3"></TabPane>
+          <TabPane tab="Xóa người dùng" key="3">
+            <p style={{ fontWeight: 600, fontSize: 21 }}>
+              Bạn có chắc muốn xóa người dùng này?
+            </p>
+            <Button onClick={handleDeleteUser} type="primary" danger>
+              Xóa
+            </Button>
+          </TabPane>
         </Tabs>
       </Modal>
       <Modal
-        title="Create User"
+        title="Thêm người dùng"
         visible={isCreateModalVisible}
         onCancel={handleCloseCreateModal}
         footer={null}
@@ -435,67 +498,94 @@ const UserManagerment = () => {
           layout="vertical"
           onFinish={handleCreateUSer}
           autoComplete="off"
+          initialValues={{
+            role: selectedUserRole,
+            password: generatedPassword,
+          }}
         >
           <Form.Item
-            label="User name"
+            label="Tên"
             name="name"
-            rules={[{ required: true, message: "Please enter the name!" }]}
+            rules={[{ required: true, message: "Xin nhập tên" }]}
           >
-            <Input placeholder="Enter name" />
+            <Input placeholder="Nhập tên" />
           </Form.Item>
           <Form.Item
             label="Email"
             name="email"
             rules={[
-              { required: true, message: "Please enter the email!" },
-              { type: "email", message: "Please enter a valid email!" },
+              { required: true, message: "Xin nhập email!" },
+              { type: "email", message: "Định dạng email không đúng" },
             ]}
           >
-            <Input placeholder="Enter email" />
+            <Input placeholder="Email" />
           </Form.Item>
           <Form.Item
-            label="Password"
+            label="Mật khẩu"
             name="password"
-            rules={[{ required: true, message: "Please enter the password!" }]}
+            rules={[{ required: true, message: "Xin nhập mật khẩu" }]}
           >
-            <Input.Password placeholder="Enter password" />
+            {/* <Input.Password placeholder={generatedPassword} /> */}
+            <Button
+              onClick={handleGeneratePassword}
+              style={{ marginBottom: 16 }}
+            >
+              Tạo mật khẩu ngẫu nhiên
+            </Button>
+            {isPasswordGenerated && (
+              <Alert
+                message="Đã tạo mật khẩu"
+                type="success"
+                style={{ marginTop: 10 }}
+                showIcon
+              />
+            )}
           </Form.Item>
           <Form.Item
             label="Role"
             name="role"
-            rules={[{ required: true, message: "Please select a role!" }]}
+            rules={[
+              { required: true, message: "Xin chọn role cho người dùng" },
+            ]}
           >
-            <Select placeholder="Select role">
+            <Select placeholder="Chọn role" onChange={handleRoleChange}>
               <Option value="admin">Admin</Option>
               <Option value="supplier">Supplier</Option>
               <Option value="user">User</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Supplier " name="supplierId">
-            <Select
-              style={{ width: 120 }}
-              options={[
-                {
-                  value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                  label: "Ubox",
-                },
-                {
-                  value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
-                  label: "GiftTOP",
-                },
-                {
-                  value: "efad3e3b-5277-4ce7-9205-08905133a33e",
-                  label: "Dealtoday",
-                },
-                {
-                  value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
-                  label: "GoTIT",
-                },
-              ]}
-            />
-          </Form.Item>
+          {selectedUserRole?.role === "supplier" && (
+            <Form.Item
+              label="Supplier"
+              name="supplierId"
+              rules={[{ required: true, message: "Xin chọn supplier" }]}
+            >
+              <Select
+                style={{ width: 200 }}
+                placeholder="Chọn supplier"
+                options={[
+                  {
+                    value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                    label: "Ubox",
+                  },
+                  {
+                    value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                    label: "GiftTOP",
+                  },
+                  {
+                    value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                    label: "Dealtoday",
+                  },
+                  {
+                    value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                    label: "GoTIT",
+                  },
+                ]}
+              />
+            </Form.Item>
+          )}
           <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading}>
+            <Button type="primary" htmlType="Cập nhật" loading={loading}>
               Create User
             </Button>
             <Button
