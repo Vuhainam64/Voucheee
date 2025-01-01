@@ -17,3 +17,38 @@ export const getAllPromotionByShopID = async (id) => {
         throw err;
     }
 };
+
+export const getAllShopPromotion = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/shopPromotion/get_all_shop_promotions`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error getAllShopPromotion:", err);
+        throw err;
+    }
+};
+
+export const createPromotion = async (name, description, percentDiscount, startDate, endDate, stock, isActive) => {
+    try {
+        const res = await axios.post(
+            `${BACKEND_API_URL}/v1/shopPromotion/create_shop_promotion`,
+            { name, description, percentDiscount, startDate, endDate, stock, isActive },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error createPromotion:", err);
+        throw err;
+    }
+};
