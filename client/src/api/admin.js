@@ -3,15 +3,12 @@ import { access_token, BACKEND_API_URL } from ".";
 
 export const getAllUser = async () => {
   try {
-    const res = await axios.get(
-      `${BACKEND_API_URL}/v1/user/get_all_user?pageSize=50`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-    console.log("get Users:", res.data);
+    const res = await axios.get(`${BACKEND_API_URL}/v1/user/get_all_user`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
     return res.data;
   } catch (err) {
     return null;
@@ -37,11 +34,11 @@ export const updateUserRole = async (userID, role) => {
   }
 };
 
-export const banUser = async (userID, reason) => {
+export const banUser = async (userID, Reason) => {
   try {
     // Ensure the full URL is correctly formed
     const res = await axios.put(
-      `${BACKEND_API_URL}/v1/user/ban_user?userId=${userID}&reason=${reason}`,
+      `${BACKEND_API_URL}/v1/user/ban_user?userId=${userID}&reason=${Reason}`,
       {},
       {
         headers: {
@@ -76,7 +73,6 @@ export const unBanUser = async (userID) => {
     return { success: false, message: "Failed to ban user" };
   }
 };
-
 export const getCurrentUser = async () => {
   try {
     const res = await axios.get(
@@ -95,6 +91,7 @@ export const getCurrentUser = async () => {
 };
 
 export const createUser = async (userData) => {
+  console.log(userData);
   try {
     const response = await axios.post(
       `${BACKEND_API_URL}/v1/user/create_user`,
@@ -116,27 +113,6 @@ export const createUser = async (userData) => {
   }
 };
 
-export const updateUser = async (userData) => {
-  try {
-    const response = await axios.post(
-      `${BACKEND_API_URL}/v1/user/update_user`,
-      userData,
-      {
-        headers: {
-          "Content-Type": "application/json-patch+json",
-          Authorization: `Bearer ${access_token}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error creating user:",
-      error.response?.data || error.message
-    );
-    throw error;
-  }
-};
 export const deleteUser = async (userID) => {
   try {
     const res = await axios.put(
