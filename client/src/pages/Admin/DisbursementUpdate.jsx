@@ -1,92 +1,107 @@
-import React from "react";
-import { Table, Button, Dropdown, Menu, Input, DatePicker, Space } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Dropdown,
+  Menu,
+  message,
+  Spin,
+  Input,
+  DatePicker,
+  Space,
+} from "antd";
+import dayjs from "dayjs";
 
 import { BiTransferAlt } from "react-icons/bi";
 import { FaChevronRight } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 
-const { Search } = Input;
+import { getAllTranfering } from "../../api/withdraw";
+
 const { RangePicker } = DatePicker;
 
 const DisbursementUpdate = () => {
-  // Dữ liệu mẫu
-  const data = [
-    {
-      key: "1",
-      accountNo: "1234567890",
-      beneficiary: "Nguyễn Văn A",
-      bank: "Vietcombank - Hà Nội",
-      amount: "10,000,000 đ",
-      paymentDetail: "Thanh toán hợp đồng ABC",
-      role: "Member",
-      time: "2023-12-01 10:30",
-      status: "Đang xử lý",
-    },
-    {
-      key: "2",
-      accountNo: "0987654321",
-      beneficiary: "Trần Thị B",
-      bank: "Techcombank - Đà Nẵng",
-      amount: "5,000,000 đ",
-      paymentDetail: "Thanh toán hợp đồng DEF",
-      role: "Supplier",
-      time: "2023-12-02 15:45",
-      status: "Hoàn thành",
-    },
-    {
-      key: "3",
-      accountNo: "1122334455",
-      beneficiary: "Lê Văn C",
-      bank: "ACB - Hồ Chí Minh",
-      amount: "20,000,000 đ",
-      paymentDetail: "Thanh toán hợp đồng XYZ",
-      role: "Seller",
-      time: "2023-12-03 08:15",
-      status: "Bị hủy",
-    },
-  ];
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchId, setSearchId] = useState("");
+  const [dateRange, setDateRange] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await getAllTranfering();
+        const formattedData = response.results.map((item, index) => ({
+          key: index,
+          updateId: item.updateId,
+          count: item.count,
+          updateDate: dayjs(item.updateDate).format("DD/MM/YYYY HH:mm"),
+          rawDate: item.updateDate, // Giữ định dạng gốc để lọc thời gian
+        }));
+        setData(formattedData);
+        setFilteredData(formattedData); // Dữ liệu ban đầu cho bảng
+      } catch (error) {
+        message.error("Không thể tải dữ liệu! Vui lòng thử lại.");
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Xử lý tìm kiếm
+  const handleSearch = (value) => {
+    setSearchId(value);
+    filterData(value, dateRange);
+  };
+
+  // Xử lý lọc theo khoảng thời gian
+  const handleDateChange = (dates) => {
+    setDateRange(dates);
+    filterData(searchId, dates);
+  };
+
+  // Lọc dữ liệu
+  const filterData = (id, range) => {
+    let filtered = [...data];
+
+    if (id) {
+      filtered = filtered.filter(
+        (item) =>
+          item.updateId &&
+          item.updateId.toLowerCase().includes(id.toLowerCase())
+      );
+    }
+
+    if (range && range.length === 2) {
+      const [start, end] = range;
+      filtered = filtered.filter((item) => {
+        const itemDate = dayjs(item.rawDate);
+        return itemDate.isAfter(start) && itemDate.isBefore(end);
+      });
+    }
+
+    setFilteredData(filtered);
+  };
 
   // Cột của bảng
   const columns = [
     {
-      title: "Số tài khoản (Account No.)",
-      dataIndex: "accountNo",
-      key: "accountNo",
+      title: "ID",
+      dataIndex: "updateId",
+      key: "updateId",
     },
     {
-      title: "Tên người thụ hưởng (Beneficiary)",
-      dataIndex: "beneficiary",
-      key: "beneficiary",
+      title: "Số lượng",
+      dataIndex: "count",
+      key: "count",
     },
     {
-      title: "Ngân hàng thụ hưởng/Chi nhánh (Beneficiary Bank)",
-      dataIndex: "bank",
-      key: "bank",
-    },
-    {
-      title: "Số tiền (Amount)",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Nội dung chuyển khoản (Payment Detail)",
-      dataIndex: "paymentDetail",
-      key: "paymentDetail",
-    },
-    {
-      title: "Vai trò (Role)",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Thời gian (Time)",
-      dataIndex: "time",
-      key: "time",
-    },
-    {
-      title: "Trạng thái (Status)",
-      dataIndex: "status",
-      key: "status",
+      title: "Thời gian",
+      dataIndex: "updateDate",
+      key: "updateDate",
     },
     {
       title: "Chức năng",
@@ -95,31 +110,20 @@ const DisbursementUpdate = () => {
         <Dropdown
           overlay={
             <Menu>
-              <Menu.Item key="1">Tải Excel</Menu.Item>
-              <Menu.Item key="2">Nhập Excel</Menu.Item>
-              <Menu.Item key="3">Chi tiết</Menu.Item>
-              <Menu.Item key="4">Hủy</Menu.Item>
+              <Menu.Item key="1">Xem thêm</Menu.Item>
+              <Menu.Item key="2">Hoàn tác</Menu.Item>
+              <Menu.Item key="3">Import Excel</Menu.Item>
+              <Menu.Item key="4">Export Excel</Menu.Item>
             </Menu>
           }
         >
           <Button>
-            Xem thêm <DownOutlined />
+            Thao tác <DownOutlined />
           </Button>
         </Dropdown>
       ),
     },
   ];
-
-  // Xử lý sự kiện tìm kiếm
-  const handleSearch = (value) => {
-    console.log("Search:", value);
-  };
-
-  // Xử lý sự kiện chọn khoảng ngày
-  const handleDateChange = (dates, dateStrings) => {
-    console.log("Selected Dates:", dates);
-    console.log("Formatted Dates:", dateStrings);
-  };
 
   return (
     <div className="w-full h-full p-4 flex flex-col space-y-4">
@@ -131,27 +135,30 @@ const DisbursementUpdate = () => {
         <div>Cập nhật giải ngân</div>
       </div>
 
-      {/* Content */}
+      {/* Table */}
       <div className="bg-white rounded-lg p-4 space-y-4">
         <div className="text-xl font-semibold">
           Danh sách giải ngân cần cập nhật
         </div>
+        <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
+          {/* Tìm kiếm ID */}
+          <Input.Search
+            placeholder="Tìm kiếm ID"
+            allowClear
+            onSearch={handleSearch}
+            style={{ width: 300 }}
+          />
 
-        {/* Search and Date Range */}
-        <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
-          {/* Search Bar */}
-          <Search placeholder="Tìm kiếm" allowClear onSearch={handleSearch} />
-
-          {/* Date Range Picker */}
-          <Space direction="vertical" size={20}>
+          {/* Lọc theo khoảng thời gian */}
+          <Space direction="vertical">
             <RangePicker format="DD/MM/YYYY" onChange={handleDateChange} />
           </Space>
         </div>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-lg p-4 space-y-4">
-        <Table columns={columns} dataSource={data} />
+        {loading ? (
+          <Spin tip="Đang tải dữ liệu..." />
+        ) : (
+          <Table columns={columns} dataSource={filteredData} />
+        )}
       </div>
     </div>
   );
