@@ -11,17 +11,16 @@ import {
   Dropdown,
   Menu,
   Switch,
-  Form,
 } from "antd";
 import dayjs from "dayjs";
-import TextArea from "antd/es/input/TextArea";
 
 import { DownOutlined } from "@ant-design/icons";
 
 import {
   getAllShopPromotion,
-  createPromotion,
+  updatePromotionStatus,
 } from "../../../../api/shoppromotion";
+import { CreatePromotion, EditPromotion } from "./components/DiscountCodeModal";
 
 const { RangePicker } = DatePicker;
 
@@ -32,7 +31,8 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState([]);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [addForm] = Form.useForm();
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingPromotion, setEditingPromotion] = useState(null);
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -84,59 +84,40 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
     setFilteredData(filtered);
   };
 
-  const handleAddPromotion = async (values) => {
-    try {
-      setLoading(true);
-      const response = await createPromotion(
-        values.name,
-        values.description,
-        values.percentDiscount,
-        values.dateRange[0].format("YYYY-MM-DD"),
-        values.dateRange[1].format("YYYY-MM-DD"),
-        values.stock,
-        values.isActive
-      );
-
-      message.success(response.message);
-      setIsAddModalVisible(false);
-      addForm.resetFields();
-
-      // Cập nhật danh sách
-      setData((prevData) => [
-        ...prevData,
-        {
-          id: response.value,
-          ...values,
-          startDate: values.dateRange[0].format("YYYY-MM-DD"),
-          endDate: values.dateRange[1].format("YYYY-MM-DD"),
-        },
-      ]);
-      setFilteredData((prevFilteredData) => [
-        ...prevFilteredData,
-        {
-          id: response.value,
-          ...values,
-          startDate: values.dateRange[0].format("YYYY-MM-DD"),
-          endDate: values.dateRange[1].format("YYYY-MM-DD"),
-        },
-      ]);
-    } catch (error) {
-      message.error("Thêm mã giảm giá thất bại!");
-    } finally {
-      setLoading(false);
-    }
+  const handleAddPromotion = (id, values) => {
+    setData((prevData) => [
+      ...prevData,
+      {
+        id,
+        ...values,
+        startDate: values.dateRange[0].format("YYYY-MM-DD"),
+        endDate: values.dateRange[1].format("YYYY-MM-DD"),
+      },
+    ]);
+    setFilteredData((prevFilteredData) => [
+      ...prevFilteredData,
+      {
+        id,
+        ...values,
+        startDate: values.dateRange[0].format("YYYY-MM-DD"),
+        endDate: values.dateRange[1].format("YYYY-MM-DD"),
+      },
+    ]);
   };
 
   const handleToggleStatus = async (record) => {
     try {
-      // Toggle trạng thái của bản ghi
+      // Gửi API để cập nhật trạng thái
+      await updatePromotionStatus(record.id, !record.isActive);
+
+      // Cập nhật trạng thái trong dữ liệu
       const updatedData = data.map((item) =>
         item.id === record.id ? { ...item, isActive: !item.isActive } : item
       );
+
       setData(updatedData);
       setFilteredData(updatedData);
 
-      // TODO: Gửi API cập nhật trạng thái tại đây
       message.success(`Trạng thái của "${record.name}" đã được cập nhật.`);
     } catch (error) {
       message.error("Cập nhật trạng thái thất bại!");
@@ -145,10 +126,24 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
 
   const handleMenuClick = (action, record) => {
     if (action === "edit") {
-      console.log("Edit clicked", record);
+      setEditingPromotion(record);
+      setIsEditModalVisible(true);
     } else if (action === "delete") {
       console.log("Delete clicked", record);
     }
+  };
+
+  const handlePromotionUpdated = (updatedPromotion) => {
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.id === updatedPromotion.id ? updatedPromotion : item
+      )
+    );
+    setFilteredData((prevFilteredData) =>
+      prevFilteredData.map((item) =>
+        item.id === updatedPromotion.id ? updatedPromotion : item
+      )
+    );
   };
 
   const columns = [
@@ -253,68 +248,17 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
         />
       )}
 
-      <Modal
-        title="Thêm Mã Giảm Giá"
-        open={isAddModalVisible}
-        onCancel={() => setIsAddModalVisible(false)}
-        footer={null}
-      >
-        <Form layout="vertical" form={addForm} onFinish={handleAddPromotion}>
-          <Form.Item
-            label="Tên khuyến mãi"
-            name="name"
-            rules={[
-              { required: true, message: "Vui lòng nhập tên khuyến mãi" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label="Ngày bắt đầu - Ngày kết thúc"
-            name="dateRange"
-            rules={[{ required: true, message: "Vui lòng chọn ngày" }]}
-          >
-            <RangePicker />
-          </Form.Item>
-          <div className="flex items-center justify-between">
-            <Form.Item
-              label="Phần trăm giảm"
-              name="percentDiscount"
-              rules={[
-                { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
-              ]}
-            >
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item
-              label="Số lượng"
-              name="stock"
-              rules={[{ required: true, message: "Vui lòng nhập số lượng" }]}
-            >
-              <Input type="number" />
-            </Form.Item>
-            <Form.Item
-              label="Trạng thái"
-              name="isActive"
-              valuePropName="checked"
-            >
-              <Switch />
-            </Form.Item>
-          </div>
-          <Form.Item
-            label="Mô tả"
-            name="description"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả" }]}
-          >
-            <TextArea />
-          </Form.Item>
-          <Form.Item className="flex justify-end">
-            <Button type="primary" htmlType="submit">
-              Tạo
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+      <CreatePromotion
+        isVisible={isAddModalVisible}
+        onClose={() => setIsAddModalVisible(false)}
+        onPromotionAdded={handleAddPromotion}
+      />
+      <EditPromotion
+        isVisible={isEditModalVisible}
+        onClose={() => setIsEditModalVisible(false)}
+        promotion={editingPromotion}
+        onPromotionUpdated={handlePromotionUpdated}
+      />
     </Modal>
   );
 };
