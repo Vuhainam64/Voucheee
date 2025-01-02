@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tabs } from "antd";
 import { motion } from "framer-motion";
 import ProgressBar from "@ramonak/react-progress-bar";
@@ -11,12 +11,15 @@ import {
   ActiveProduct,
   AllProduct,
   DeleteProduct,
+  DiscountCodeModal,
   InactiveProduct,
   PendingProduct,
   ViolateProduct,
 } from "./components/SellerProduct";
 
 const SellerProduct = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const items = [
     {
       key: "1",
@@ -59,22 +62,21 @@ const SellerProduct = () => {
         <div className="font-bold">Quản Lý Sản Phẩm</div>
       </div>
 
-      {/* code ở đây  */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="font-bold text-xl">Quản Lý Sản Phẩm</div>
           <div className="flex items-center space-x-4 py-2">
             <div
               className="flex items-center space-x-2 border-primary text-primary 
-          bg-white p-2 px-4 rounded-md cursor-pointer"
+              bg-white p-2 px-4 rounded-md cursor-pointer"
+              onClick={() => setIsModalVisible(true)}
             >
-              <div>Quản lí số lượng lớn</div>
-              <FaChevronDown />
+              <div>Quản lí mã giảm giá</div>
             </div>
             <motion.div
               {...buttonClick}
               className="flex items-center space-x-2 bg-primary text-white rounded-md 
-          p-2 px-4 cursor-pointer"
+              p-2 px-4 cursor-pointer"
             >
               <FaPlus />
               <div>Thêm sản phẩm</div>
@@ -98,6 +100,12 @@ const SellerProduct = () => {
 
         <Tabs defaultActiveKey="1" items={items} />
       </div>
+
+      {/* Modal quản lý mã giảm giá */}
+      <DiscountCodeModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
     </div>
   );
 };

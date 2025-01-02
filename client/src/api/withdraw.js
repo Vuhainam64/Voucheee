@@ -53,3 +53,20 @@ export const updateWithdrawStatusTransfering = async (Ids) => {
         throw err;
     }
 };
+
+export const getAllTranfering = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/withdraw/get_withdraw_transactions_by_update_id`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error getAllTranfering:", err);
+        throw err;
+    }
+};
