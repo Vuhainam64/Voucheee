@@ -88,3 +88,20 @@ export const updatePromotionStatus = async (id, isActive) => {
         throw error;
     }
 };
+
+export const deletePromotion = async (id) => {
+    try {
+        const res = await axios.delete(
+            `${BACKEND_API_URL}/v1/shopPromotion/delete_promotion/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (error) {
+        console.error("Error updating promotion status:", error);
+        throw error;
+    }
+};

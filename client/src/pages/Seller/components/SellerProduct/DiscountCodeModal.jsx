@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { DownOutlined } from "@ant-design/icons";
 
 import {
+  deletePromotion,
   getAllShopPromotion,
   updatePromotionStatus,
 } from "../../../../api/shoppromotion";
@@ -129,7 +130,31 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
       setEditingPromotion(record);
       setIsEditModalVisible(true);
     } else if (action === "delete") {
-      console.log("Delete clicked", record);
+      Modal.confirm({
+        title: "Xác nhận xóa",
+        content: `Bạn có chắc chắn muốn xóa mã giảm giá "${record.name}" không?`,
+        okText: "Xóa",
+        okType: "danger",
+        cancelText: "Hủy",
+        onOk: () => handleDeletePromotion(record.id),
+      });
+    }
+  };
+
+  const handleDeletePromotion = async (id) => {
+    try {
+      // Gửi API xóa
+      await deletePromotion(id);
+
+      // Cập nhật danh sách sau khi xóa
+      const updatedData = data.filter((item) => item.id !== id);
+      setData(updatedData);
+      setFilteredData(updatedData);
+
+      message.success("Mã giảm giá đã được xóa thành công!");
+    } catch (error) {
+      message.error("Xóa mã giảm giá thất bại!");
+      console.error("Error deleting promotion:", error);
     }
   };
 
