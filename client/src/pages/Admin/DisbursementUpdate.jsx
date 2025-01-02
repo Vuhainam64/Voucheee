@@ -17,6 +17,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { DownOutlined } from "@ant-design/icons";
 
 import { getAllTranfering } from "../../api/withdraw";
+import { TransactionDetailsModal } from "./components/DisbursementUpdate";
 
 const { RangePicker } = DatePicker;
 
@@ -26,6 +27,8 @@ const DisbursementUpdate = () => {
   const [loading, setLoading] = useState(false);
   const [searchId, setSearchId] = useState("");
   const [dateRange, setDateRange] = useState([]);
+  const [selectedTransactions, setSelectedTransactions] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,10 +40,11 @@ const DisbursementUpdate = () => {
           updateId: item.updateId,
           count: item.count,
           updateDate: dayjs(item.updateDate).format("DD/MM/YYYY HH:mm"),
-          rawDate: item.updateDate, // Giữ định dạng gốc để lọc thời gian
+          rawDate: item.updateDate,
+          transactions: item.transactions, // Add transactions for modal
         }));
         setData(formattedData);
-        setFilteredData(formattedData); // Dữ liệu ban đầu cho bảng
+        setFilteredData(formattedData);
       } catch (error) {
         message.error("Không thể tải dữ liệu! Vui lòng thử lại.");
         console.error("Error fetching data:", error);
@@ -51,19 +55,16 @@ const DisbursementUpdate = () => {
     fetchData();
   }, []);
 
-  // Xử lý tìm kiếm
   const handleSearch = (value) => {
     setSearchId(value);
     filterData(value, dateRange);
   };
 
-  // Xử lý lọc theo khoảng thời gian
   const handleDateChange = (dates) => {
     setDateRange(dates);
     filterData(searchId, dates);
   };
 
-  // Lọc dữ liệu
   const filterData = (id, range) => {
     let filtered = [...data];
 
@@ -86,7 +87,12 @@ const DisbursementUpdate = () => {
     setFilteredData(filtered);
   };
 
-  // Cột của bảng
+  const handleViewDetails = (record) => {
+    setSelectedTransactions(record.transactions);
+    console.log(record.transactions);
+    setIsModalVisible(true);
+  };
+
   const columns = [
     {
       title: "ID",
@@ -110,7 +116,9 @@ const DisbursementUpdate = () => {
         <Dropdown
           overlay={
             <Menu>
-              <Menu.Item key="1">Xem thêm</Menu.Item>
+              <Menu.Item key="1" onClick={() => handleViewDetails(record)}>
+                Chi tiết
+              </Menu.Item>
               <Menu.Item key="2">Hoàn tác</Menu.Item>
               <Menu.Item key="3">Import Excel</Menu.Item>
               <Menu.Item key="4">Export Excel</Menu.Item>
@@ -127,7 +135,6 @@ const DisbursementUpdate = () => {
 
   return (
     <div className="w-full h-full p-4 flex flex-col space-y-4">
-      {/* Header */}
       <div className="flex items-center space-x-2">
         <BiTransferAlt className="text-xl" />
         <div>Giải ngân</div>
@@ -135,21 +142,17 @@ const DisbursementUpdate = () => {
         <div>Cập nhật giải ngân</div>
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-lg p-4 space-y-4">
         <div className="text-xl font-semibold">
           Danh sách giải ngân cần cập nhật
         </div>
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
-          {/* Tìm kiếm ID */}
           <Input.Search
             placeholder="Tìm kiếm ID"
             allowClear
             onSearch={handleSearch}
             style={{ width: 300 }}
           />
-
-          {/* Lọc theo khoảng thời gian */}
           <Space direction="vertical">
             <RangePicker format="DD/MM/YYYY" onChange={handleDateChange} />
           </Space>
@@ -160,6 +163,12 @@ const DisbursementUpdate = () => {
           <Table columns={columns} dataSource={filteredData} />
         )}
       </div>
+
+      <TransactionDetailsModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        transactions={selectedTransactions}
+      />
     </div>
   );
 };
