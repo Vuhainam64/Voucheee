@@ -16,6 +16,7 @@ import {
   Space,
   Tooltip,
   Form,
+  Alert,
 } from "antd";
 import {
   PhoneOutlined,
@@ -39,7 +40,15 @@ import { toast } from "react-toastify";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
-
+const generateRandomPassword = (length = 12) => {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
 const UserManagerment = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +58,15 @@ const UserManagerment = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState(
+    generateRandomPassword()
+  );
+  const [selectedUserRole, setSelectedUserRole] = useState({
+    role: "",
+    supplierId: "",
+  });
+  const [isPasswordGenerated, setIsPasswordGenerated] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [currentUser, setCurrentUser] = useState();
   const { TabPane } = Tabs;
@@ -97,9 +114,9 @@ const UserManagerment = () => {
       setLoading(false);
     }
   };
-  const handleTableChange = (pagination) => {
-    setCurrentPage(pagination.current);
-  };
+  // const handleTableChange = (pagination) => {
+  //   setCurrentPage(pagination.current);
+  // };
 
   const handleChange = (value) => {
     setFilterRole(value);
@@ -134,13 +151,13 @@ const UserManagerment = () => {
     setUserData({ username: "", email: "", password: "" });
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (event) => {
+  //   const { name, value } = event.target;
+  //   setUserData((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
   const handleUpdateRole = async () => {
     if (!selectedUser) return;
     setLoadingUpdate(true);
@@ -179,32 +196,14 @@ const UserManagerment = () => {
     setisUserModalVisible(false);
     toast.success("Cập nhật thành công");
   };
-  // const handleCreateUSer = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     const response = await createUser(userData);
-  //     console.log("User created:", response);
-  //     handleCloseCreateModal();
-  //     setUserData({ username: "", email: "", password: "" }); // Reset form
-  //   } catch (error) {
-  //     console.error("Error in creating user:", error);
-  //     // Handle error, maybe show it to the user
-  //   }
-  // };
+
   const handleCreateUSer = async (values) => {
     setLoading(true);
-
-    // Map role to numeric value as required by the API
-    // const roleMapping = {
-    //   admin: 0,
-    //   supplier: 1,
-    //   user: 2,
-    // };
 
     const payload = {
       name: values.name,
       email: values.email,
-      hashPassword: values.password,
+      hashPassword: generatedPassword,
       role: values.role,
       supplierId: values.supplierId,
     };
@@ -220,6 +219,16 @@ const UserManagerment = () => {
     } finally {
       setLoading(false);
     }
+  };
+  const handleRoleChange = (value) => {
+    setSelectedUser((prev) => ({ ...prev, role: value }));
+    form.setFieldsValue({ role: value, supplierId: "" });
+  };
+  const handleGeneratePassword = () => {
+    const newPassword = generateRandomPassword();
+    setGeneratedPassword(newPassword);
+    form.setFieldsValue({ password: newPassword });
+    setIsPasswordGenerated(true);
   };
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
@@ -294,7 +303,7 @@ const UserManagerment = () => {
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 4,
+            pageSize: 10,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}
@@ -435,6 +444,10 @@ const UserManagerment = () => {
           layout="vertical"
           onFinish={handleCreateUSer}
           autoComplete="off"
+          initialValues={{
+            role: selectedUserRole,
+            password: generatedPassword,
+          }}
         >
           <Form.Item
             label="User name"
@@ -458,42 +471,64 @@ const UserManagerment = () => {
             name="password"
             rules={[{ required: true, message: "Please enter the password!" }]}
           >
-            <Input.Password placeholder="Enter password" />
+            {/* <Input.Password placeholder={generatedPassword} /> */}
+            <Button
+              onClick={handleGeneratePassword}
+              style={{ marginBottom: 16 }}
+            >
+              Tạo mật khẩu ngẫu nhiên
+            </Button>
+            {isPasswordGenerated && (
+              <Alert
+                message="Đã tạo mật khẩu"
+                type="success"
+                style={{ marginTop: 10 }}
+                showIcon
+              />
+            )}
           </Form.Item>
           <Form.Item
             label="Role"
             name="role"
             rules={[{ required: true, message: "Please select a role!" }]}
           >
-            <Select placeholder="Select role">
+            <Select placeholder="Select role" onChange={handleRoleChange}>
               <Option value="admin">Admin</Option>
               <Option value="supplier">Supplier</Option>
               <Option value="user">User</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Supplier " name="supplierId">
-            <Select
-              style={{ width: 120 }}
-              options={[
-                {
-                  value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                  label: "Ubox",
-                },
-                {
-                  value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
-                  label: "GiftTOP",
-                },
-                {
-                  value: "efad3e3b-5277-4ce7-9205-08905133a33e",
-                  label: "Dealtoday",
-                },
-                {
-                  value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
-                  label: "GoTIT",
-                },
-              ]}
-            />
-          </Form.Item>
+          {selectedUser?.role === "supplier" && (
+            <Form.Item
+              label="Supplier"
+              name="supplierId"
+              rules={[{ required: true, message: "Xin chọn supplier" }]}
+            >
+              <Select
+                style={{ width: 200 }}
+                placeholder="Chọn supplier"
+                options={[
+                  {
+                    value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                    label: "UBOX",
+                  },
+                  {
+                    value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                    label: "GIFTPOP",
+                  },
+                  {
+                    value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                    label: "DEALTODAY",
+                  },
+                  {
+                    value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                    label: "GOTIT",
+                  },
+                ]}
+              />
+            </Form.Item>
+          )}
+
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
               Create User
