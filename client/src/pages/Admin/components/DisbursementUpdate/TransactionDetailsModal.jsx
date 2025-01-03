@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Table, Input, Button, Space, message } from "antd";
+import { Modal, Table, Input, Button, Space, message, Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
+import { updateWithdrawStatusTransfering } from "../../../../api/withdraw";
 
 const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
   const [searchText, setSearchText] = useState("");
@@ -27,6 +29,48 @@ const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
     setFilteredTransactions(filtered);
   };
 
+  const handleFileUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+      const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+      // Bỏ dòng đầu và các dòng tiêu đề
+      const transactionData = jsonData.slice(4).map((row) => {
+        const paymentDetail = row[5] || ""; // Nội dung chuyển khoản
+        const match = paymentDetail.match(/Ma giao dich (\w+)/); // Lấy id từ nội dung
+        const id = match ? match[1] : null;
+        return {
+          id,
+          statusEnum: 2, // Cố định trạng thái
+          note: row[7], // Trạng thái giao dịch
+        };
+      });
+
+      // Lọc ra các giao dịch hợp lệ (có id)
+      const validTransactions = transactionData.filter((item) => item.id);
+
+      // Gọi API với danh sách giao dịch
+      if (validTransactions.length > 0) {
+        updateWithdrawStatusTransfering(validTransactions)
+          .then((response) => {
+            message.success(`Cập nhật thành công: ${response.message}`);
+            onClose();
+          })
+          .catch((err) => {
+            message.error("Lỗi cập nhật giao dịch!");
+            console.error(err);
+          });
+      } else {
+        message.error("Không tìm thấy giao dịch hợp lệ trong file Excel!");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return false; // Chặn upload file trực tiếp
+  };
+
   const exportToExcel = () => {
     const sheetData = [
       ["DANH SÁCH GIAO DỊCH", "", "", "", "", "", ""],
@@ -37,19 +81,18 @@ const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
         "Ngân hàng thụ hưởng/Chi nhánh (Beneficiary Bank)",
         "Số tiền (Amount)",
         "Nội dung chuyển khoản (Payment Detail)",
-        "Thời gian tạo (Create Date)",
       ],
     ];
 
     filteredTransactions.forEach((item, index) => {
       sheetData.push([
         index + 1,
-        item?.withdrawWalletTransaction?.bankNumber || "",
+        `${item?.withdrawWalletTransaction?.bankNumber}` || "",
         item?.withdrawWalletTransaction?.bankAccount || "",
         item?.withdrawWalletTransaction?.bankName || "",
         item?.withdrawWalletTransaction?.amount || 0,
-        item?.withdrawWalletTransaction?.note || "",
-        new Date(item?.createDate).toLocaleString(),
+        `${item?.withdrawWalletTransaction?.note} Ma giao dich ${item?.id}` ||
+          "",
       ]);
     });
 
@@ -93,6 +136,7 @@ const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
       title: "Nội dung chuyển khoản (Payment Detail)",
       dataIndex: ["withdrawWalletTransaction", "note"],
       key: "note",
+      render: (note, record) => `${note} Ma giao dich ${record?.id || ""}`,
     },
     {
       title: "Thời gian tạo (Create Date)",
@@ -108,7 +152,7 @@ const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
       open={visible}
       onCancel={onClose}
       footer={null}
-      width={800}
+      width={1200}
     >
       <Space
         style={{
@@ -123,9 +167,18 @@ const TransactionDetailsModal = ({ visible, onClose, transactions }) => {
           value={searchText}
           style={{ width: 400 }}
         />
-        <Button type="primary" onClick={exportToExcel}>
-          Xuất Excel
-        </Button>
+        <div className="flex space-x-2">
+          <Upload
+            beforeUpload={handleFileUpload}
+            accept=".xlsx, .xls"
+            showUploadList={false}
+          >
+            <Button icon={<UploadOutlined />}>Nhập Excel</Button>
+          </Upload>
+          <Button type="primary" onClick={exportToExcel}>
+            Xuất Excel
+          </Button>
+        </div>
       </Space>
       <Table
         columns={columns}

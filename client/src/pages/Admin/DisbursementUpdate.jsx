@@ -53,7 +53,7 @@ const DisbursementUpdate = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [isModalVisible]);
 
   const handleSearch = (value) => {
     setSearchId(value);
