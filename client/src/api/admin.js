@@ -17,12 +17,12 @@ export const getAllUser = async () => {
     return null;
   }
 };
-export const updateUserRole = async (userID, role) => {
+export const updateUserRole = async (userID, role, supplierId) => {
   try {
     // Ensure the full URL is correctly formed
     const res = await axios.put(
       `${BACKEND_API_URL}/v1/user/update_user_role`,
-      { userId: userID, role: role },
+      { userId: userID, role: role, supplierId: supplierId },
       {
         headers: {
           Authorization: `Bearer ${access_token}`,

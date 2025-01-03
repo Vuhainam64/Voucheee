@@ -158,28 +158,44 @@ const UserManagerment = () => {
   //     [name]: value,
   //   }));
   // };
-  const handleUpdateRole = async () => {
-    if (!selectedUser) return;
-    setLoadingUpdate(true);
 
-    const { id, role } = selectedUser;
-    if (!id || !role) {
-      setLoadingUpdate(false);
-      return;
-    }
+  const handleUpdateRole = async () => {
+    const { role, supplierId } = form.getFieldsValue();
 
     try {
-      await updateUserRole(id, role);
-      await fetchAllUser();
-
-      setisUserModalVisible(false);
-      toast.success("Cập nhật thành công");
+      const response = await updateUserRole(selectedUser.id, role, supplierId);
+      if (response.success) {
+        message.success("User role updated successfully!");
+      } else {
+        message.error(response.message || "Failed to update user role.");
+      }
     } catch (error) {
-      console.error("API call failed", error); // Log the error for debugging
-    } finally {
-      setLoadingUpdate(false);
+      message.error("An error occurred while updating the user role.");
     }
   };
+  // const handleUpdateRole = async () => {
+  //   if (!selectedUser) return;
+  //   setLoadingUpdate(true);
+
+  //   const { id, role, supplierId } = selectedUser;
+  //   console.log(supplierId);
+  //   if (!id || !role) {
+  //     setLoadingUpdate(false);
+  //     return;
+  //   }
+
+  //   try {
+  //     await updateUserRole(id, role, supplierId);
+  //     await fetchAllUser();
+
+  //     setisUserModalVisible(false);
+  //     toast.success("Cập nhật thành công");
+  //   } catch (error) {
+  //     console.error("API call failed", error); // Log the error for debugging
+  //   } finally {
+  //     setLoadingUpdate(false);
+  //   }
+  // };
 
   const handleUnBanUser = async () => {
     const { id } = selectedUser;
@@ -299,7 +315,7 @@ const UserManagerment = () => {
           dataSource={filteredUsers}
           columns={columns}
           loading={loading}
-          rowKey={(record) => record._id}
+          rowKey={(record) => record.id}
           rowClassName="table-row"
           pagination={{
             current: currentPage,
@@ -361,30 +377,117 @@ const UserManagerment = () => {
                 </Row>
 
                 <Divider />
-
-                {/* Role Selection Section */}
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Text strong>Role:</Text>
-                    <Select
-                      value={selectedUser.role}
-                      onChange={(value) =>
-                        setSelectedUser({ ...selectedUser, role: value })
-                      }
-                      style={{ width: "100%" }}
-                      suffixIcon={<EditOutlined />}
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={handleUpdateRole}
+                  autoComplete="off"
+                  initialValues={{
+                    role: selectedUser.role,
+                    supplierId: selectedUser.supplierId || undefined,
+                  }}
+                >
+                  {selectedUser.role !== "SUPPLIER" && (
+                    <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                      <Col span={24}>
+                        <Text strong>Role:</Text>
+                        <Select
+                          value={selectedUser.role}
+                          onChange={handleRoleChange}
+                          style={{ width: "100%" }}
+                          suffixIcon={<EditOutlined />}
+                        >
+                          <Option value="admin">Admin</Option>
+                          <Option value="user">User</Option>
+                          <Option value="supplier">Supplier</Option>
+                        </Select>
+                      </Col>
+                    </Row>
+                  )}
+                  {selectedUser?.role === "supplier" && (
+                    <Form.Item
+                      name="supplierId"
+                      rules={[{ required: true, message: "Xin chọn supplier" }]}
                     >
-                      <Option value="admin">Admin</Option>
-                      <Option value="user">User</Option>
-                      <Option value="supplier">Supplier</Option>
-                    </Select>
-                  </Col>
-                </Row>
+                      <Select
+                        style={{ width: 200 }}
+                        placeholder={selectedUser.supplierName}
+                        options={[
+                          {
+                            value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                            label: "URBOX",
+                          },
+                          {
+                            value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                            label: "GIFTPOP",
+                          },
+                          {
+                            value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                            label: "DEALTODAY",
+                          },
+                          {
+                            value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                            label: "GOTIT",
+                          },
+                        ]}
+                      />
+                    </Form.Item>
+                  )}
+                  {/* Role Selection Section */}
+                  {selectedUser.role === "SUPPLIER" && (
+                    <>
+                      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                        <Col span={24}>
+                          <Text strong>Role:</Text>
+                          <Select
+                            value={selectedUser.role}
+                            onChange={(value) =>
+                              setSelectedUser({ ...selectedUser, role: value })
+                            }
+                            style={{ width: "100%" }}
+                            suffixIcon={<EditOutlined />}
+                          >
+                            <Option value="admin">Admin</Option>
+                            <Option value="user">User</Option>
+                            <Option value="supplier">Supplier</Option>
+                          </Select>
+                        </Col>
+                      </Row>
+                      <Form.Item
+                        name="supplierId"
+                        rules={[
+                          { required: true, message: "Xin chọn supplier" },
+                        ]}
+                      >
+                        <Select
+                          style={{ width: 200 }}
+                          placeholder={selectedUser.supplierName}
+                          options={[
+                            {
+                              value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                              label: "URBOX",
+                            },
+                            {
+                              value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                              label: "GIFTPOP",
+                            },
+                            {
+                              value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                              label: "DEALTODAY",
+                            },
+                            {
+                              value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                              label: "GOTIT",
+                            },
+                          ]}
+                        />
+                      </Form.Item>
+                    </>
+                  )}
+                  <Divider />
 
-                <Divider />
-
-                {/* Created and Updated By Section */}
-                {/* <Row gutter={[16, 16]}>
+                  {/* Created and Updated By Section */}
+                  {/* <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Space direction="vertical" size="small">
                       <Text strong>Created By:</Text>
@@ -398,21 +501,17 @@ const UserManagerment = () => {
                     </Space>
                   </Col>
                 </Row> */}
-                <Row>
-                  <Button key="cancel" onClick={handleCloseModal}>
-                    Cancel
-                  </Button>
-                  ,
-                  <Button
-                    key="submit"
-                    type="primary"
-                    onClick={handleUpdateRole}
-                    loading={loadingUpdate}
-                  >
-                    Update
-                  </Button>
-                  ,
-                </Row>
+                  <Row>
+                    <Button key="cancel" onClick={handleCloseModal}>
+                      Cancel
+                    </Button>
+                    ,
+                    <Button key="submit" type="primary" loading={loadingUpdate}>
+                      Update
+                    </Button>
+                    ,
+                  </Row>
+                </Form>
               </div>
             ) : (
               <Spin size="small" />
@@ -510,7 +609,7 @@ const UserManagerment = () => {
                 options={[
                   {
                     value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                    label: "UBOX",
+                    label: "URBOX",
                   },
                   {
                     value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
