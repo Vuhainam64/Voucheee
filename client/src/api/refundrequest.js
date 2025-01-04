@@ -17,3 +17,21 @@ export const getAllRefund = async (status) => {
         throw err;
     }
 };
+
+export const updateRefundStatus = async (id, reason, status) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/refundRequest/update_refund_request_status/${id}`,
+            { reason, status },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error createPromotion:", err);
+        throw err;
+    }
+};
