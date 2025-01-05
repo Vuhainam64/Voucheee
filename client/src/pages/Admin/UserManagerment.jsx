@@ -33,6 +33,7 @@ import {
   unBanUser,
   createUser,
   reActiveUser,
+  getAllSupplier,
 } from "../../api/admin";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
@@ -51,6 +52,7 @@ const generateRandomPassword = (length = 12) => {
 };
 const UserManagerment = () => {
   const [users, setUsers] = useState([]);
+  const [supplier, setSupplier] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filterRole, setFilterRole] = useState("all");
@@ -58,50 +60,19 @@ const UserManagerment = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [role, setRole] = useState("");
   // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState(
     generateRandomPassword()
   );
-  const [selectedUserRole, setSelectedUserRole] = useState({
+  const [selectedUserRole] = useState({
     role: "",
     supplierId: "",
   });
   const [isPasswordGenerated, setIsPasswordGenerated] = useState(false);
-  const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [currentUser, setCurrentUser] = useState();
   const { TabPane } = Tabs;
   const [form] = Form.useForm();
-  const [userData, setUserData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  useEffect(() => {
-    const fetchAllUser = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllUser();
-        setUsers(data?.results || []); // Update the users state
-      } catch (error) {
-        message.error("Failed to fetch users.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchCurrentUser = async () => {
-      try {
-        const data = await getCurrentUser(); // Call the correct function
-
-        setCurrentUser(data?.id); // Set the current user state
-      } catch (error) {
-        console.error("Failed to fetch current user", error);
-      }
-    };
-
-    fetchAllUser(); // Fetch all users
-    fetchCurrentUser(); // Fetch the current user
-  }, []); // The empty array ensures this effect only runs once when the component mounts
 
   const fetchAllUser = async () => {
     setLoading(true);
@@ -114,6 +85,33 @@ const UserManagerment = () => {
       setLoading(false);
     }
   };
+  const fetchAllSupplier = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllSupplier();
+
+      setSupplier(data || []); // Update the users state
+    } catch (error) {
+      message.error("Failed to fetch suppliers.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchCurrentUser = async () => {
+    try {
+      const data = await getCurrentUser(); // Call the correct function
+
+      setCurrentUser(data?.id); // Set the current user state
+    } catch (error) {
+      console.error("Failed to fetch current user", error);
+    }
+  };
+  useEffect(() => {
+    fetchAllUser(); // Fetch all users
+    fetchCurrentUser(); // Fetch the current user
+    fetchAllSupplier();
+  }, []); // The empty array ensures this effect only runs once when the component mounts
+
   // const handleTableChange = (pagination) => {
   //   setCurrentPage(pagination.current);
   // };
@@ -148,74 +146,54 @@ const UserManagerment = () => {
 
   const handleCloseCreateModal = () => {
     setIsCreateModalVisible(false);
-    setUserData({ username: "", email: "", password: "" });
   };
-
-  // const handleInputChange = (event) => {
-  //   const { name, value } = event.target;
-  //   setUserData((prevState) => ({
-  //     ...prevState,
-  //     [name]: value,
-  //   }));
-  // };
 
   const handleUpdateRole = async () => {
     const { role, supplierId } = form.getFieldsValue();
+    console.log("Form Values:", { role, supplierId });
 
     try {
       const response = await updateUserRole(selectedUser.id, role, supplierId);
+      console.log("Form Values:", selectedUser.id, role, supplierId);
       if (response.success) {
-        message.success("User role updated successfully!");
+        await fetchAllUser();
+        toast.success("Cập nhật thành công");
       } else {
-        message.error(response.message || "Failed to update user role.");
+        toast.error(response.message || "Cập nhật thất bại");
       }
     } catch (error) {
-      message.error("An error occurred while updating the user role.");
+      setLoading(false); // Stop loading in case of error
+      toast.error("Cập nhật thất bại");
     }
   };
-  // const handleUpdateRole = async () => {
-  //   if (!selectedUser) return;
-  //   setLoadingUpdate(true);
-
-  //   const { id, role, supplierId } = selectedUser;
-  //   console.log(supplierId);
-  //   if (!id || !role) {
-  //     setLoadingUpdate(false);
-  //     return;
-  //   }
-
-  //   try {
-  //     await updateUserRole(id, role, supplierId);
-  //     await fetchAllUser();
-
-  //     setisUserModalVisible(false);
-  //     toast.success("Cập nhật thành công");
-  //   } catch (error) {
-  //     console.error("API call failed", error); // Log the error for debugging
-  //   } finally {
-  //     setLoadingUpdate(false);
-  //   }
-  // };
 
   const handleUnBanUser = async () => {
-    const { id } = selectedUser;
-    await unBanUser(id);
-    await reActiveUser(id);
-    await fetchAllUser();
-    setisUserModalVisible(false);
-    toast.success("Cập nhật thành công");
+    try {
+      const { id } = selectedUser;
+      await unBanUser(id);
+      await reActiveUser(id);
+      await fetchAllUser();
+      setisUserModalVisible(false);
+      toast.success("Cập nhật thành công");
+    } catch {
+      setLoading(false);
+      toast.error("Cập nhật thất bại");
+    }
   };
   const handleBanUser = async () => {
-    const { id } = selectedUser;
-    await banUser(id, "adsad");
-    await fetchAllUser();
-    setisUserModalVisible(false);
-    toast.success("Cập nhật thành công");
+    try {
+      const { id } = selectedUser;
+      await banUser(id, "");
+      await fetchAllUser();
+      setisUserModalVisible(false);
+      toast.success("Cập nhật thành công");
+    } catch (error) {
+      setLoading(false);
+      toast.error("Cập nhật thất bại");
+    }
   };
 
   const handleCreateUSer = async (values) => {
-    setLoading(true);
-
     const payload = {
       name: values.name,
       email: values.email,
@@ -225,19 +203,22 @@ const UserManagerment = () => {
     };
 
     try {
+      setLoading(true);
+
       await createUser(payload);
-      toast.success("User created successfully!");
+      toast.success("Tạo người dùng thành công");
       await fetchAllUser();
       form.resetFields();
       handleCloseCreateModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create user.");
+      toast.error(error.response?.data?.message || "Tạo người dùng thất bại");
     } finally {
       setLoading(false);
     }
   };
   const handleRoleChange = (value) => {
     setSelectedUser((prev) => ({ ...prev, role: value }));
+    console.log(role);
     form.setFieldsValue({ role: value, supplierId: "" });
   };
   const handleGeneratePassword = () => {
@@ -288,7 +269,7 @@ const UserManagerment = () => {
                 { value: "all", label: "All" },
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
-                { value: "staff", label: "Staff" },
+                { value: "supplier", label: "supplier" },
               ]}
             />
             <Search
@@ -302,6 +283,7 @@ const UserManagerment = () => {
             size="large"
             icon={<FaUserPlus />}
             onClick={() => setIsCreateModalVisible(true)}
+            loading={loading}
           >
             Thêm mới
           </Button>
@@ -377,32 +359,35 @@ const UserManagerment = () => {
                 </Row>
 
                 <Divider />
+
                 <Form
                   form={form}
                   layout="vertical"
                   onFinish={handleUpdateRole}
                   autoComplete="off"
                   initialValues={{
-                    role: selectedUser.role,
+                    role: selectedUser?.role || "user",
                     supplierId: selectedUser.supplierId || undefined,
                   }}
                 >
                   {selectedUser.role !== "SUPPLIER" && (
-                    <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-                      <Col span={24}>
-                        <Text strong>Role:</Text>
-                        <Select
-                          value={selectedUser.role}
-                          onChange={handleRoleChange}
-                          style={{ width: "100%" }}
-                          suffixIcon={<EditOutlined />}
-                        >
-                          <Option value="admin">Admin</Option>
-                          <Option value="user">User</Option>
-                          <Option value="supplier">Supplier</Option>
-                        </Select>
-                      </Col>
-                    </Row>
+                    <Form.Item name="role">
+                      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                        <Col span={24}>
+                          <Text strong>Role:</Text>
+                          <Select
+                            value={selectedUser.role}
+                            onChange={handleRoleChange}
+                            style={{ width: "100%" }}
+                            suffixIcon={<EditOutlined />}
+                          >
+                            <Option value="admin">Admin</Option>
+                            <Option value="user">User</Option>
+                            <Option value="supplier">Supplier</Option>
+                          </Select>
+                        </Col>
+                      </Row>
+                    </Form.Item>
                   )}
                   {selectedUser?.role === "supplier" && (
                     <Form.Item
@@ -410,32 +395,21 @@ const UserManagerment = () => {
                       rules={[{ required: true, message: "Xin chọn supplier" }]}
                     >
                       <Select
-                        style={{ width: 200 }}
+                        loading={loading}
+                        optionFilterProp="children"
                         placeholder={selectedUser.supplierName}
-                        options={[
-                          {
-                            value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                            label: "URBOX",
-                          },
-                          {
-                            value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
-                            label: "GIFTPOP",
-                          },
-                          {
-                            value: "efad3e3b-5277-4ce7-9205-08905133a33e",
-                            label: "DEALTODAY",
-                          },
-                          {
-                            value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
-                            label: "GOTIT",
-                          },
-                        ]}
-                      />
+                      >
+                        {supplier.map((supplier) => (
+                          <Select.Option key={supplier.id} value={supplier.id}>
+                            {supplier.name} {/* Displaying the supplier name */}
+                          </Select.Option>
+                        ))}
+                      </Select>
                     </Form.Item>
                   )}
                   {/* Role Selection Section */}
                   {selectedUser.role === "SUPPLIER" && (
-                    <>
+                    <Form.Item name="role">
                       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
                         <Col span={24}>
                           <Text strong>Role:</Text>
@@ -459,30 +433,34 @@ const UserManagerment = () => {
                           { required: true, message: "Xin chọn supplier" },
                         ]}
                       >
-                        <Select
+                        {/* <Select
                           style={{ width: 200 }}
                           placeholder={selectedUser.supplierName}
-                          options={[
-                            {
-                              value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                              label: "URBOX",
-                            },
-                            {
-                              value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
-                              label: "GIFTPOP",
-                            },
-                            {
-                              value: "efad3e3b-5277-4ce7-9205-08905133a33e",
-                              label: "DEALTODAY",
-                            },
-                            {
-                              value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
-                              label: "GOTIT",
-                            },
-                          ]}
+                          optionFilterProp="children"
+                          loading={loading}
                         />
+                        {supplier.map((supp) => (
+                          <Select.Option key={supp.id} value={supp.id}>
+                            {supp.name}
+                          </Select.Option>
+                        ))} */}
+                        <Select
+                          loading={loading}
+                          optionFilterProp="children"
+                          placeholder={selectedUser.supplierName}
+                        >
+                          {supplier.map((supplier) => (
+                            <Select.Option
+                              key={supplier.id}
+                              value={supplier.id}
+                            >
+                              {supplier.name}{" "}
+                              {/* Displaying the supplier name */}
+                            </Select.Option>
+                          ))}
+                        </Select>
                       </Form.Item>
-                    </>
+                    </Form.Item>
                   )}
                   <Divider />
 
@@ -502,11 +480,20 @@ const UserManagerment = () => {
                   </Col>
                 </Row> */}
                   <Row>
-                    <Button key="cancel" onClick={handleCloseModal}>
+                    <Button
+                      key="cancel"
+                      onClick={handleCloseModal}
+                      loading={loading}
+                    >
                       Cancel
                     </Button>
                     ,
-                    <Button key="submit" type="primary" loading={loadingUpdate}>
+                    <Button
+                      key="submit"
+                      type="primary"
+                      loading={loading}
+                      htmlType="submit"
+                    >
                       Update
                     </Button>
                     ,
@@ -521,10 +508,20 @@ const UserManagerment = () => {
             <p>Ban Reason</p>
             <TextField></TextField>
             <Row>
-              <Button type="primary" danger onClick={handleBanUser}>
+              <Button
+                type="primary"
+                danger
+                onClick={handleBanUser}
+                loading={loading}
+              >
                 Ban
               </Button>
-              <Button type="primary" success onClick={handleUnBanUser}>
+              <Button
+                type="primary"
+                success
+                onClick={handleUnBanUser}
+                loading={loading}
+              >
                 Un-Ban
               </Button>
             </Row>
@@ -574,6 +571,7 @@ const UserManagerment = () => {
             <Button
               onClick={handleGeneratePassword}
               style={{ marginBottom: 16 }}
+              loading={loading}
             >
               Tạo mật khẩu ngẫu nhiên
             </Button>
@@ -592,12 +590,12 @@ const UserManagerment = () => {
             rules={[{ required: true, message: "Please select a role!" }]}
           >
             <Select placeholder="Select role" onChange={handleRoleChange}>
-              <Option value="admin">Admin</Option>
-              <Option value="supplier">Supplier</Option>
-              <Option value="user">User</Option>
+              <Option value="ADMIN">Admin</Option>
+              <Option value="SUPPLIER">Supplier</Option>
+              <Option value="USER">User</Option>
             </Select>
           </Form.Item>
-          {selectedUser?.role === "supplier" && (
+          {selectedUser?.role === "SUPPLIER" && (
             <Form.Item
               label="Supplier"
               name="supplierId"
@@ -635,6 +633,7 @@ const UserManagerment = () => {
             <Button
               onClick={handleCloseCreateModal}
               style={{ marginLeft: "10px" }}
+              loading={loading}
             >
               Cancel
             </Button>

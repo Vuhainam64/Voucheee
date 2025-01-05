@@ -29,7 +29,7 @@ export const updateUserRole = async (userID, role, supplierId) => {
         },
       }
     );
-
+    console.log(userID, role, supplierId);
     return res.data;
   } catch (err) {
     console.error("Error updating user role:", err);
@@ -94,7 +94,7 @@ export const getCurrentUser = async () => {
 };
 
 export const createUser = async (userData) => {
-  console.log(userData);
+  // console.log(userData);
   try {
     const response = await axios.post(
       `${BACKEND_API_URL}/v1/user/create_user`,
@@ -167,5 +167,70 @@ export const updateUserStatus = async (userId, status) => {
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+export const getOrderDashboard = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/dashboard/get_order_dashboard`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getWalletTransactionDashboard = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/dashboard/get_wallet_transaction`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getTransactionDashboard = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/wallet/get_dashboard_transaction`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getAllSupplier = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/supplier/get_all_supplier`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return null;
   }
 };
