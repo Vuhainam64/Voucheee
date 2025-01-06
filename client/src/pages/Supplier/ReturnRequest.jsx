@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Tabs, Button, Input, DatePicker, Modal, Form } from "antd";
+import {
+  Table,
+  Tag,
+  Tabs,
+  Button,
+  Input,
+  DatePicker,
+  Modal,
+  Form,
+  Dropdown,
+  Menu,
+  Image,
+} from "antd";
 import { FaChevronRight } from "react-icons/fa6";
 import { MdOutlineDashboard } from "react-icons/md";
 import { getAllRefund } from "../../api/refundrequest";
@@ -24,6 +36,18 @@ const ReturnRequest = () => {
   const [selectedVoucher, setSelectedVoucher] = useState(null);
   const [reason, setReason] = useState("");
   const [modalStatus, setModalStatus] = useState(1);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [selectedDetails, setSelectedDetails] = useState(null);
+
+  const handleViewDetails = (voucher) => {
+    setSelectedDetails(voucher);
+    setIsDetailModalVisible(true); // Hiện modal chi tiết
+  };
+
+  const closeDetailModal = () => {
+    setIsDetailModalVisible(false); // Đóng modal chi tiết
+    setSelectedDetails(null);
+  };
 
   const fetchRefunds = async (page = 1, statusFilter = status) => {
     setLoading(true);
@@ -69,12 +93,7 @@ const ReturnRequest = () => {
     setSelectedVoucher(voucher);
     setModalStatus(1); // Set to 'Hoàn tất' by default
     setIsModalVisible(true); // Show the modal
-  };
-
-  const handleReject = (voucher) => {
-    setSelectedVoucher(voucher);
-    setModalStatus(2); // Set to 'Từ chối' by default
-    setIsModalVisible(true); // Show the modal
+    setIsDetailModalVisible(false); // Close the detail modal if it's open)
   };
 
   const handleModalSubmit = async () => {
@@ -85,7 +104,7 @@ const ReturnRequest = () => {
 
     try {
       const response = await updateRefundStatus(
-        selectedVoucher.id,
+        selectedVoucher.id || selectedDetails.id,
         reason,
         modalStatus
       );
@@ -202,24 +221,33 @@ const ReturnRequest = () => {
     {
       title: "Chức năng",
       key: "action",
-      render: (_, voucher) => {
-        return status === 0 ? (
-          <div className="space-x-2">
-            <Button
-              onClick={() => handleRefund(voucher)}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+      render: (_, voucher) => (
+        <div className="space-x-2">
+          <Button
+            onClick={(e) => e.stopPropagation()} // Để tránh xung đột với expand row
+          >
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key="1" onClick={() => handleViewDetails(voucher)}>
+                    Chi tiết
+                  </Menu.Item>
+                  {status === 0 && (
+                    <Menu.Item key="2" onClick={() => handleRefund(voucher)}>
+                      Hoàn trả
+                    </Menu.Item>
+                  )}
+                </Menu>
+              }
+              trigger={["click"]}
             >
-              Hoàn trả
-            </Button>
-            <Button
-              onClick={() => handleReject(voucher)}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Từ chối
-            </Button>
-          </div>
-        ) : null;
-      },
+              <div>
+                Xem thêm <FaChevronRight className="inline" />
+              </div>
+            </Dropdown>
+          </Button>
+        </div>
+      ),
     },
   ];
 
@@ -321,6 +349,86 @@ const ReturnRequest = () => {
             </select>
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title={
+          <div className="text-lg font-semibold text-gray-800">
+            {selectedDetails?.voucherCode?.name || "Chi tiết Voucher"}
+          </div>
+        }
+        open={isDetailModalVisible}
+        onOk={handleRefund}
+        onCancel={closeDetailModal}
+        okText="Hoàn trả/ Từ Chối"
+        cancelButtonProps={{ style: { display: "none" } }}
+        className="rounded-lg"
+      >
+        {selectedDetails && (
+          <div className="p-4 space-y-4 text-gray-700">
+            <div className="flex flex-col">
+              <p>
+                <span className="font-medium">Mã Code:</span>{" "}
+                {selectedDetails.voucherCode?.code}
+              </p>
+              <p>
+                <span className="font-medium">Thương hiệu:</span>{" "}
+                {selectedDetails.voucherCode?.brand}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center space-x-4">
+              <div className="flex items-center space-x-1">
+                <div className="font-medium">Hạn sử dụng:</div>
+                <div>
+                  {moment(selectedDetails.voucherCode?.startDate).format(
+                    "DD/MM/YYYY"
+                  )}{" "}
+                  -{" "}
+                  {moment(selectedDetails.voucherCode?.endDate).format(
+                    "DD/MM/YYYY"
+                  )}
+                </div>
+              </div>
+              <p className="flex items-center">
+                <div className="font-medium">Trạng thái:</div>{" "}
+                <Tag
+                  color={
+                    selectedDetails.status === "PENDING"
+                      ? "orange"
+                      : selectedDetails.status === "SUSPECTED"
+                      ? "red"
+                      : "green"
+                  }
+                  className="ml-2"
+                >
+                  {selectedDetails.status}
+                </Tag>
+              </p>
+            </div>
+
+            {/* Display Images */}
+            {selectedDetails.medias?.length > 0 && (
+              <div className="space-y-2">
+                <div className="font-medium">Hình ảnh liên quan:</div>
+                <div className="grid grid-cols-2 gap-2">
+                  {selectedDetails.medias.map((media, index) => (
+                    <Image
+                      key={media.id || index}
+                      src={`data:image/png;base64,${media.url}`}
+                      alt={`media-${index}`}
+                      className="rounded-lg border border-gray-300"
+                      width={100}
+                      height={100}
+                      preview={{
+                        mask: "Xem chi tiết", // Hiển thị text khi hover vào ảnh
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );

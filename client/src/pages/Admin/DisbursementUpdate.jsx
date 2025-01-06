@@ -37,6 +37,7 @@ const DisbursementUpdate = () => {
         const response = await getAllTranfering();
         const formattedData = response.results.map((item, index) => ({
           key: index,
+          status: item.status,
           updateId: item.updateId,
           count: item.count,
           updateDate: dayjs(item.updateDate).format("DD/MM/YYYY HH:mm"),
@@ -108,6 +109,11 @@ const DisbursementUpdate = () => {
       title: "Thời gian",
       dataIndex: "updateDate",
       key: "updateDate",
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
     },
     {
       title: "Chức năng",

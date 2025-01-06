@@ -58,6 +58,11 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
         image && <img src={image} alt="Voucher" style={{ width: "50px" }} />,
     },
     {
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
       title: "Ngày bắt đầu",
       dataIndex: "startDate",
       key: "startDate",
@@ -72,6 +77,7 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
   const dataSource = vouchers.map((voucher) => ({
     key: voucher.id,
     name: voucher.name,
+    status: voucher.status,
     modalname: voucher.modalname,
     code: voucher.code,
     image: voucher.image,

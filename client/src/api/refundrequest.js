@@ -21,8 +21,8 @@ export const getAllRefund = async (status) => {
 export const updateRefundStatus = async (id, reason, status) => {
     try {
         const res = await axios.put(
-            `${BACKEND_API_URL}/v1/refundRequest/update_refund_request_status/${id}`,
-            { reason, status },
+            `${BACKEND_API_URL}/v1/refundRequest/update_refund_request_status/${id}?status=${status}`,
+            { reason },
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
