@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Statistic, Typography, message, Text } from "antd";
+import { Row, Col, Card, Statistic, Typography, message, Tabs } from "antd";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -8,7 +8,7 @@ import {
   PointElement,
   LineElement,
   Title,
-  Tooltip,
+  Tooltip as ChartTooltip,
   Legend,
 } from "chart.js";
 import {
@@ -16,6 +16,13 @@ import {
   getWalletTransactionDashboard,
   getTransactionDashboard,
 } from "../../api/admin";
+import OrdersList from "./components/Dashboard/OrderList";
+import PaidOrdersChart from "./components/Dashboard/OrderChart";
+import IncomeChart from "./components/Dashboard/IncomeChart";
+import RefundList from "./components/Dashboard/RefundList";
+import TopUpList from "./components/Dashboard/TopUpTransaction";
+import TabPane from "antd/es/tabs/TabPane";
+import WithdrawList from "./components/Dashboard/WithdrawTransaction";
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -23,7 +30,7 @@ ChartJS.register(
   PointElement,
   LineElement,
   Title,
-  Tooltip,
+  ChartTooltip,
   Legend
 );
 
@@ -115,7 +122,7 @@ const AdminDashboard = () => {
             {/* {dashboardTransaction.map((trans) => (
               <Statistic
                 title="Total Sales"
-                value={dashboardTransaction.totalBalance}
+                value={trans.totalBalance}
                 prefix="$"
               />
             ))} */}
@@ -141,13 +148,13 @@ const AdminDashboard = () => {
       {/* Sales Trend and Orders Trend */}
       <Row gutter={16}>
         <Col span={12}>
-          <Card title="Sales Trend">
-            <Line data={salesChartData} />
+          <Card title="Doanh thu">
+            <IncomeChart />
           </Card>
         </Col>
         <Col span={12}>
           <Card title="Orders Trend">
-            <Line data={ordersChartData} />
+            <PaidOrdersChart />
           </Card>
         </Col>
       </Row>
@@ -155,42 +162,29 @@ const AdminDashboard = () => {
       {/* Product Insights */}
       <Row gutter={16} style={{ marginTop: "24px" }}>
         <Col span={12}>
-          <Card title="Top Products" bordered={false}>
-            {/* This could be a dynamic list of products */}
-            <ul>
-              <li>Product 1: $1500</li>
-              <li>Product 2: $1200</li>
-              <li>Product 3: $900</li>
-            </ul>
+          <Card title="Danh sách order" bordered={false}>
+            <OrdersList />
           </Card>
         </Col>
         <Col span={12}>
-          <Card title="Inventory Overview" bordered={false}>
-            {/* Low stock or out of stock items */}
-            <ul>
-              <li>Product A: Low Stock</li>
-              <li>Product B: Out of Stock</li>
-            </ul>
+          <Card title="Yêu cầu hoàn tiền" bordered={false}>
+            <RefundList />
           </Card>
         </Col>
       </Row>
 
       {/* Customer Insights */}
       <Row gutter={16} style={{ marginTop: "24px" }}>
-        <Col span={12}>
-          <Card title="Customer Feedback">
-            <ul>
-              <li>Average Rating: 4.5/5</li>
-              <li>Positive Reviews: 90%</li>
-            </ul>
-          </Card>
-        </Col>
-        <Col span={12}>
-          <Card title="Active Users">
-            <ul>
-              <li>Active Users This Week: 200</li>
-              <li>Returning Users: 150</li>
-            </ul>
+        <Col span={24}>
+          <Card title="Thống kê nạp - rút tiền">
+            <Tabs defaultActiveKey="1">
+              <TabPane tab="Nạp tiền" key="1">
+                <TopUpList />
+              </TabPane>
+              <TabPane tab="Rút tiền" key="2">
+                <WithdrawList />
+              </TabPane>
+            </Tabs>
           </Card>
         </Col>
       </Row>

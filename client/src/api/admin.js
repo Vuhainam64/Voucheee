@@ -228,7 +228,132 @@ export const getAllSupplier = async () => {
         },
       }
     );
-    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getAllOrder = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/order/get_all_order`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getDetaiOrder = async (id) => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/order/get_order/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getAllPartnerTransaction = async (id) => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/partnerTransaction/get_all_partner_transaction`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getAllRefund = async (id) => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/refundRequest/get_all_refund_request`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    console.log("refund: ", res.data);
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getDetaiRefund = async (id) => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/refundRequest/get_refund_request/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const createSupplier = async (name) => {
+  console.log(name);
+  try {
+    const res = await axios.post(
+      `https://api.vouchee.shop/api/v1/supplier/create_supplier`,
+      name,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const getAllTopup = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/topUpRequest/get_all_top_up_requests`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
+export const getAllWithdraw = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/withdraw/get_all_withdraw_request`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
     return res.data;
   } catch (err) {
     return null;

@@ -34,6 +34,7 @@ import {
   createUser,
   reActiveUser,
   getAllSupplier,
+  createSupplier,
 } from "../../api/admin";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
@@ -60,6 +61,8 @@ const UserManagerment = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isCreateSuppModalVisible, setIsCreateSuppModalVisible] =
+    useState(false);
   const [role, setRole] = useState("");
   // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState(
@@ -123,7 +126,14 @@ const UserManagerment = () => {
   const onSearch = (value) => {
     setSearchText(value);
   };
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate); // Convert to Date object
+    const day = String(date.getDate()).padStart(2, "0"); // Add leading zero if day < 10
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-indexed, hence +1)
+    const year = date.getFullYear(); // Get year
 
+    return `${day}/${month}/${year}`; // Return formatted date
+  };
   const filteredUsers = users.filter((user) => {
     const isRoleMatch =
       filterRole === "all" ||
@@ -147,7 +157,9 @@ const UserManagerment = () => {
   const handleCloseCreateModal = () => {
     setIsCreateModalVisible(false);
   };
-
+  const handleCloseCreateSuppModal = () => {
+    setIsCreateSuppModalVisible(false);
+  };
   const handleUpdateRole = async () => {
     const { role, supplierId } = form.getFieldsValue();
     console.log("Form Values:", { role, supplierId });
@@ -216,6 +228,7 @@ const UserManagerment = () => {
       setLoading(false);
     }
   };
+
   const handleRoleChange = (value) => {
     setSelectedUser((prev) => ({ ...prev, role: value }));
     console.log(role);
@@ -227,14 +240,39 @@ const UserManagerment = () => {
     form.setFieldsValue({ password: newPassword });
     setIsPasswordGenerated(true);
   };
+  const handleCreateSupplier = async (values) => {
+    const payload = {
+      name: values.name,
+    };
+
+    try {
+      setLoading(true);
+
+      await createSupplier(payload);
+      toast.success("Tạo nhà cung cấp thành công");
+      await fetchAllUser();
+      form.resetFields();
+      handleCloseCreateSuppModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Tạo nhà cung cấp thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Permission", dataIndex: "role", key: "role" },
-    { title: "Date Added", dataIndex: "createDate", key: "createDate" },
+    { title: "Trạng thái", dataIndex: "status", key: "status" },
+    { title: "Chức năng", dataIndex: "role", key: "role" },
     {
-      title: "Operation",
+      title: "Ngày tạo",
+      dataIndex: "createDate",
+      key: "createDate",
+      render: (createDate) => formatDate(createDate),
+    },
+    {
+      title: "Hành động",
       key: "operation",
       render: (_, record) => {
         // Disable the "Edit" button if the record is the current user
@@ -272,21 +310,29 @@ const UserManagerment = () => {
                 { value: "supplier", label: "supplier" },
               ]}
             />
-            <Search
-              placeholder="Search users"
-              onSearch={onSearch}
-              enterButton
-            />
+            <Search placeholder="Tìm kiếm" onSearch={onSearch} enterButton />
           </div>
-          <Button
-            type="primary"
-            size="large"
-            icon={<FaUserPlus />}
-            onClick={() => setIsCreateModalVisible(true)}
-            loading={loading}
-          >
-            Thêm mới
-          </Button>
+          <div>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FaUserPlus />}
+              onClick={() => setIsCreateModalVisible(true)}
+              loading={loading}
+              style={{ marginRight: 16 }}
+            >
+              Thêm User
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FaUserPlus />}
+              onClick={() => setIsCreateSuppModalVisible(true)}
+              loading={loading}
+            >
+              Thêm nhà cung cấp
+            </Button>
+          </div>
         </div>
       </div>
       <div
@@ -308,13 +354,13 @@ const UserManagerment = () => {
         />
       </div>
       <Modal
-        title="Edit User Role"
+        title="Cập nhật thông tin người dùng"
         visible={isUserModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Infomation" key="1">
+          <TabPane tab="Thông tin" key="1">
             {selectedUser ? (
               <div>
                 <Row
@@ -342,7 +388,7 @@ const UserManagerment = () => {
                 <Row gutter={[16, 16]}>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Phone Number">
+                      <Tooltip title="Số điện thoại">
                         <PhoneOutlined style={{ fontSize: "18px" }} />
                       </Tooltip>
                       <Text>{selectedUser.phoneNumber}</Text>
@@ -350,7 +396,7 @@ const UserManagerment = () => {
                   </Col>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Email Address">
+                      <Tooltip title="Email">
                         <MailOutlined style={{ fontSize: "18px" }} />
                       </Tooltip>
                       <Text>{selectedUser.email}</Text>
@@ -392,7 +438,7 @@ const UserManagerment = () => {
                   {selectedUser?.role === "supplier" && (
                     <Form.Item
                       name="supplierId"
-                      rules={[{ required: true, message: "Xin chọn supplier" }]}
+                      rules={[{ required: true, message: "Hãy chọn supplier" }]}
                     >
                       <Select
                         loading={loading}
@@ -430,7 +476,7 @@ const UserManagerment = () => {
                       <Form.Item
                         name="supplierId"
                         rules={[
-                          { required: true, message: "Xin chọn supplier" },
+                          { required: true, message: "Hãy chọn supplier" },
                         ]}
                       >
                         {/* <Select
@@ -485,7 +531,7 @@ const UserManagerment = () => {
                       onClick={handleCloseModal}
                       loading={loading}
                     >
-                      Cancel
+                      Hủy
                     </Button>
                     ,
                     <Button
@@ -494,7 +540,7 @@ const UserManagerment = () => {
                       loading={loading}
                       htmlType="submit"
                     >
-                      Update
+                      Cập nhật
                     </Button>
                     ,
                   </Row>
@@ -505,7 +551,7 @@ const UserManagerment = () => {
             )}
           </TabPane>
           <TabPane tab="Ban" key="2">
-            <p>Ban Reason</p>
+            <p>Lí do ban</p>
             <TextField></TextField>
             <Row>
               <Button
@@ -522,7 +568,7 @@ const UserManagerment = () => {
                 onClick={handleUnBanUser}
                 loading={loading}
               >
-                Un-Ban
+                Hủy ban
               </Button>
             </Row>
           </TabPane>
@@ -530,7 +576,7 @@ const UserManagerment = () => {
         </Tabs>
       </Modal>
       <Modal
-        title="Create User"
+        title="Tạo người dùng"
         visible={isCreateModalVisible}
         onCancel={handleCloseCreateModal}
         footer={null}
@@ -546,26 +592,26 @@ const UserManagerment = () => {
           }}
         >
           <Form.Item
-            label="User name"
+            label="Tên người dùng"
             name="name"
-            rules={[{ required: true, message: "Please enter the name!" }]}
+            rules={[{ required: true, message: "Hãy nhập tên người dùng" }]}
           >
-            <Input placeholder="Enter name" />
+            <Input placeholder="vv" />
           </Form.Item>
           <Form.Item
             label="Email"
             name="email"
             rules={[
-              { required: true, message: "Please enter the email!" },
-              { type: "email", message: "Please enter a valid email!" },
+              { required: true, message: "Hãy nhập Email" },
+              { type: "email", message: "Hãy nhập Email" },
             ]}
           >
-            <Input placeholder="Enter email" />
+            <Input placeholder="Email" />
           </Form.Item>
           <Form.Item
-            label="Password"
+            label="Mật khẩu"
             name="password"
-            rules={[{ required: true, message: "Please enter the password!" }]}
+            rules={[{ required: true, message: "Hãy nhập mật khẩu" }]}
           >
             {/* <Input.Password placeholder={generatedPassword} /> */}
             <Button
@@ -585,11 +631,11 @@ const UserManagerment = () => {
             )}
           </Form.Item>
           <Form.Item
-            label="Role"
+            label="Chức năng"
             name="role"
-            rules={[{ required: true, message: "Please select a role!" }]}
+            rules={[{ required: true, message: "Hãy chọn chức năng" }]}
           >
-            <Select placeholder="Select role" onChange={handleRoleChange}>
+            <Select placeholder="Chọn chức năng" onChange={handleRoleChange}>
               <Option value="ADMIN">Admin</Option>
               <Option value="SUPPLIER">Supplier</Option>
               <Option value="USER">User</Option>
@@ -597,11 +643,11 @@ const UserManagerment = () => {
           </Form.Item>
           {selectedUser?.role === "SUPPLIER" && (
             <Form.Item
-              label="Supplier"
+              label="Nhà cung cấp"
               name="supplierId"
-              rules={[{ required: true, message: "Xin chọn supplier" }]}
+              rules={[{ required: true, message: "Hãy chọn nhà cung cấp" }]}
             >
-              <Select
+              {/* <Select
                 style={{ width: 200 }}
                 placeholder="Chọn supplier"
                 options={[
@@ -622,20 +668,64 @@ const UserManagerment = () => {
                     label: "GOTIT",
                   },
                 ]}
-              />
+              /> */}
+              <Select
+                loading={loading}
+                optionFilterProp="children"
+                placeholder={selectedUser.supplierName}
+              >
+                {supplier.map((supplier) => (
+                  <Select.Option key={supplier.id} value={supplier.id}>
+                    {supplier.name} {/* Displaying the supplier name */}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
           )}
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Create User
+              Tạo người dùng
             </Button>
             <Button
               onClick={handleCloseCreateModal}
               style={{ marginLeft: "10px" }}
               loading={loading}
             >
-              Cancel
+              Hủy
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Tạo nhà cung cấp"
+        visible={isCreateSuppModalVisible}
+        onCancel={handleCloseCreateSuppModal}
+        footer={null}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCreateSupplier}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Tên nhà cung cấp"
+            name="name"
+            rules={[{ required: true, message: "Hãy nhập tên nhà cung cấp" }]}
+          >
+            <Input placeholder="Nhập tên nhà cung cấp" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Tạo nhà cung cấp
+            </Button>
+            <Button
+              onClick={handleCloseCreateSuppModal}
+              style={{ marginLeft: "10px" }}
+              loading={loading}
+            >
+              Hủy
             </Button>
           </Form.Item>
         </Form>
