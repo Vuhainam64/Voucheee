@@ -56,3 +56,20 @@ export const getAllOrder = async (status, startDate, endDate) => {
         throw err;
     }
 };
+
+export const getSellerOrder = async (startDate, endDate, orderId) => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/order/get_seller_order?startDate=${startDate}&endDate=${endDate}&orderId=${orderId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error get order:", err);
+        throw err;
+    }
+};
