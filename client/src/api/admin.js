@@ -359,3 +359,18 @@ export const getAllWithdraw = async () => {
     return null;
   }
 };
+export const getAllVoucher = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.vouchee.shop/api/v1/voucher/get_all_voucher`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
+    return res.data;
+  } catch (err) {
+    return null;
+  }
+};
