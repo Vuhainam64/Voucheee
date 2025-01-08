@@ -12,11 +12,18 @@ import {
   DatePicker,
   message,
 } from "antd";
-import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import moment from "moment-timezone";
 import { toast } from "react-toastify";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+
+import { CopyOutlined, PlusOutlined } from "@ant-design/icons";
+
 import { getModal } from "../../../../../../api/modal";
 import { createVoucherCode } from "../../../../../../api/voucher";
+import {
+  removeCode,
+  updateVoucherCode,
+} from "../../../../../../api/vouchercode";
 import { storage } from "../../../../../../config/firebase.config";
 
 const { TabPane } = Tabs;
@@ -30,7 +37,10 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
   const [imageFiles, setImageFiles] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("1"); // Track the active tab
+  const [activeTab, setActiveTab] = useState("1");
+  const [editMode, setEditMode] = useState(false); // Track whether we're editing or adding
+  const [currentRecord, setCurrentRecord] = useState(null); // Store the current record to edit
+  const [form] = Form.useForm(); // Create form instance
 
   useEffect(() => {
     const fetchModalData = async () => {
@@ -63,16 +73,111 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
     fetchModalData();
   }, [modalId, refreshKey]);
 
-  const handleDelete = (record) => {
-    console.log("Delete code:", record.code);
+  const handleDelete = async (record) => {
+    try {
+      const result = await removeCode(record.id);
+      if (result) {
+        toast.success("Voucher code deleted successfully!");
+      }
+      setRefreshKey((prevKey) => prevKey + 1);
+    } catch (error) {
+      toast.error("Failed to delete voucher code.");
+      console.error("Error deleting voucher code:", error);
+    }
   };
 
   const handleEdit = (record) => {
-    console.log("Edit code:", record.code);
+    // Set edit mode and load the record to edit
+    setIsAddCodeModalVisible(true);
+    setEditMode(true);
+    setCurrentRecord(record);
+    form.setFieldsValue({
+      code: record.code,
+      startDate: moment(record.startDate, "YYYY-MM-DD"),
+      endDate: moment(record.endDate, "YYYY-MM-DD"),
+    });
+    setImageFiles([
+      {
+        uid: record.id,
+        name: "voucher_image.jpg",
+        status: "done",
+        url: record.image,
+      },
+    ]);
+  };
+
+  const handleAddVoucherCode = (values) => {
+    const { code, startDate, endDate } = values;
+    const image = imageFiles.length > 0 ? imageFiles[0] : null;
+    if (!image) {
+      toast.error("Please upload an image for the voucher code.");
+      return;
+    }
+
+    const formattedStartDate = startDate.format("YYYY-MM-DD");
+    const formattedEndDate = endDate.format("YYYY-MM-DD");
+
+    if (editMode && currentRecord) {
+      // If editing, update the voucher code
+      updateVoucherCode(
+        currentRecord.id,
+        code,
+        image.url,
+        formattedStartDate,
+        formattedEndDate,
+        0
+      )
+        .then(() => {
+          toast.success("Voucher code updated successfully!");
+          setRefreshKey((prevKey) => prevKey + 1);
+          setIsAddCodeModalVisible(false);
+          setImageFiles([]);
+          setEditMode(false);
+          setCurrentRecord(null); // Clear current record after update
+        })
+        .catch((error) => {
+          toast.error("Failed to update voucher code.");
+          console.error("Error updating voucher code:", error);
+        });
+    } else {
+      // If adding new voucher, keep the previous logic
+      const storageRef = ref(storage, `vouchers/${image.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, image.originFileObj);
+
+      uploadTask.on(
+        "state_changed",
+        null,
+        (error) => {
+          toast.error("Failed to upload image.");
+          console.error("Image upload error:", error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          createVoucherCode(modalId, {
+            code,
+            image: downloadURL,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
+          })
+            .then(() => {
+              toast.success("Voucher code added successfully!");
+              setRefreshKey((prevKey) => prevKey + 1);
+              setIsAddCodeModalVisible(false);
+              setImageFiles([]);
+            })
+            .catch((error) => {
+              toast.error("Failed to add voucher code.");
+              console.error("Error adding voucher code:", error);
+            });
+        }
+      );
+    }
   };
 
   const handleAddCode = () => {
     setIsAddCodeModalVisible(true);
+    setEditMode(false); // Reset to add mode when opening the form
+    setCurrentRecord(null); // Clear current record
   };
 
   const handleCancelAddCode = () => {
@@ -100,7 +205,7 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
         <div>
           {text}{" "}
           <CopyOutlined
-            onClick={() => copyToClipboard(text)} // Trigger the copy function
+            onClick={() => copyToClipboard(text)}
             style={{ cursor: "pointer", marginLeft: 8 }}
           />
         </div>
@@ -112,11 +217,9 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
       key: "code",
     },
     {
-      // Conditionally render the "NewCode" column only in the "Đang Bán" tab
       title: "NewCode",
       key: "newCode",
       render: () => <div className="text-xl">*********</div>,
-      // Only render if the active tab is "1" (Đang Bán)
       visible: activeTab === "1",
     },
     {
@@ -158,49 +261,6 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
     },
   ];
 
-  const handleAddVoucherCode = (values) => {
-    const { code, startDate, endDate } = values;
-    const image = imageFiles.length > 0 ? imageFiles[0] : null;
-    if (!image) {
-      toast.error("Please upload an image for the voucher code.");
-      return;
-    }
-
-    const formattedStartDate = startDate.format("YYYY-MM-DD");
-    const formattedEndDate = endDate.format("YYYY-MM-DD");
-
-    const storageRef = ref(storage, `vouchers/${image.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, image.originFileObj);
-
-    uploadTask.on(
-      "state_changed",
-      null,
-      (error) => {
-        toast.error("Failed to upload image.");
-        console.error("Image upload error:", error);
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        createVoucherCode(modalId, {
-          code,
-          image: downloadURL,
-          startDate: formattedStartDate,
-          endDate: formattedEndDate,
-        })
-          .then(() => {
-            toast.success("Voucher code added successfully!");
-            setRefreshKey((prevKey) => prevKey + 1);
-            setIsAddCodeModalVisible(false);
-            setImageFiles([]);
-          })
-          .catch((error) => {
-            toast.error("Failed to add voucher code.");
-            console.error("Error adding voucher code:", error);
-          });
-      }
-    );
-  };
-
   return (
     <>
       <Modal
@@ -224,14 +284,14 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
               <Tabs
                 defaultActiveKey="1"
                 activeKey={activeTab}
-                onChange={setActiveTab} // Set active tab
+                onChange={setActiveTab}
               >
                 <TabPane tab="Đang Bán" key="1">
                   <Table
                     columns={modalPopupColumns.filter(
                       (column) => column.visible !== false
                     )}
-                    dataSource={unusedVoucherCodes} // Updated here
+                    dataSource={unusedVoucherCodes}
                     rowKey={(record) => record.id}
                     pagination={{ pageSize: 5 }}
                   />
@@ -264,12 +324,12 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
 
       {/* Modal to add voucher code */}
       <Modal
-        title="Thêm Voucher Code"
+        title="Voucher Code"
         open={isAddCodeModalVisible}
         onCancel={handleCancelAddCode}
         footer={null}
       >
-        <Form onFinish={handleAddVoucherCode}>
+        <Form form={form} onFinish={handleAddVoucherCode}>
           <Form.Item
             label="Code"
             name="code"
@@ -316,7 +376,7 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Thêm code
+              Xác nhận
             </Button>
           </Form.Item>
         </Form>

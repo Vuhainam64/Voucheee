@@ -49,6 +49,7 @@ import {
 } from "../pages/User";
 import {
   ConvertVoucher,
+  ReturnRequest,
   SupplierDashboard,
   SupplierIncome,
   SupplierTransaction,
@@ -97,14 +98,14 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
     });
   }
 
-  if (isLogin && !isEmailVerified) {
-    routes.push(
-      { path: "/verify", element: <VerifyPopup /> },
-      { path: "*", element: <Navigate to="/verify" /> }
-    );
-  }
+  // if (isLogin && !isEmailVerified) {
+  //   routes.push(
+  //     { path: "/verify", element: <VerifyPopup /> },
+  //     { path: "*", element: <Navigate to="/verify" /> }
+  //   );
+  // }
 
-  if (isLogin && isEmailVerified) {
+  if (isLogin) {
     routes.push(
       // Add the routes that should be available after login and email verification
       // { path: "/create-feedback", element: <CreateFeedback /> },
@@ -139,6 +140,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
         children: [
           { path: "dashboard", element: <SupplierDashboard /> },
           { path: "convertVoucher", element: <ConvertVoucher /> },
+          { path: "returnRequest", element: <ReturnRequest /> },
           { path: "myIncome", element: <SupplierIncome /> },
           { path: "myTransaction", element: <SupplierTransaction /> },
           { path: "myBank", element: <SupplierBank /> },

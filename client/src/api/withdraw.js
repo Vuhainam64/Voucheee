@@ -35,11 +35,11 @@ export const getChartTransaction = async () => {
     }
 };
 
-export const updateWithdrawStatusTransfering = async (Ids) => {
+export const updateWithdrawStatusTransfering = async (data) => {
     try {
         const res = await axios.put(
             `${BACKEND_API_URL}/v1/withdraw/update_withdraw_request_status`,
-            Ids,
+            data,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,

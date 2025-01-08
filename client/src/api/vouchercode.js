@@ -104,3 +104,45 @@ export const convertNewCode = async (data) => {
         throw err;
     }
 };
+
+export const updateVoucherCode = async (id, code, image, startDate, endDate, status) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/voucherCode/update_voucher_code/${id}`,
+            {
+                code,
+                image,
+                startDate,
+                endDate,
+                status
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json-patch+json',
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error updating voucher code status:", err);
+        throw err;
+    }
+};
+
+export const removeCode = async (id) => {
+    try {
+        const res = await axios.delete(
+            `${BACKEND_API_URL}/v1/voucherCode/delete_voucher_code/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error removing code:", err);
+        throw err;
+    }
+};

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Tabs } from "antd";
 import { motion } from "framer-motion";
 import ProgressBar from "@ramonak/react-progress-bar";
 
@@ -7,51 +6,10 @@ import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa6";
 
 import { buttonClick } from "../../animations";
-import {
-  ActiveProduct,
-  AllProduct,
-  DeleteProduct,
-  DiscountCodeModal,
-  InactiveProduct,
-  PendingProduct,
-  ViolateProduct,
-} from "./components/SellerProduct";
+import { AllProduct, DiscountCodeModal } from "./components/SellerProduct";
 
 const SellerProduct = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const items = [
-    {
-      key: "1",
-      label: <div className="text-xl">Tất cả</div>,
-      children: <AllProduct />,
-    },
-    {
-      key: "2",
-      label: <div className="text-xl">Đang hoạt động</div>,
-      children: <ActiveProduct />,
-    },
-    {
-      key: "3",
-      label: <div className="text-xl">Không hoạt động</div>,
-      children: <InactiveProduct />,
-    },
-    {
-      key: "4",
-      label: <div className="text-xl">Chờ duyệt</div>,
-      children: <PendingProduct />,
-    },
-    {
-      key: "5",
-      label: <div className="text-xl">Vi phạm</div>,
-      children: <ViolateProduct />,
-    },
-    {
-      key: "6",
-      label: <div className="text-xl">Đã xoá</div>,
-      children: <DeleteProduct />,
-    },
-  ];
 
   return (
     <div className="w-full h-full p-8 flex flex-col">
@@ -98,7 +56,7 @@ const SellerProduct = () => {
           </div>
         </div>
 
-        <Tabs defaultActiveKey="1" items={items} />
+        <AllProduct />
       </div>
 
       {/* Modal quản lý mã giảm giá */}
