@@ -1,55 +1,139 @@
-import React, { useEffect, useState } from "react";
-import { Button, Input, Select, Space, Table, Switch, Dropdown } from "antd";
-import { toast } from "react-toastify";
-import { motion } from "framer-motion";
-
-import { FaChevronDown } from "react-icons/fa";
-
-import { buttonClick } from "../../../../animations";
-import { getSellerVoucher, updateVoucherActive } from "../../../../api/voucher";
-import { updateModalActive } from "../../../../api/modal";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Dropdown,
+  Image,
+  message,
+  Select,
+  Space,
+  Switch,
+  Table,
+  Input,
+} from "antd";
+import { DownOutlined } from "@ant-design/icons";
 import { ModalPopup } from "./components/AllProduct";
+import { updateModalActive } from "../../../../api/modal";
+import { getSellerVoucher, updateVoucherActive } from "../../../../api/voucher";
 
 const { Option } = Select;
 
 const AllProduct = () => {
-  const [filterOutOfStock, setfilterOutOfStock] = useState(false);
   const [vouchers, setVouchers] = useState([]);
+  const [filteredVouchers, setFilteredVouchers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalId, setModalId] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedSupplier, setSelectedSupplier] = useState("Option1");
+  const [selectedSort, setSelectedSort] = useState("Option1");
 
   useEffect(() => {
     const fetchVouchers = async () => {
       const data = await getSellerVoucher();
       setVouchers(data?.results || []);
+      setFilteredVouchers(data?.results || []);
     };
     fetchVouchers();
   }, []);
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    filterVouchers(value, selectedSupplier, selectedSort);
+  };
+
+  const handleSupplierChange = (value) => {
+    setSelectedSupplier(value);
+    filterVouchers(searchValue, value, selectedSort);
+  };
+
+  const handleSortChange = (value) => {
+    setSelectedSort(value);
+    filterVouchers(searchValue, selectedSupplier, value);
+  };
+
+  const filterVouchers = (search, supplier, sort) => {
+    let filtered = vouchers;
+
+    if (search) {
+      filtered = filtered.filter((voucher) => {
+        // Check if the title or code is defined before calling toLowerCase
+        const titleMatch =
+          voucher.title &&
+          voucher.title.toLowerCase().includes(search.toLowerCase());
+        const codeMatch =
+          voucher.code &&
+          voucher.code.toLowerCase().includes(search.toLowerCase());
+
+        return titleMatch || codeMatch;
+      });
+    }
+
+    if (supplier && supplier !== "Option1") {
+      filtered = filtered.filter(
+        (voucher) => voucher.supplierName === supplier
+      );
+    }
+
+    if (sort) {
+      switch (sort) {
+        case "Option1": // Tạo gần nhất
+          filtered = filtered.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+          break;
+        case "Option2": // Cập nhật gần nhất
+          filtered = filtered.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+          );
+          break;
+        case "Option3": // Còn ít trong kho
+          filtered = filtered.sort((a, b) => a.stock - b.stock);
+          break;
+        case "Option4": // Đắt nhất
+          filtered = filtered.sort((a, b) => b.sellPrice - a.sellPrice);
+          break;
+        case "Option5": // Rẻ nhất
+          filtered = filtered.sort((a, b) => a.sellPrice - b.sellPrice);
+          break;
+        default:
+          break;
+      }
+    }
+
+    setFilteredVouchers(filtered);
+  };
 
   const showModal = (id) => {
     setModalId(id);
     setIsModalVisible(true);
   };
 
+  const expandedRowRender = (record) => (
+    <Table
+      columns={expandColumns}
+      dataSource={record.modals}
+      pagination={false}
+      rowKey="id"
+    />
+  );
+
   const items = [
     {
-      label: <div>Sao chép</div>,
-      key: "0",
+      key: "1",
+      label: "Sao chép",
     },
     {
-      label: <div>Xoá</div>,
-      key: "1",
+      key: "2",
+      label: "Xoá",
     },
   ];
 
-  // Columns for the main product table
   const columns = [
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       render: (image) => (
-        <img src={image} alt="Product" style={{ width: 50, height: 50 }} />
+        <Image src={image} alt="Product" style={{ width: 50, height: 50 }} />
       ),
       width: "10%",
     },
@@ -95,14 +179,13 @@ const AllProduct = () => {
     },
   ];
 
-  // Columns for the nested modal table
-  const modalColumns = [
+  const expandColumns = [
     {
       title: "Hình ảnh",
       dataIndex: "image",
       key: "image",
       render: (image) => (
-        <img src={image} alt="Modal" style={{ width: 50, height: 50 }} />
+        <Image src={image} alt="Modal" style={{ width: 50, height: 50 }} />
       ),
       width: "10%",
     },
@@ -133,9 +216,8 @@ const AllProduct = () => {
       key: "stock",
     },
     {
-      title: "Đang hoạt động",
-      dataIndex: "isActive",
-      key: "isActive",
+      title: "Trạng thái",
+      key: "status",
       render: (active, record) => (
         <Switch
           checked={active}
@@ -153,17 +235,16 @@ const AllProduct = () => {
                 }))
               );
             } catch (error) {
-              toast.error("Failed to update active status for modal:", error);
+              message.error("Failed to update active status for modal:", error);
             }
           }}
         />
       ),
     },
     {
-      title: "Chức năng",
-      dataIndex: "operation",
+      title: "Hành động",
       key: "operation",
-      render: (_, record) => (
+      render: (record) => (
         <Space size="middle" direction="vertical">
           <Button type="link" onClick={() => showModal(record.id)}>
             Quản lý kho
@@ -174,10 +255,9 @@ const AllProduct = () => {
             }}
             trigger={["click"]}
           >
-            <Button onClick={(e) => e.preventDefault()} type="link">
+            <Button type="link">
               <Space>
-                Xem thêm
-                <FaChevronDown />
+                Xem thêm <DownOutlined />
               </Space>
             </Button>
           </Dropdown>
@@ -186,92 +266,57 @@ const AllProduct = () => {
     },
   ];
 
-  // Row selection object
-  const rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(
-        `selectedRowKeys: ${selectedRowKeys}`,
-        "selectedRows: ",
-        selectedRows
-      );
-    },
-  };
-
   return (
-    <div>
-      <div className="bg-white p-4 rounded-xl">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div>Lọc sản phẩm:</div>
-            <motion.div
-              {...buttonClick}
-              onClick={() => setfilterOutOfStock(!filterOutOfStock)}
-              className={`px-2 py-1 rounded-md cursor-pointer ${
-                filterOutOfStock ? "bg-primary text-white" : "bg-slate-200"
-              }`}
-            >
-              Hết hàng
-            </motion.div>
-          </div>
-          <motion.div
-            {...buttonClick}
-            className={`px-2 py-1 rounded-md cursor-pointer hover:text-white
-            hover:bg-primary border border-gray-400 hover:border-primary`}
-          >
-            Thiết lập lại
-          </motion.div>
-        </div>
-        <div className="flex flex-row py-4 space-x-10">
-          <Space.Compact className="flex-1">
-            <Select defaultValue="Option1">
-              <Option value="Option1">Tên sản phẩm</Option>
-              <Option value="Option2">Mã sản phẩm</Option>
-            </Select>
-            <Input.Search className="w-full" />
-          </Space.Compact>
-          <Space.Compact className="flex-1">
-            <Button>Nhà cung cấp</Button>
-            <Select defaultValue="Option1" className="w-full">
-              <Option value="Option1">GiftPop</Option>
-              <Option value="Option2">Gotit</Option>
-              <Option value="Option3">Urbox</Option>
-              <Option value="Option4">Utop</Option>
-            </Select>
-          </Space.Compact>
-          <Space.Compact className="flex-1">
-            <Button>Sắp xếp</Button>
-            <Select defaultValue="Option1" className="w-full">
-              <Option value="Option1">Tạo gần nhất</Option>
-              <Option value="Option2">Cập nhật gần nhất</Option>
-              <Option value="Option3">Còn ít trong kho</Option>
-              <Option value="Option4">Đắt nhất</Option>
-              <Option value="Option5">Rẻ nhất</Option>
-            </Select>
-          </Space.Compact>
-        </div>
-
-        {/* Table Section */}
-        <div className="pt-4">
-          <div className="pb-2">Đã chọn 0 sản phẩm</div>
-          <Table
-            columns={columns}
-            rowSelection={rowSelection}
-            expandable={{
-              expandedRowRender: (record) => (
-                <Table
-                  columns={modalColumns}
-                  dataSource={record.modals}
-                  pagination={false}
-                />
-              ),
-              rowExpandable: (record) =>
-                record.modals && record.modals.length > 0,
-            }}
-            dataSource={vouchers}
+    <div className=" bg-white rounded-lg px-4">
+      <div className="flex flex-row py-4 space-x-10">
+        <Space.Compact className="flex-1">
+          <Select defaultValue="Option1" onChange={handleSearch}>
+            <Option value="Option1">Tên sản phẩm</Option>
+            <Option value="Option2">Mã sản phẩm</Option>
+          </Select>
+          <Input.Search
+            className="w-full"
+            value={searchValue}
+            onChange={(e) => handleSearch(e.target.value)}
           />
-        </div>
+        </Space.Compact>
+        <Space.Compact className="flex-1">
+          <Button>Nhà cung cấp</Button>
+          <Select
+            defaultValue="Option1"
+            className="w-full"
+            onChange={handleSupplierChange}
+          >
+            <Option value="Option1">Tất cả</Option>
+            <Option value="Option2">GOTIT</Option>
+            <Option value="Option3">URBOX</Option>
+            <Option value="Option4">UTOP</Option>
+            <Option value="Option5">DEALTODAY</Option>
+          </Select>
+        </Space.Compact>
+        <Space.Compact className="flex-1">
+          <Button>Sắp xếp</Button>
+          <Select
+            defaultValue="Option1"
+            className="w-full"
+            onChange={handleSortChange}
+          >
+            <Option value="Option3">Còn ít trong kho</Option>
+            <Option value="Option4">Đắt nhất</Option>
+            <Option value="Option5">Rẻ nhất</Option>
+          </Select>
+        </Space.Compact>
       </div>
 
+      <Table
+        columns={columns}
+        expandable={{
+          expandedRowRender,
+        }}
+        dataSource={filteredVouchers}
+        rowKey="id"
+        pagination={{ pageSize: 5 }}
+      />
       <ModalPopup
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}

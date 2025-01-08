@@ -5,7 +5,7 @@ import { FaChevronRight } from "react-icons/fa";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { LuBarChartHorizontal } from "react-icons/lu";
 
-import { DetailReview, PendingReview } from "./components/SellerReview";
+import { DetailReview } from "./components/SellerReview";
 
 const tabs = [
   {
@@ -13,11 +13,11 @@ const tabs = [
     label: <div className="text-xl">Chi tiết đánh giá</div>,
     children: <DetailReview />,
   },
-  {
-    key: "2",
-    label: <div className="text-xl">Chờ được đánh giá</div>,
-    children: <PendingReview />,
-  },
+  // {
+  //   key: "2",
+  //   label: <div className="text-xl">Chờ được đánh giá</div>,
+  //   children: <PendingReview />,
+  // },
 ];
 
 const SellerReview = () => {
