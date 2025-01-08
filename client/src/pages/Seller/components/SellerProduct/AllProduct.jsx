@@ -102,6 +102,54 @@ const AllProduct = () => {
     setFilteredVouchers(filtered);
   };
 
+  const handleSwitchChange = async (checked, record) => {
+    try {
+      await updateVoucherActive(record.id, checked);
+
+      // Update both vouchers and filteredVouchers
+      setVouchers((prevVouchers) =>
+        prevVouchers.map((voucher) =>
+          voucher.id === record.id ? { ...voucher, isActive: checked } : voucher
+        )
+      );
+      setFilteredVouchers((prevFilteredVouchers) =>
+        prevFilteredVouchers.map((voucher) =>
+          voucher.id === record.id ? { ...voucher, isActive: checked } : voucher
+        )
+      );
+    } catch (error) {
+      console.error("Failed to update active status:", error);
+    }
+  };
+
+  const handleModalSwitchChange = async (checked, record) => {
+    console.log(checked, record);
+    try {
+      // Update modal's active status in the backend
+      await updateModalActive(record.id, checked);
+
+      // Update the state to reflect the change in the UI
+      setVouchers((prevVouchers) =>
+        prevVouchers.map((voucher) => ({
+          ...voucher,
+          modals: voucher.modals.map((modal) =>
+            modal.id === record.id ? { ...modal, isActive: checked } : modal
+          ),
+        }))
+      );
+      setFilteredVouchers((prevFilteredVouchers) =>
+        prevFilteredVouchers.map((voucher) => ({
+          ...voucher,
+          modals: voucher.modals.map((modal) =>
+            modal.id === record.id ? { ...modal, isActive: checked } : modal
+          ),
+        }))
+      );
+    } catch (error) {
+      message.error("Failed to update active status for modal:", error);
+    }
+  };
+
   const showModal = (id) => {
     setModalId(id);
     setIsModalVisible(true);
@@ -160,20 +208,7 @@ const AllProduct = () => {
       render: (active, record) => (
         <Switch
           checked={active}
-          onChange={async (checked) => {
-            try {
-              await updateVoucherActive(record.id, checked);
-              setVouchers((prevVouchers) =>
-                prevVouchers.map((voucher) =>
-                  voucher.id === record.id
-                    ? { ...voucher, isActive: checked }
-                    : voucher
-                )
-              );
-            } catch (error) {
-              console.error("Failed to update active status:", error);
-            }
-          }}
+          onChange={(checked) => handleSwitchChange(checked, record)}
         />
       ),
     },
@@ -216,28 +251,13 @@ const AllProduct = () => {
       key: "stock",
     },
     {
-      title: "Trạng thái",
-      key: "status",
+      title: "Đang hoạt động",
+      dataIndex: "isActive",
+      key: "isActive",
       render: (active, record) => (
         <Switch
           checked={active}
-          onChange={async (checked) => {
-            try {
-              await updateModalActive(record.id, checked);
-              setVouchers((prevVouchers) =>
-                prevVouchers.map((voucher) => ({
-                  ...voucher,
-                  modals: voucher.modals.map((modal) =>
-                    modal.id === record.id
-                      ? { ...modal, isActive: checked }
-                      : modal
-                  ),
-                }))
-              );
-            } catch (error) {
-              message.error("Failed to update active status for modal:", error);
-            }
-          }}
+          onChange={(checked) => handleModalSwitchChange(checked, record)}
         />
       ),
     },
