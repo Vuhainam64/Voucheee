@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 
-import { FaChevronDown, FaChevronRight } from "react-icons/fa6";
-import { AiOutlineDashboard } from "react-icons/ai";
 import { BiTask } from "react-icons/bi";
+import { RiAdminLine } from "react-icons/ri";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa6";
+import { AiOutlineDashboard, AiOutlineUserSwitch } from "react-icons/ai";
 
 import { Avatar } from "../../assets/img";
 import { Menus, signOutAction } from "../../utils/helpers";
@@ -14,7 +15,6 @@ import { buttonClick } from "../../animations";
 function UserProfileDetails() {
   const user = useSelector((state) => state.user?.user);
   const role = useSelector((state) => state.role?.role);
-
   const [isMenu, setIsMenu] = useState(false);
 
   return (
@@ -42,34 +42,36 @@ function UserProfileDetails() {
           z-10 flex flex-col items-start justify-start gap-4 w-full bg-white
           min-w-[250px]"
           >
-            {role === "admin" && (
+            {role === "ADMIN" && (
               <Link
-                to={"/admin"}
+                to={"/admin/dashboard"}
                 className="text-md flex flex-row justify-between text-gray-700 
                 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 
                 rounded-md"
               >
                 <div className="flex flex-row gap-5">
                   <div className="text-2xl">
-                    <AiOutlineDashboard />
+                    <RiAdminLine />
                   </div>
-                  <button>Dashboard</button>
+                  <button>Trang quản trị</button>
                 </div>
                 <div className="text-xs">
                   <FaChevronRight />
                 </div>
               </Link>
             )}
-            {role === "employee" && (
+            {role === "SUPPLIER" && (
               <Link
-                to={"/employee/"}
-                className="text-md flex flex-row justify-between text-gray-700 hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 rounded-md"
+                to={"/supplier/dashboard"}
+                className="text-md flex flex-row justify-between text-gray-700 
+                hover:bg-gray-100 hover:text-gray-900 items-center w-full px-2 py-1 
+                rounded-md"
               >
                 <div className="flex flex-row gap-5">
                   <div className="text-2xl">
-                    <BiTask />
+                    <AiOutlineUserSwitch />
                   </div>
-                  <button>Task</button>
+                  <button>Trang nhà cung cấp</button>
                 </div>
                 <div className="text-xs">
                   <FaChevronRight />

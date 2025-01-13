@@ -10,7 +10,6 @@ import {
   MdOutlineSettings,
 } from "react-icons/md";
 import {
-  RiAdminLine,
   RiCustomerService2Fill,
   RiInboxArchiveFill,
   RiRefundFill,
@@ -22,7 +21,7 @@ import { PiCoinThin } from "react-icons/pi";
 import { BiTransferAlt } from "react-icons/bi";
 import { HiOutlineTicket } from "react-icons/hi";
 import { TbTruckDelivery } from "react-icons/tb";
-import { AiOutlinePieChart, AiOutlineUserSwitch } from "react-icons/ai";
+import { AiOutlinePieChart } from "react-icons/ai";
 import { IoShareSocial, IoWallet } from "react-icons/io5";
 import { SiSecurityscorecard, SiZalo } from "react-icons/si";
 import { LuBarChartHorizontal, LuWallet } from "react-icons/lu";
@@ -55,21 +54,9 @@ export const Menus = [
   },
   {
     id: uuidv4(),
-    icon: <RiAdminLine />,
-    name: <div className="text-nowrap">Trang quản trị</div>,
-    uri: "/admin/dashboard",
-  },
-  {
-    id: uuidv4(),
     icon: <BsShop />,
-    name: <div className="text-nowrap">Trang người bán</div>,
+    name: <div className="text-nowrap" id="SELLER">Trang người bán</div>,
     uri: "/seller/productlist",
-  },
-  {
-    id: uuidv4(),
-    icon: <AiOutlineUserSwitch />,
-    name: <div className="text-nowrap">Trang nhà cung cấp</div>,
-    uri: "/supplier/dashboard",
   },
   {
     id: uuidv4(),
@@ -77,7 +64,6 @@ export const Menus = [
     name: <div className="text-nowrap">Voucher của tôi</div>,
     uri: "/user/listVoucher",
   },
-
 ];
 
 export const ClientMenus = [
