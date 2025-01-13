@@ -64,6 +64,8 @@ import {
   UserManagerment,
 } from "../pages/Admin";
 import SupplierBank from "../pages/Supplier/SupplierBank";
+import OrderDetail from "../pages/Admin/components/Dashboard/OrderDetail";
+import RefundDetail from "../pages/Admin/components/Dashboard/RefundDetail";
 
 const Routers = ({ isLogin, isEmailVerified, userRole }) => {
   const routes = [
@@ -189,7 +191,13 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "dashboard", element: <AdminDashboard /> },
           { path: "financial-overview", element: <FinancialOverview /> },
           { path: "transactions", element: <AdminTransactions /> },
-          { path: "permission", element: <UserManagerment /> },
+          {
+            path: "permission",
+            element: <UserManagerment />,
+          },
+          { path: "order/:id", element: <OrderDetail /> },
+          { path: "refund/:id", element: <RefundDetail /> },
+
           { path: "zalo", element: <ZaloPage /> },
           { path: "disbursementList", element: <DisbursementList /> },
           { path: "disbursementUpdate", element: <DisbursementUpdate /> },

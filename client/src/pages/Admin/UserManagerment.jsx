@@ -16,6 +16,7 @@ import {
   Space,
   Tooltip,
   Form,
+  Alert,
 } from "antd";
 import {
   PhoneOutlined,
@@ -32,6 +33,8 @@ import {
   unBanUser,
   createUser,
   reActiveUser,
+  getAllSupplier,
+  createSupplier,
 } from "../../api/admin";
 import { TextField } from "@mui/material";
 import { toast } from "react-toastify";
@@ -39,9 +42,18 @@ import { toast } from "react-toastify";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
-
+const generateRandomPassword = (length = 12) => {
+  const charset =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    password += charset.charAt(Math.floor(Math.random() * charset.length));
+  }
+  return password;
+};
 const UserManagerment = () => {
   const [users, setUsers] = useState([]);
+  const [supplier, setSupplier] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [filterRole, setFilterRole] = useState("all");
@@ -49,42 +61,21 @@ const UserManagerment = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isUserModalVisible, setisUserModalVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [loadingUpdate, setLoadingUpdate] = useState(false);
+  const [isCreateSuppModalVisible, setIsCreateSuppModalVisible] =
+    useState(false);
+  const [role, setRole] = useState("");
+  // const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState(
+    generateRandomPassword()
+  );
+  const [selectedUserRole] = useState({
+    role: "",
+    supplierId: "",
+  });
+  const [isPasswordGenerated, setIsPasswordGenerated] = useState(false);
   const [currentUser, setCurrentUser] = useState();
   const { TabPane } = Tabs;
   const [form] = Form.useForm();
-  const [userData, setUserData] = useState({
-    username: "",
-    email: "",
-    password: "",
-  });
-  useEffect(() => {
-    const fetchAllUser = async () => {
-      setLoading(true);
-      try {
-        const data = await getAllUser();
-        setUsers(data?.results || []); // Update the users state
-      } catch (error) {
-        message.error("Failed to fetch users.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchCurrentUser = async () => {
-      try {
-        const data = await getCurrentUser(); // Call the correct function
-
-        setCurrentUser(data?.id); // Set the current user state
-      } catch (error) {
-        console.error("Failed to fetch current user", error);
-      }
-    };
-
-    fetchAllUser(); // Fetch all users
-    fetchCurrentUser(); // Fetch the current user
-  }, []); // The empty array ensures this effect only runs once when the component mounts
 
   const fetchAllUser = async () => {
     setLoading(true);
@@ -97,9 +88,36 @@ const UserManagerment = () => {
       setLoading(false);
     }
   };
-  const handleTableChange = (pagination) => {
-    setCurrentPage(pagination.current);
+  const fetchAllSupplier = async () => {
+    setLoading(true);
+    try {
+      const data = await getAllSupplier();
+
+      setSupplier(data || []); // Update the users state
+    } catch (error) {
+      message.error("Failed to fetch suppliers.");
+    } finally {
+      setLoading(false);
+    }
   };
+  const fetchCurrentUser = async () => {
+    try {
+      const data = await getCurrentUser(); // Call the correct function
+
+      setCurrentUser(data?.id); // Set the current user state
+    } catch (error) {
+      console.error("Failed to fetch current user", error);
+    }
+  };
+  useEffect(() => {
+    fetchAllUser(); // Fetch all users
+    fetchCurrentUser(); // Fetch the current user
+    fetchAllSupplier();
+  }, []); // The empty array ensures this effect only runs once when the component mounts
+
+  // const handleTableChange = (pagination) => {
+  //   setCurrentPage(pagination.current);
+  // };
 
   const handleChange = (value) => {
     setFilterRole(value);
@@ -108,7 +126,14 @@ const UserManagerment = () => {
   const onSearch = (value) => {
     setSearchText(value);
   };
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate); // Convert to Date object
+    const day = String(date.getDate()).padStart(2, "0"); // Add leading zero if day < 10
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Get month (0-indexed, hence +1)
+    const year = date.getFullYear(); // Get year
 
+    return `${day}/${month}/${year}`; // Return formatted date
+  };
   const filteredUsers = users.filter((user) => {
     const isRoleMatch =
       filterRole === "all" ||
@@ -131,104 +156,123 @@ const UserManagerment = () => {
 
   const handleCloseCreateModal = () => {
     setIsCreateModalVisible(false);
-    setUserData({ username: "", email: "", password: "" });
   };
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const handleCloseCreateSuppModal = () => {
+    setIsCreateSuppModalVisible(false);
   };
   const handleUpdateRole = async () => {
-    if (!selectedUser) return;
-    setLoadingUpdate(true);
-
-    const { id, role } = selectedUser;
-    if (!id || !role) {
-      setLoadingUpdate(false);
-      return;
-    }
+    const { role, supplierId } = form.getFieldsValue();
+    console.log("Form Values:", { role, supplierId });
 
     try {
-      await updateUserRole(id, role);
-      await fetchAllUser();
-
-      setisUserModalVisible(false);
-      toast.success("Cập nhật thành công");
+      const response = await updateUserRole(selectedUser.id, role, supplierId);
+      console.log("Form Values:", selectedUser.id, role, supplierId);
+      if (response.success) {
+        await fetchAllUser();
+        toast.success("Cập nhật thành công");
+      } else {
+        toast.error(response.message || "Cập nhật thất bại");
+      }
     } catch (error) {
-      console.error("API call failed", error); // Log the error for debugging
-    } finally {
-      setLoadingUpdate(false);
+      setLoading(false); // Stop loading in case of error
+      toast.error("Cập nhật thất bại");
     }
   };
 
   const handleUnBanUser = async () => {
-    const { id } = selectedUser;
-    await unBanUser(id);
-    await reActiveUser(id);
-    await fetchAllUser();
-    setisUserModalVisible(false);
-    toast.success("Cập nhật thành công");
+    try {
+      const { id } = selectedUser;
+      await unBanUser(id);
+      await reActiveUser(id);
+      await fetchAllUser();
+      setisUserModalVisible(false);
+      toast.success("Cập nhật thành công");
+    } catch {
+      setLoading(false);
+      toast.error("Cập nhật thất bại");
+    }
   };
   const handleBanUser = async () => {
-    const { id } = selectedUser;
-    await banUser(id, "adsad");
-    await fetchAllUser();
-    setisUserModalVisible(false);
-    toast.success("Cập nhật thành công");
+    try {
+      const { id } = selectedUser;
+      await banUser(id, "");
+      await fetchAllUser();
+      setisUserModalVisible(false);
+      toast.success("Cập nhật thành công");
+    } catch (error) {
+      setLoading(false);
+      toast.error("Cập nhật thất bại");
+    }
   };
-  // const handleCreateUSer = async (event) => {
-  //   event.preventDefault();
-  //   try {
-  //     const response = await createUser(userData);
-  //     console.log("User created:", response);
-  //     handleCloseCreateModal();
-  //     setUserData({ username: "", email: "", password: "" }); // Reset form
-  //   } catch (error) {
-  //     console.error("Error in creating user:", error);
-  //     // Handle error, maybe show it to the user
-  //   }
-  // };
+
   const handleCreateUSer = async (values) => {
-    setLoading(true);
-
-    // Map role to numeric value as required by the API
-    // const roleMapping = {
-    //   admin: 0,
-    //   supplier: 1,
-    //   user: 2,
-    // };
-
     const payload = {
       name: values.name,
       email: values.email,
-      hashPassword: values.password,
+      hashPassword: generatedPassword,
       role: values.role,
       supplierId: values.supplierId,
     };
 
     try {
+      setLoading(true);
+
       await createUser(payload);
-      toast.success("User created successfully!");
+      toast.success("Tạo người dùng thành công");
       await fetchAllUser();
       form.resetFields();
       handleCloseCreateModal();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create user.");
+      toast.error(error.response?.data?.message || "Tạo người dùng thất bại");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleRoleChange = (value) => {
+    setSelectedUser((prev) => ({ ...prev, role: value }));
+    console.log(role);
+    form.setFieldsValue({ role: value, supplierId: "" });
+  };
+  const handleGeneratePassword = () => {
+    const newPassword = generateRandomPassword();
+    setGeneratedPassword(newPassword);
+    form.setFieldsValue({ password: newPassword });
+    setIsPasswordGenerated(true);
+  };
+  const handleCreateSupplier = async (values) => {
+    const payload = {
+      name: values.name,
+    };
+
+    try {
+      setLoading(true);
+
+      await createSupplier(payload);
+      toast.success("Tạo nhà cung cấp thành công");
+      await fetchAllUser();
+      form.resetFields();
+      handleCloseCreateSuppModal();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Tạo nhà cung cấp thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Tên", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Permission", dataIndex: "role", key: "role" },
-    { title: "Date Added", dataIndex: "createDate", key: "createDate" },
+    { title: "Trạng thái", dataIndex: "status", key: "status" },
+    { title: "Chức năng", dataIndex: "role", key: "role" },
     {
-      title: "Operation",
+      title: "Ngày tạo",
+      dataIndex: "createDate",
+      key: "createDate",
+      render: (createDate) => formatDate(createDate),
+    },
+    {
+      title: "Hành động",
       key: "operation",
       render: (_, record) => {
         // Disable the "Edit" button if the record is the current user
@@ -263,23 +307,32 @@ const UserManagerment = () => {
                 { value: "all", label: "All" },
                 { value: "admin", label: "Admin" },
                 { value: "user", label: "User" },
-                { value: "staff", label: "Staff" },
+                { value: "supplier", label: "supplier" },
               ]}
             />
-            <Search
-              placeholder="Search users"
-              onSearch={onSearch}
-              enterButton
-            />
+            <Search placeholder="Tìm kiếm" onSearch={onSearch} enterButton />
           </div>
-          <Button
-            type="primary"
-            size="large"
-            icon={<FaUserPlus />}
-            onClick={() => setIsCreateModalVisible(true)}
-          >
-            Thêm mới
-          </Button>
+          <div>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FaUserPlus />}
+              onClick={() => setIsCreateModalVisible(true)}
+              loading={loading}
+              style={{ marginRight: 16 }}
+            >
+              Thêm User
+            </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<FaUserPlus />}
+              onClick={() => setIsCreateSuppModalVisible(true)}
+              loading={loading}
+            >
+              Thêm nhà cung cấp
+            </Button>
+          </div>
         </div>
       </div>
       <div
@@ -290,24 +343,24 @@ const UserManagerment = () => {
           dataSource={filteredUsers}
           columns={columns}
           loading={loading}
-          rowKey={(record) => record._id}
+          rowKey={(record) => record.id}
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 4,
+            pageSize: 10,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}
         />
       </div>
       <Modal
-        title="Edit User Role"
+        title="Cập nhật thông tin người dùng"
         visible={isUserModalVisible}
         onCancel={handleCloseModal}
         footer={null}
       >
         <Tabs defaultActiveKey="1">
-          <TabPane tab="Infomation" key="1">
+          <TabPane tab="Thông tin" key="1">
             {selectedUser ? (
               <div>
                 <Row
@@ -335,7 +388,7 @@ const UserManagerment = () => {
                 <Row gutter={[16, 16]}>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Phone Number">
+                      <Tooltip title="Số điện thoại">
                         <PhoneOutlined style={{ fontSize: "18px" }} />
                       </Tooltip>
                       <Text>{selectedUser.phoneNumber}</Text>
@@ -343,7 +396,7 @@ const UserManagerment = () => {
                   </Col>
                   <Col span={24}>
                     <Space direction="horizontal" size="middle">
-                      <Tooltip title="Email Address">
+                      <Tooltip title="Email">
                         <MailOutlined style={{ fontSize: "18px" }} />
                       </Tooltip>
                       <Text>{selectedUser.email}</Text>
@@ -353,29 +406,112 @@ const UserManagerment = () => {
 
                 <Divider />
 
-                {/* Role Selection Section */}
-                <Row gutter={[16, 16]}>
-                  <Col span={24}>
-                    <Text strong>Role:</Text>
-                    <Select
-                      value={selectedUser.role}
-                      onChange={(value) =>
-                        setSelectedUser({ ...selectedUser, role: value })
-                      }
-                      style={{ width: "100%" }}
-                      suffixIcon={<EditOutlined />}
+                <Form
+                  form={form}
+                  layout="vertical"
+                  onFinish={handleUpdateRole}
+                  autoComplete="off"
+                  initialValues={{
+                    role: selectedUser?.role || "user",
+                    supplierId: selectedUser.supplierId || undefined,
+                  }}
+                >
+                  {selectedUser.role !== "SUPPLIER" && (
+                    <Form.Item name="role">
+                      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                        <Col span={24}>
+                          <Text strong>Role:</Text>
+                          <Select
+                            value={selectedUser.role}
+                            onChange={handleRoleChange}
+                            style={{ width: "100%" }}
+                            suffixIcon={<EditOutlined />}
+                          >
+                            <Option value="admin">Admin</Option>
+                            <Option value="user">User</Option>
+                            <Option value="supplier">Supplier</Option>
+                          </Select>
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  )}
+                  {selectedUser?.role === "supplier" && (
+                    <Form.Item
+                      name="supplierId"
+                      rules={[{ required: true, message: "Hãy chọn supplier" }]}
                     >
-                      <Option value="admin">Admin</Option>
-                      <Option value="user">User</Option>
-                      <Option value="supplier">Supplier</Option>
-                    </Select>
-                  </Col>
-                </Row>
+                      <Select
+                        loading={loading}
+                        optionFilterProp="children"
+                        placeholder={selectedUser.supplierName}
+                      >
+                        {supplier.map((supplier) => (
+                          <Select.Option key={supplier.id} value={supplier.id}>
+                            {supplier.name} {/* Displaying the supplier name */}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
+                  {/* Role Selection Section */}
+                  {selectedUser.role === "SUPPLIER" && (
+                    <Form.Item name="role">
+                      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+                        <Col span={24}>
+                          <Text strong>Role:</Text>
+                          <Select
+                            value={selectedUser.role}
+                            onChange={(value) =>
+                              setSelectedUser({ ...selectedUser, role: value })
+                            }
+                            style={{ width: "100%" }}
+                            suffixIcon={<EditOutlined />}
+                          >
+                            <Option value="admin">Admin</Option>
+                            <Option value="user">User</Option>
+                            <Option value="supplier">Supplier</Option>
+                          </Select>
+                        </Col>
+                      </Row>
+                      <Form.Item
+                        name="supplierId"
+                        rules={[
+                          { required: true, message: "Hãy chọn supplier" },
+                        ]}
+                      >
+                        {/* <Select
+                          style={{ width: 200 }}
+                          placeholder={selectedUser.supplierName}
+                          optionFilterProp="children"
+                          loading={loading}
+                        />
+                        {supplier.map((supp) => (
+                          <Select.Option key={supp.id} value={supp.id}>
+                            {supp.name}
+                          </Select.Option>
+                        ))} */}
+                        <Select
+                          loading={loading}
+                          optionFilterProp="children"
+                          placeholder={selectedUser.supplierName}
+                        >
+                          {supplier.map((supplier) => (
+                            <Select.Option
+                              key={supplier.id}
+                              value={supplier.id}
+                            >
+                              {supplier.name}{" "}
+                              {/* Displaying the supplier name */}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    </Form.Item>
+                  )}
+                  <Divider />
 
-                <Divider />
-
-                {/* Created and Updated By Section */}
-                {/* <Row gutter={[16, 16]}>
+                  {/* Created and Updated By Section */}
+                  {/* <Row gutter={[16, 16]}>
                   <Col span={12}>
                     <Space direction="vertical" size="small">
                       <Text strong>Created By:</Text>
@@ -389,35 +525,50 @@ const UserManagerment = () => {
                     </Space>
                   </Col>
                 </Row> */}
-                <Row>
-                  <Button key="cancel" onClick={handleCloseModal}>
-                    Cancel
-                  </Button>
-                  ,
-                  <Button
-                    key="submit"
-                    type="primary"
-                    onClick={handleUpdateRole}
-                    loading={loadingUpdate}
-                  >
-                    Update
-                  </Button>
-                  ,
-                </Row>
+                  <Row>
+                    <Button
+                      key="cancel"
+                      onClick={handleCloseModal}
+                      loading={loading}
+                    >
+                      Hủy
+                    </Button>
+                    ,
+                    <Button
+                      key="submit"
+                      type="primary"
+                      loading={loading}
+                      htmlType="submit"
+                    >
+                      Cập nhật
+                    </Button>
+                    ,
+                  </Row>
+                </Form>
               </div>
             ) : (
               <Spin size="small" />
             )}
           </TabPane>
           <TabPane tab="Ban" key="2">
-            <p>Ban Reason</p>
+            <p>Lí do ban</p>
             <TextField></TextField>
             <Row>
-              <Button type="primary" danger onClick={handleBanUser}>
+              <Button
+                type="primary"
+                danger
+                onClick={handleBanUser}
+                loading={loading}
+              >
                 Ban
               </Button>
-              <Button type="primary" success onClick={handleUnBanUser}>
-                Un-Ban
+              <Button
+                type="primary"
+                success
+                onClick={handleUnBanUser}
+                loading={loading}
+              >
+                Hủy ban
               </Button>
             </Row>
           </TabPane>
@@ -425,7 +576,7 @@ const UserManagerment = () => {
         </Tabs>
       </Modal>
       <Modal
-        title="Create User"
+        title="Tạo người dùng"
         visible={isCreateModalVisible}
         onCancel={handleCloseCreateModal}
         footer={null}
@@ -435,74 +586,146 @@ const UserManagerment = () => {
           layout="vertical"
           onFinish={handleCreateUSer}
           autoComplete="off"
+          initialValues={{
+            role: selectedUserRole,
+            password: generatedPassword,
+          }}
         >
           <Form.Item
-            label="User name"
+            label="Tên người dùng"
             name="name"
-            rules={[{ required: true, message: "Please enter the name!" }]}
+            rules={[{ required: true, message: "Hãy nhập tên người dùng" }]}
           >
-            <Input placeholder="Enter name" />
+            <Input placeholder="vv" />
           </Form.Item>
           <Form.Item
             label="Email"
             name="email"
             rules={[
-              { required: true, message: "Please enter the email!" },
-              { type: "email", message: "Please enter a valid email!" },
+              { required: true, message: "Hãy nhập Email" },
+              { type: "email", message: "Hãy nhập Email" },
             ]}
           >
-            <Input placeholder="Enter email" />
+            <Input placeholder="Email" />
           </Form.Item>
           <Form.Item
-            label="Password"
+            label="Mật khẩu"
             name="password"
-            rules={[{ required: true, message: "Please enter the password!" }]}
+            rules={[{ required: true, message: "Hãy nhập mật khẩu" }]}
           >
-            <Input.Password placeholder="Enter password" />
+            {/* <Input.Password placeholder={generatedPassword} /> */}
+            <Button
+              onClick={handleGeneratePassword}
+              style={{ marginBottom: 16 }}
+              loading={loading}
+            >
+              Tạo mật khẩu ngẫu nhiên
+            </Button>
+            {isPasswordGenerated && (
+              <Alert
+                message="Đã tạo mật khẩu"
+                type="success"
+                style={{ marginTop: 10 }}
+                showIcon
+              />
+            )}
           </Form.Item>
           <Form.Item
-            label="Role"
+            label="Chức năng"
             name="role"
-            rules={[{ required: true, message: "Please select a role!" }]}
+            rules={[{ required: true, message: "Hãy chọn chức năng" }]}
           >
-            <Select placeholder="Select role">
-              <Option value="admin">Admin</Option>
-              <Option value="supplier">Supplier</Option>
-              <Option value="user">User</Option>
+            <Select placeholder="Chọn chức năng" onChange={handleRoleChange}>
+              <Option value="ADMIN">Admin</Option>
+              <Option value="SUPPLIER">Supplier</Option>
+              <Option value="USER">User</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Supplier " name="supplierId">
-            <Select
-              style={{ width: 120 }}
-              options={[
-                {
-                  value: "afe77cd6-c86a-414b-b214-06d36382d803",
-                  label: "Ubox",
-                },
-                {
-                  value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
-                  label: "GiftTOP",
-                },
-                {
-                  value: "efad3e3b-5277-4ce7-9205-08905133a33e",
-                  label: "Dealtoday",
-                },
-                {
-                  value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
-                  label: "GoTIT",
-                },
-              ]}
-            />
-          </Form.Item>
+          {selectedUser?.role === "SUPPLIER" && (
+            <Form.Item
+              label="Nhà cung cấp"
+              name="supplierId"
+              rules={[{ required: true, message: "Hãy chọn nhà cung cấp" }]}
+            >
+              {/* <Select
+                style={{ width: 200 }}
+                placeholder="Chọn supplier"
+                options={[
+                  {
+                    value: "afe77cd6-c86a-414b-b214-06d36382d803",
+                    label: "URBOX",
+                  },
+                  {
+                    value: "8424aadf-7e2e-4489-81f4-b2185dd189be",
+                    label: "GIFTPOP",
+                  },
+                  {
+                    value: "efad3e3b-5277-4ce7-9205-08905133a33e",
+                    label: "DEALTODAY",
+                  },
+                  {
+                    value: "3542bb12-7e32-485d-baeb-a6df18c51eb6",
+                    label: "GOTIT",
+                  },
+                ]}
+              /> */}
+              <Select
+                loading={loading}
+                optionFilterProp="children"
+                placeholder={selectedUser.supplierName}
+              >
+                {supplier.map((supplier) => (
+                  <Select.Option key={supplier.id} value={supplier.id}>
+                    {supplier.name} {/* Displaying the supplier name */}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          )}
+
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Create User
+              Tạo người dùng
             </Button>
             <Button
               onClick={handleCloseCreateModal}
               style={{ marginLeft: "10px" }}
+              loading={loading}
             >
-              Cancel
+              Hủy
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="Tạo nhà cung cấp"
+        visible={isCreateSuppModalVisible}
+        onCancel={handleCloseCreateSuppModal}
+        footer={null}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleCreateSupplier}
+          autoComplete="off"
+        >
+          <Form.Item
+            label="Tên nhà cung cấp"
+            name="name"
+            rules={[{ required: true, message: "Hãy nhập tên nhà cung cấp" }]}
+          >
+            <Input placeholder="Nhập tên nhà cung cấp" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Tạo nhà cung cấp
+            </Button>
+            <Button
+              onClick={handleCloseCreateSuppModal}
+              style={{ marginLeft: "10px" }}
+              loading={loading}
+            >
+              Hủy
             </Button>
           </Form.Item>
         </Form>
