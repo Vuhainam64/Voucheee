@@ -70,3 +70,22 @@ export const getAllTranfering = async () => {
         throw err;
     }
 };
+
+export const createWithdraw = async (walletType, amount) => {
+    try {
+        const res = await axios.post(
+            `${BACKEND_API_URL}/v1/withdraw/create_withdraw_request?walletType=${walletType}`,
+            { amount },
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json-patch+json',
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error updating voucher code status:", err);
+        throw err;
+    }
+};

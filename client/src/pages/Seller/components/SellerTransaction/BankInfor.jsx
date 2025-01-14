@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Modal, Input, message } from "antd"; // Thêm Modal và Input từ Ant Design
-
+import { Button, Modal, Input, message, Spin } from "antd"; // Thêm Spin từ Ant Design
 import { LuNfc } from "react-icons/lu";
 import { FcSimCardChip } from "react-icons/fc";
 import { FaChevronRight } from "react-icons/fa";
-
 import { getUser } from "../../../../api/user";
 import { logoPrimary } from "../../../../assets/img";
+import { createWithdraw } from "../../../../api/withdraw";
 
 const BankInfor = () => {
   const [bankAccount, setBankAccount] = useState({});
-  const [isModalVisible, setIsModalVisible] = useState(false); // Quản lý trạng thái của modal
-  const [withdrawAmount, setWithdrawAmount] = useState(""); // Quản lý số tiền người dùng nhập vào
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [loading, setLoading] = useState(false); // Quản lý trạng thái đang xử lý
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,13 +21,11 @@ const BankInfor = () => {
     };
 
     fetchUserData();
-  }, []);
+  }, [loading]);
 
-  // Hàm hiển thị thông báo và xử lý rút tiền
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount);
 
-    // Kiểm tra số tiền người dùng nhập vào
     if (isNaN(amount) || amount <= 0) {
       message.error("Số tiền cần rút không hợp lệ.");
       return;
@@ -38,20 +36,33 @@ const BankInfor = () => {
       return;
     }
 
-    // Nếu mọi thứ hợp lệ, thông báo thành công
-    message.success(`Rút tiền thành công: ${amount} VND`);
+    if (amount < 10000) {
+      message.error("Số tiền rút tối thiểu là 10.000 VND.");
+      return;
+    }
 
-    // Đóng modal sau khi xử lý
-    setIsModalVisible(false);
-    setWithdrawAmount(""); // Reset giá trị nhập
+    setLoading(true);
+
+    try {
+      await createWithdraw(1, amount);
+      message.success(`Rút tiền thành công: ${amount} VND`);
+      setBankAccount((prev) => ({
+        ...prev,
+        balance: prev.balance - amount,
+      }));
+      setIsModalVisible(false);
+      setWithdrawAmount("");
+    } catch (error) {
+      message.error("Rút tiền thất bại. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Mở modal
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  // Đóng modal
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -115,8 +126,9 @@ const BankInfor = () => {
         open={isModalVisible}
         onCancel={handleCancel}
         onOk={handleWithdraw}
-        okText="Rút tiền"
+        okText={loading ? <Spin /> : "Rút tiền"} // Hiển thị Spin khi xử lý
         cancelText="Hủy"
+        confirmLoading={loading} // Trạng thái xử lý
       >
         <div className="space-y-4">
           <div>
@@ -127,14 +139,14 @@ const BankInfor = () => {
           </div>
           <div>
             <label className="block text-sm font-semibold">
-              Số tiền cần rút: (Tối thiểu 50.000)
+              Số tiền cần rút: (Tối thiểu 10.000)
             </label>
             <Input
               type="number"
               value={withdrawAmount}
               onChange={(e) => setWithdrawAmount(e.target.value)}
               placeholder="Nhập số tiền cần rút"
-              min={50000}
+              min={10000}
             />
           </div>
         </div>
