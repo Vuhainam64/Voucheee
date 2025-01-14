@@ -43,7 +43,7 @@ const SellerReview = () => {
           showIcon
         />
       </div>
-      <div className="bg-white p-4 rounded-lg">
+      {/* <div className="bg-white p-4 rounded-lg">
         <div className="font-bold text-xl">Tổng quan</div>
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-blue-100 p-4 rounded-lg mt-4 space-y-4">
@@ -85,7 +85,7 @@ const SellerReview = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <Tabs defaultActiveKey="1" items={tabs} className="pt-4" />
     </div>
   );
