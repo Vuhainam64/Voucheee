@@ -17,7 +17,7 @@ import { getSellerVoucher, updateVoucherActive } from "../../../../api/voucher";
 
 const { Option } = Select;
 
-const AllProduct = () => {
+const AllProduct = ({ setTotalVoucher }) => {
   const [vouchers, setVouchers] = useState([]);
   const [filteredVouchers, setFilteredVouchers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -29,6 +29,7 @@ const AllProduct = () => {
   useEffect(() => {
     const fetchVouchers = async () => {
       const data = await getSellerVoucher();
+      setTotalVoucher(data?.metaData.total || 0);
       setVouchers(data?.results || []);
       setFilteredVouchers(data?.results || []);
     };

@@ -10,6 +10,7 @@ import { AllProduct, DiscountCodeModal } from "./components/SellerProduct";
 
 const SellerProduct = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [totalVoucher, setTotalVoucher] = useState(0);
 
   return (
     <div className="w-full h-full p-8 flex flex-col">
@@ -46,9 +47,12 @@ const SellerProduct = () => {
           <div className="flex items-center space-x-2">
             <div className="">Tổng quan sản phẩm</div>
             <div className="w-225">
-              <ProgressBar completed={(31 / 100) * 100} bgColor={"#33acc7"} />
+              <ProgressBar
+                completed={(totalVoucher / 100) * 100}
+                bgColor={"#33acc7"}
+              />
             </div>
-            <div>31/100</div>
+            <div>{totalVoucher}/100</div>
           </div>
           <div className="space-x-2 flex items-center text-primary">
             <div>Chi tiết</div>
@@ -56,7 +60,7 @@ const SellerProduct = () => {
           </div>
         </div>
 
-        <AllProduct />
+        <AllProduct setTotalVoucher={setTotalVoucher} />
       </div>
 
       {/* Modal quản lý mã giảm giá */}

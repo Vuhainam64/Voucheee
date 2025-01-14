@@ -241,7 +241,7 @@ const BasicInformation = ({
           )}
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Video"
           valuePropName="fileList"
           getValueFromEvent={normFile}
@@ -310,7 +310,7 @@ const BasicInformation = ({
               </ul>
             </div>
           </div>
-        </Form.Item>
+        </Form.Item> */}
       </Form>
     </div>
   );
