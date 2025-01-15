@@ -211,7 +211,7 @@ const BasicInformation = ({
           <TreeSelect {...tProps} />
         </Form.Item>
         <Form.Item
-          label="Ảnh sản phẩm (tối đa 5 ảnh)"
+          label="Ảnh sản phẩm (tối đa 5 ảnh và nên từ 3 ảnh trở lên)"
           valuePropName="fileList"
           getValueFromEvent={normFile}
           labelCol={{ span: 24 }}

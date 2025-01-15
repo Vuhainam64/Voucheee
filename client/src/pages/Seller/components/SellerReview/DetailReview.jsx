@@ -9,12 +9,14 @@ import {
   Image,
   Rate,
   message,
+  Modal,
 } from "antd";
 
 import { FaRegCopy } from "react-icons/fa";
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 
-import { getAllRatingBySeller } from "../../../../api/rating";
+import { getAllRatingBySeller, replyRating } from "../../../../api/rating";
+import TextArea from "antd/es/input/TextArea";
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -40,6 +42,7 @@ const columns = [
 
 const DetailReview = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [filters, setFilters] = useState({
@@ -48,6 +51,10 @@ const DetailReview = () => {
     serviceStar: null,
     sellerStar: null,
   });
+
+  const [isReplyModalVisible, setIsReplyModalVisible] = useState(false);
+  const [replyContent, setReplyContent] = useState("");
+  const [currentReviewId, setCurrentReviewId] = useState(null);
 
   const fetchReviews = async () => {
     try {
@@ -142,15 +149,19 @@ const DetailReview = () => {
                 <Image
                   width={25}
                   className="rounded-full"
-                  src={item.sellerImage}
+                  src={item.buyerImage}
                 />
-                <div>{item.sellerName}</div>
+                <div>{item.buyerName}</div>
                 <div className="cursor-pointer text-primary">
                   <IoChatbubbleEllipsesOutline />
                 </div>
               </div>
               <div className="space-y-4">
-                <Button type="primary" className="w-full">
+                <Button
+                  onClick={() => handleReplyClick(item.id)}
+                  type="primary"
+                  className="w-full"
+                >
                   Trả Lời
                 </Button>
                 <Button type="primary" className="w-full">
@@ -168,7 +179,7 @@ const DetailReview = () => {
 
   useEffect(() => {
     fetchReviews();
-  }, [filters]);
+  }, [filters, refresh]);
 
   const start = () => {
     setLoading(true);
@@ -233,6 +244,33 @@ const DetailReview = () => {
       ...prevFilters,
       modalId: value,
     }));
+  };
+
+  const handleReplyClick = (id) => {
+    setCurrentReviewId(id); // Lưu ID đánh giá hiện tại
+    setIsReplyModalVisible(true); // Mở popup
+  };
+
+  const handleReplySubmit = async () => {
+    if (!replyContent.trim()) {
+      message.error("Nội dung trả lời không được để trống!");
+      return;
+    }
+
+    const replyRes = await replyRating(currentReviewId, replyContent);
+    if (replyRes.result) {
+      message.success("Đã gửi trả lời!");
+    } else {
+      message.error("Gửi trả lời thất bại!");
+    }
+    setRefresh((prev) => prev + 1);
+    setIsReplyModalVisible(false);
+    setReplyContent("");
+  };
+
+  const handleReplyCancel = () => {
+    setIsReplyModalVisible(false);
+    setReplyContent("");
   };
 
   return (
@@ -332,6 +370,23 @@ const DetailReview = () => {
           />
         </Flex>
       </div>
+
+      {/* Popup trả lời */}
+      <Modal
+        title="Trả Lời Đánh Giá"
+        open={isReplyModalVisible}
+        onOk={handleReplySubmit}
+        onCancel={handleReplyCancel}
+        okText="Gửi"
+        cancelText="Hủy"
+      >
+        <TextArea
+          rows={4}
+          placeholder="Nhập nội dung trả lời"
+          value={replyContent}
+          onChange={(e) => setReplyContent(e.target.value)}
+        />
+      </Modal>
     </div>
   );
 };

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Alert, Anchor, Button, Form, message, Progress, Steps } from "antd";
 
+import { FaBoxes } from "react-icons/fa";
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronRight } from "react-icons/fa6";
 
@@ -26,7 +27,17 @@ const SellerPublish = () => {
   const [images, setImages] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
   const [modals, setModals] = useState([]);
-  console.log(modals);
+  const [contentScore, setContentScore] = useState(0);
+
+  useEffect(() => {
+    let score = 0;
+    if (images.length >= 3) score += 30; // Hình ảnh đầy đủ
+    if (title.length > 0) score += 20; // Tiêu đề hợp lệ
+    if (description.length > 50) score += 30; // Mô tả đầy đủ
+    if (brandId && supplierId) score += 20; // Thông tin thương hiệu và nhà cung cấp
+    setContentScore(score);
+  }, [images, title, description, brandId, supplierId]);
+
   const onFinish = async (values) => {
     const data = {
       brandId,
@@ -82,7 +93,17 @@ const SellerPublish = () => {
         <div>Thêm Sản Phẩm</div>
       </div>
 
-      <div className="text-2xl font-semibold py-4">Thêm sản phẩm</div>
+      <div className="flex items-center justify-between">
+        <div className="text-2xl font-semibold py-4">Thêm sản phẩm</div>
+        <Link
+          to={"/seller/productlist"}
+          className="flex items-center space-x-2 bg-primary text-white rounded-md 
+              p-2 px-4 cursor-pointer hover:no-underline hover:text-gray-200"
+        >
+          <div>Quản lý Sản phẩm</div>
+          <FaBoxes />
+        </Link>
+      </div>
       <div className="grid grid-cols-5 gap-4">
         <div className="col-span-4">
           <Form
@@ -141,7 +162,8 @@ const SellerPublish = () => {
         <div className="col-span-1 h-screen sticky top-4 space-y-4">
           <div className="bg-white rounded-xl p-6">
             <div className="text-xl font-semibold">Điểm nội dung</div>
-            <Progress percent={30} size="small" />
+            <Progress percent={contentScore} size="small" />
+
             <Anchor
               offsetTop={100}
               items={[

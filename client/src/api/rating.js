@@ -25,3 +25,21 @@ export const getAllRatingBySeller = async (modalId, qualityStar, serviceStar, se
         throw err;
     }
 };
+
+export const replyRating = async (id, content) => {
+    try {
+        const res = await axios.put(
+            `${BACKEND_API_URL}/v1/rating/reply_rating/${id}?rep=${content}`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error change active voucher:", err);
+        throw err;
+    }
+};

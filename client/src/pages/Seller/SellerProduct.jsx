@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa6";
 
-import { buttonClick } from "../../animations";
 import { AllProduct, DiscountCodeModal } from "./components/SellerProduct";
 
 const SellerProduct = () => {
@@ -32,14 +31,14 @@ const SellerProduct = () => {
             >
               <div>Quản lí mã giảm giá</div>
             </div>
-            <motion.div
-              {...buttonClick}
+            <Link
+              to={"/seller/publish"}
               className="flex items-center space-x-2 bg-primary text-white rounded-md 
-              p-2 px-4 cursor-pointer"
+              p-2 px-4 cursor-pointer hover:no-underline hover:text-gray-200"
             >
               <FaPlus />
               <div>Thêm sản phẩm</div>
-            </motion.div>
+            </Link>
           </div>
         </div>
 

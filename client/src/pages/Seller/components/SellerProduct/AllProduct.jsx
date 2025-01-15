@@ -313,12 +313,13 @@ const AllProduct = ({ setTotalVoucher }) => {
             <Option value="Option3">URBOX</Option>
             <Option value="Option4">UTOP</Option>
             <Option value="Option5">DEALTODAY</Option>
+            <Option value="Option6">GIFTPOP</Option>
           </Select>
         </Space.Compact>
         <Space.Compact className="flex-1">
           <Button>Sắp xếp</Button>
           <Select
-            defaultValue="Option1"
+            defaultValue="Option3"
             className="w-full"
             onChange={handleSortChange}
           >
