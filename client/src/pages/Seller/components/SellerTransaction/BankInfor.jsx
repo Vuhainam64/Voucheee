@@ -100,7 +100,7 @@ const BankInfor = () => {
               to="/seller/myBank"
               className="flex items-center space-x-2 text-primary hover:no-underline"
             >
-              <div>Quản lí tài khoản ngân hàng</div>
+              <div>Quản lý tài khoản ngân hàng</div>
               <FaChevronRight />
             </Link>
           </div>

@@ -111,7 +111,7 @@ const SupplierTransaction = () => {
                 to="/supplier/myBank"
                 className="flex items-center space-x-2 text-primary hover:no-underline"
               >
-                <div>Quản lí tài khoản ngân hàng</div>
+                <div>Quản lý Tài khoản Ngân hàng</div>
                 <FaChevronRight />
               </Link>
             </div>

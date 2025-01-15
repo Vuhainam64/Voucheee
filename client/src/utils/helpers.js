@@ -264,7 +264,7 @@ export const SupplierMenus = [
         uri: "/supplier/convertVoucher",
       },
       {
-        title: "Quản lí hoàn trả",
+        title: "Quản lý hoàn trả",
         Icon: FaUndo,
         uri: "/supplier/returnRequest",
       },

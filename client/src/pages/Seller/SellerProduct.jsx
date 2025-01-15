@@ -29,7 +29,7 @@ const SellerProduct = () => {
               bg-white p-2 px-4 rounded-md cursor-pointer"
               onClick={() => setIsModalVisible(true)}
             >
-              <div>Quản lí mã giảm giá</div>
+              <div>Quản lý mã giảm giá</div>
             </div>
             <Link
               to={"/seller/publish"}

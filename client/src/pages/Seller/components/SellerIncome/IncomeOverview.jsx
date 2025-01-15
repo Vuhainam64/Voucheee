@@ -98,7 +98,7 @@ const IncomeOverview = () => {
                   className="text-primary bg-white p-1 px-2 rounded-md border
                 border-primary cursor-pointer"
                 >
-                  Quản lí số dư tài khoản Vouchee
+                  Quản lý số dư tài khoản Vouchee
                 </div>
               </div>
               <div className="relative w-full h-full">

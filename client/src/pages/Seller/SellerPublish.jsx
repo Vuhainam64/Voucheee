@@ -178,28 +178,6 @@ const SellerPublish = () => {
                       className="cursor-pointer"
                     >
                       <div className="font-semibold pb-2">Thông tin cơ bản</div>
-                      {showStepsBasicInformation && (
-                        <Steps
-                          progressDot
-                          direction="vertical"
-                          current={1}
-                          items={[
-                            {
-                              title: "Finished",
-                              description: "Thêm ít nhất 3 ảnh chính.",
-                            },
-                            {
-                              title: "In Progress",
-                              description: "Chất lượng tiêu đề",
-                            },
-                            {
-                              title: "Waiting",
-                              description:
-                                "This is a description. This is a description.",
-                            },
-                          ]}
-                        />
-                      )}
                     </div>
                   ),
                 },

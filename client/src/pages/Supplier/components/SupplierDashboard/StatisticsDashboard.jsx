@@ -32,7 +32,7 @@ const StatisticsDashboard = ({ statisticsData }) => {
           </div>
         </div>
         <div className="space-y-2 text-center">
-          <div>Đang chờ xử lí</div>
+          <div>Đang chờ xử lý</div>
           <div className="font-bold text-xl text-primary">
             {statisticsData.pendingVouchers}
           </div>

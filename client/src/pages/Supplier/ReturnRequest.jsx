@@ -258,12 +258,12 @@ const ReturnRequest = () => {
         <MdOutlineDashboard className="text-xl" />
         <div>Tài Chính</div>
         <FaChevronRight />
-        <div>Quản lí hoàn trả</div>
+        <div>Quản lý Hoàn trả</div>
       </div>
 
       {/* Main content */}
       <div className="bg-white rounded-lg p-4 space-y-4 shadow-md">
-        <div className="text-xl font-semibold">Quản lí hoàn trả</div>
+        <div className="text-xl font-semibold">Quản lý hoàn trả</div>
 
         {/* Search Filters */}
         <div className="flex space-x-4">

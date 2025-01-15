@@ -551,7 +551,7 @@ const UserManagerment = () => {
             )}
           </TabPane>
           <TabPane tab="Ban" key="2">
-            <p>Lí do ban</p>
+            <p>Lý do ban</p>
             <TextField></TextField>
             <Row>
               <Button
