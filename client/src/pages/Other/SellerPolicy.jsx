@@ -5,7 +5,7 @@ const { Title, Paragraph } = Typography;
 const { Link } = Anchor;
 
 const SellerPolicy = () => {
-  const [language, setLanguage] = useState("vi");
+  const [language, setLanguage] = useState("vi"); // "vi" = Tiếng Việt, "en" = English
 
   const content = {
     vi: {
@@ -92,26 +92,83 @@ const SellerPolicy = () => {
             <Title id="pricing-payment" level={2}>
               {lang.pricingPayment}
             </Title>
+            <Paragraph>
+              {language === "vi"
+                ? "Người bán có trách nhiệm thiết lập giá của các e-voucher của mình. Giá không được vượt quá giá trị của voucher trừ khi được phép khác."
+                : "Sellers are responsible for setting the prices of their e-vouchers. The price should not exceed the face value of the voucher unless otherwise authorized."}
+            </Paragraph>
+            <Paragraph>
+              {language === "vi"
+                ? "Nền tảng sẽ tính phí hoa hồng trên mỗi giao dịch bán e-voucher, và khoản phí này sẽ được trừ từ giá trị bán cuối cùng."
+                : "The platform will charge a commission fee on the sale of e-vouchers, which will be deducted from the final sale price."}
+            </Paragraph>
             <Divider />
 
             <Title id="refund-policy" level={2}>
               {lang.refundPolicy}
             </Title>
+            <Paragraph>
+              {language === "vi"
+                ? "E-voucher nói chung không được hoàn trả trừ khi có quy định khác trong chính sách của người bán."
+                : "E-vouchers are generally non-refundable unless specified otherwise in the seller’s terms."}
+            </Paragraph>
             <Divider />
 
             <Title id="prohibited-conduct" level={2}>
               {lang.prohibitedConduct}
             </Title>
+            <ul>
+              <li>
+                {language === "vi"
+                  ? "Bán e-voucher giả mạo, lừa đảo hoặc không được phép."
+                  : "Selling counterfeit, fraudulent, or unauthorized e-vouchers."}
+              </li>
+              <li>
+                {language === "vi"
+                  ? "Lừa dối người mua về quy trình đổi voucher, ngày hết hạn hoặc giá trị của voucher."
+                  : "Misleading buyers regarding the redemption process, expiry date, or value of e-vouchers."}
+              </li>
+              <li>
+                {language === "vi"
+                  ? "Tham gia vào bất kỳ hoạt động gian lận nào như tăng giá voucher hoặc thao túng đánh giá và nhận xét."
+                  : "Engaging in any form of fraudulent activity such as artificially inflating voucher prices or manipulating ratings and reviews."}
+              </li>
+              <li>
+                {language === "vi"
+                  ? "Sử dụng e-voucher cho các hoạt động bất hợp pháp hoặc cung cấp các voucher vi phạm bất kỳ luật lệ quốc gia hoặc quốc tế nào."
+                  : "Using e-vouchers for illegal activities or offering vouchers that violate any local, national, or international laws."}
+              </li>
+              <li>
+                {language === "vi"
+                  ? "Đăng bán các e-voucher hết hạn hoặc không hợp lệ."
+                  : "Listing expired or invalid e-vouchers for sale."}
+              </li>
+            </ul>
             <Divider />
 
             <Title id="voucher-expiration" level={2}>
               {lang.voucherExpiration}
             </Title>
+            <Paragraph>
+              {language === "vi"
+                ? "Người bán phải cung cấp thông tin rõ ràng về ngày hết hạn của e-voucher, nếu có."
+                : "Sellers must provide clear information regarding the expiration date of the e-voucher, if applicable."}
+            </Paragraph>
             <Divider />
 
             <Title id="seller-responsibilities" level={2}>
               {lang.sellerResponsibilities}
             </Title>
+            <Paragraph>
+              {language === "vi"
+                ? "Người bán phải cập nhật danh sách sản phẩm của mình, đảm bảo rằng tất cả thông tin như ngày hết hạn, tình trạng sản phẩm và các điều khoản đều chính xác và phản ánh đúng sản phẩm hiện tại."
+                : "Sellers must keep their product listings up to date, ensuring that all information, such as expiration dates, product availability, and terms, are accurate and reflective of the current offering."}
+            </Paragraph>
+            <Paragraph>
+              {language === "vi"
+                ? "Người bán phải xử lý tất cả các yêu cầu và khiếu nại của khách hàng một cách chuyên nghiệp."
+                : "Sellers must handle all customer inquiries and complaints in a professional manner."}
+            </Paragraph>
           </Typography>
         </div>
         <div className="w-1/4">
