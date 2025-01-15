@@ -20,7 +20,7 @@ import {
   VoucherDetail,
 } from "../pages/Home";
 // import { Account, Password, Profile } from "../pages/Setting";
-import { PageNotFound, ZaloPage } from "../pages/Other";
+import { PageNotFound, SellerPolicy, ZaloPage } from "../pages/Other";
 import { Login, Register, VerifyPopup } from "../pages/Auth";
 import {
   SellerBank,
@@ -173,6 +173,7 @@ const Routers = ({ isLogin, isEmailVerified, userRole }) => {
           { path: "myTransaction", element: <SellerTransaction /> },
           { path: "myBank", element: <SellerBank /> },
           { path: "zalo", element: <ZaloPage /> },
+          { path: "policy", element: <SellerPolicy /> },
         ],
       },
       // {

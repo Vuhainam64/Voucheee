@@ -16,7 +16,7 @@ import {
 } from "react-icons/ri";
 import { CiBank, CiBoxList } from "react-icons/ci";
 import { BsShop } from "react-icons/bs";
-import { FaBoxes, FaBullhorn, FaUndo } from "react-icons/fa";
+import { FaBoxes, FaBullhorn, FaFileAlt, FaUndo } from "react-icons/fa";
 import { PiCoinThin } from "react-icons/pi";
 import { BiTransferAlt } from "react-icons/bi";
 import { HiOutlineTicket } from "react-icons/hi";
@@ -148,6 +148,12 @@ export const ClientMenus = [
         uri: "/seller/social",
       },
     ],
+  },
+  {
+    title: "Chính sách",
+    Icon: FaFileAlt,
+    spacing: true,
+    uri: "/seller/policy",
   },
 ];
 
