@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 
 import { getSupplierTransaction } from "../../../../api/supplier";
+import IncomeAnalyze from "./IncomeAnalyze";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
@@ -177,6 +178,7 @@ const PendingPayment = () => {
 
   return (
     <div>
+      <IncomeAnalyze filteredTransactions={filteredTransactions} />
       <div className="pt-4 flex space-x-10">
         <div className="flex items-center">
           <Space direction="horizontal" size="middle" style={{ width: "100%" }}>
