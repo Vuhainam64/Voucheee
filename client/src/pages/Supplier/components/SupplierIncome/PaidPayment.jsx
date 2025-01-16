@@ -41,7 +41,9 @@ const PaidPayment = () => {
             formattedDate: new Date(item.createDate).toLocaleDateString(
               "vi-VN"
             ), // Định dạng để hiển thị
-            orderStatus: "Chờ thanh toán",
+            orderStatus: `${
+              item.status === "PAID" ? "Đã thanh toán" : "Chờ thanh toán"
+            }`,
             estimatedPayment: `${item.amount.toLocaleString()} đ`,
             paidAmount: `${item.afterBalance.toLocaleString()} đ`,
             statementCode: item.id,

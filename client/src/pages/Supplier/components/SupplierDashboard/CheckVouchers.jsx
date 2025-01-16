@@ -97,10 +97,27 @@ const CheckVouchers = () => {
     setIsModalVisible(true);
   };
 
+  const exportSelectedColumns = (data) => {
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      modalname: item.modalname,
+      modalId: item.modalId,
+      status: item.status,
+      image: item.image,
+      startDate: item.startDate,
+      endDate: item.endDate,
+      code: item.code,
+      newCode: item.newCode,
+      comment: item.comment,
+      updateStatus: item.updateStatus,
+    }));
+  };
+
   const handleOk = async () => {
     setIsModalVisible(false);
     try {
-      await updateListCodeStatusConverting(selectedRowKeys);
+      const updateRes = await updateListCodeStatusConverting(selectedRowKeys);
       message.success(
         "Vouchers đã được chuyển trạng thái sang chờ chuyển đổi."
       );
@@ -109,7 +126,8 @@ const CheckVouchers = () => {
         const selectedVouchers = vouchers.filter((voucher) =>
           selectedRowKeys.includes(voucher.id)
         );
-        exportToExcel(selectedVouchers, "vouchers");
+        const filteredVouchers = exportSelectedColumns(selectedVouchers);
+        exportToExcel(filteredVouchers, updateRes.value.updateid);
       }
 
       await fetchVouchers();

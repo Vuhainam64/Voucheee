@@ -8,6 +8,7 @@ import {
   Menu,
   message,
   Tooltip,
+  Select,
 } from "antd";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
@@ -22,6 +23,7 @@ import { ConvertingDetail } from "./components/ConvertVoucher";
 dayjs.extend(isBetween);
 
 const { Search } = Input;
+const { Option } = Select;
 
 const ConvertVoucher = () => {
   const [vouchers, setVouchers] = useState([]);
@@ -29,6 +31,8 @@ const ConvertVoucher = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("Tất cả");
+  const [sortOrder, setSortOrder] = useState("desc"); // "desc" for newest, "asc" for oldest
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
 
@@ -56,24 +60,46 @@ const ConvertVoucher = () => {
     };
 
     fetchVouchers();
-  }, []);
+  }, [isModalVisible]);
 
   const handleSearch = (value) => {
     setSearchText(value);
-    filterData(value, selectedDate);
+    filterData(value, selectedDate, selectedStatus, sortOrder);
   };
 
   const handleDateChange = (date, dateString) => {
     setSelectedDate(dateString);
-    filterData(searchText, dateString);
+    filterData(searchText, dateString, selectedStatus, sortOrder);
   };
 
-  const filterData = (text, date) => {
-    const filtered = vouchers.filter((voucher) => {
+  const handleStatusChange = (value) => {
+    setSelectedStatus(value);
+    filterData(searchText, selectedDate, value, sortOrder);
+  };
+
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+    filterData(searchText, selectedDate, selectedStatus, value);
+  };
+
+  const filterData = (text, date, status, order) => {
+    let filtered = vouchers.filter((voucher) => {
       const matchesID = voucher.id.includes(text);
       const matchesDate = date ? dayjs(voucher.time).isSame(date, "day") : true;
-      return matchesID && matchesDate;
+      const matchesStatus =
+        status === "Tất cả" ||
+        (status === "Đã xử lý" && voucher.status === "Đã xử lý") ||
+        (status === "Chưa xử lý" && voucher.status === "Chưa xử lý");
+      return matchesID && matchesDate && matchesStatus;
     });
+
+    // Sort the filtered data
+    filtered = filtered.sort((a, b) => {
+      return order === "desc"
+        ? dayjs(b.time).valueOf() - dayjs(a.time).valueOf()
+        : dayjs(a.time).valueOf() - dayjs(b.time).valueOf();
+    });
+
     setFilteredVouchers(filtered);
   };
 
@@ -96,8 +122,6 @@ const ConvertVoucher = () => {
       onClick={({ key }) => handleMenuClick(key, voucher)}
       items={[
         { key: "details", label: "Xem chi tiết" },
-        { key: "export", label: "Xuất Excel" },
-        { key: "import", label: "Nhập Excel" },
         { key: "cancel", label: "Huỷ" },
       ]}
     />
@@ -160,14 +184,33 @@ const ConvertVoucher = () => {
         <div className="text-xl font-semibold">
           Danh sách voucher đang chờ chuyển đổi
         </div>
-        {/* Search and Date Filter */}
+        {/* Filters */}
         <div className="flex items-center space-x-4">
           <Search
-            placeholder="Tìm kiếm voucher"
+            placeholder="Tìm kiếm theo ID"
             onSearch={handleSearch}
             style={{ width: 300 }}
           />
           <DatePicker onChange={handleDateChange} />
+          <Select
+            placeholder="Lọc theo trạng thái"
+            onChange={handleStatusChange}
+            style={{ width: 200 }}
+            defaultValue="Tất cả"
+          >
+            <Option value="Tất cả">Tất cả</Option>
+            <Option value="Đã xử lý">Đã xử lý</Option>
+            <Option value="Chưa xử lý">Chưa xử lý</Option>
+          </Select>
+          <Select
+            placeholder="Sắp xếp"
+            onChange={handleSortChange}
+            style={{ width: 200 }}
+            defaultValue="desc"
+          >
+            <Option value="desc">Mới nhất</Option>
+            <Option value="asc">Cũ nhất</Option>
+          </Select>
         </div>
       </div>
 
@@ -180,7 +223,7 @@ const ConvertVoucher = () => {
         className="bg-white rounded-xl"
       />
 
-      {/* Use ConvertingDetail Modal */}
+      {/* Converting Detail Modal */}
       {selectedVoucher && (
         <ConvertingDetail
           visible={isModalVisible}

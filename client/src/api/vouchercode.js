@@ -54,13 +54,16 @@ export const updateListCodeStatusConverting = async (codeIds) => {
     }
 };
 
-export const getAllVoucherConverting = async () => {
+export const getAllVoucherConverting = async (updateId) => {
     try {
         const res = await axios.get(
             `${BACKEND_API_URL}/v1/voucherCode/get_supplier_voucher_code_converting`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
+                },
+                params: {
+                    updateId,
                 },
             }
         );
@@ -70,6 +73,7 @@ export const getAllVoucherConverting = async () => {
         throw err;
     }
 };
+
 
 export const getVoucherConvertingByID = async (ID) => {
     try {
