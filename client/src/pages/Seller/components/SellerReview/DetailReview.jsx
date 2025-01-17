@@ -25,6 +25,7 @@ const columns = [
   {
     title: "Nội dung",
     dataIndex: "content",
+    width: "25%",
   },
   {
     title: "Đánh giá",
@@ -45,6 +46,9 @@ const DetailReview = () => {
   const [refresh, setRefresh] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
+  const [isBulkReplyModalVisible, setIsBulkReplyModalVisible] = useState(false);
+  const [bulkReplyContent, setBulkReplyContent] = useState("");
+
   const [filters, setFilters] = useState({
     modalId: "",
     qualityStar: null,
@@ -97,6 +101,7 @@ const DetailReview = () => {
               <div className="text-gray-400">
                 Đã tạo: {new Date(item.createDate).toLocaleString()}
               </div>
+              <div className="text-gray-400">Trả lời: {item.rep}</div>
             </div>
           ),
           rate: (
@@ -273,6 +278,38 @@ const DetailReview = () => {
     setReplyContent("");
   };
 
+  const repplyAll = () => {
+    setIsBulkReplyModalVisible(true); // Hiển thị popup trả lời hàng loạt
+  };
+
+  const handleBulkReplySubmit = async () => {
+    if (!bulkReplyContent.trim()) {
+      message.error("Nội dung trả lời không được để trống!");
+      return;
+    }
+
+    const promises = selectedRowKeys.map((id) =>
+      replyRating(id, bulkReplyContent)
+    );
+
+    try {
+      await Promise.all(promises);
+      message.success("Phản hồi hàng loạt thành công!");
+      setRefresh((prev) => prev + 1);
+    } catch (err) {
+      message.error("Phản hồi hàng loạt thất bại!");
+    }
+
+    setBulkReplyContent("");
+    setIsBulkReplyModalVisible(false);
+    setSelectedRowKeys([]);
+  };
+
+  const handleBulkReplyCancel = () => {
+    setIsBulkReplyModalVisible(false);
+    setBulkReplyContent("");
+  };
+
   return (
     <div className="space-y-4">
       {/* Lọc đánh giá  */}
@@ -354,9 +391,8 @@ const DetailReview = () => {
           <Flex align="center" gap="middle">
             <Button
               type="primary"
-              onClick={start}
-              disabled={!hasSelected}
-              loading={loading}
+              onClick={repplyAll}
+              disabled={selectedRowKeys.length === 0}
             >
               Phản hồi hàng loạt
             </Button>
@@ -385,6 +421,23 @@ const DetailReview = () => {
           placeholder="Nhập nội dung trả lời"
           value={replyContent}
           onChange={(e) => setReplyContent(e.target.value)}
+        />
+      </Modal>
+
+      {/* Popup trả lời hàng loạt */}
+      <Modal
+        title="Phản hồi hàng loạt"
+        open={isBulkReplyModalVisible}
+        onOk={handleBulkReplySubmit}
+        onCancel={handleBulkReplyCancel}
+        okText="Gửi"
+        cancelText="Hủy"
+      >
+        <TextArea
+          rows={4}
+          placeholder="Nhập nội dung trả lời chung cho các đánh giá đã chọn"
+          value={bulkReplyContent}
+          onChange={(e) => setBulkReplyContent(e.target.value)}
         />
       </Modal>
     </div>

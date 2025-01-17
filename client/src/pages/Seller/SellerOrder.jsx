@@ -35,10 +35,10 @@ const columns = [
     title: "Trạng thái",
     dataIndex: "status",
   },
-  {
-    title: "Thao tác",
-    dataIndex: "action",
-  },
+  // {
+  //   title: "Thao tác",
+  //   dataIndex: "action",
+  // },
 ];
 
 const SellerOrder = () => {
@@ -130,17 +130,17 @@ const SellerOrder = () => {
         status: (
           <div>
             <div className="font-semibold">{order.status || "Chờ xử lý"}</div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <AiOutlinePrinter />
               <div>Hoá đơn</div>
-            </div>
+            </div> */}
           </div>
         ),
-        action: (
-          <Button type="primary" className="w-full">
-            Chuẩn bị hàng và Gửi
-          </Button>
-        ),
+        // action: (
+        //   <Button type="primary" className="w-full">
+        //     Chuẩn bị hàng và Gửi
+        //   </Button>
+        // ),
       }));
   };
 
