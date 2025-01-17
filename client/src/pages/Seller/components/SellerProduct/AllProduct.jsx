@@ -309,11 +309,11 @@ const AllProduct = ({ setTotalVoucher }) => {
             onChange={handleSupplierChange}
           >
             <Option value="Option1">Tất cả</Option>
-            <Option value="Option2">GOTIT</Option>
-            <Option value="Option3">URBOX</Option>
-            <Option value="Option4">UTOP</Option>
-            <Option value="Option5">DEALTODAY</Option>
-            <Option value="Option6">GIFTPOP</Option>
+            <Option value="GOTIT">GOTIT</Option>
+            <Option value="URBOX">URBOX</Option>
+            <Option value="UTOP">UTOP</Option>
+            <Option value="DEALTODAY">DEALTODAY</Option>
+            <Option value="GIFTPOP">GIFTPOP</Option>
           </Select>
         </Space.Compact>
         <Space.Compact className="flex-1">
