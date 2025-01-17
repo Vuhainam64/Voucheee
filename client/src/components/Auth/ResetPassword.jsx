@@ -13,7 +13,7 @@ import UserAuthInput from "./UserAuthInput";
 
 function ResetPassword(props) {
   const user = useSelector((state) => state?.user?.user);
-  const [email, setEmail] = useState(user.email || "");
+  const [email, setEmail] = useState(user?.email || ""); // Safe fallback for user.email
   const setGetEmailValidationStatus = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
 
@@ -27,8 +27,9 @@ function ResetPassword(props) {
       }
     }
   };
+
   return (
-    <div className="fixed z-30 top-0 inset-x-0 px-4 pt-6 sm:px-0 sm:flex sm:items-top sm:justify-center">
+    <div className="fixed z-30 top-16 inset-x-0 px-4 pt-6 sm:px-0 sm:flex sm:items-top sm:justify-center">
       <div className="fixed inset-0 transform">
         <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
       </div>
@@ -40,7 +41,7 @@ function ResetPassword(props) {
             </button>
           </div>
 
-          {/* email reset form  */}
+          {/* email reset form */}
           {!sendEmail ? (
             <>
               <div className="sm:flex sm:flex-col sm:items-start">
@@ -93,7 +94,7 @@ function ResetPassword(props) {
             </>
           ) : (
             <>
-              {/* check email  */}
+              {/* check email */}
               <div className="sm:flex sm:flex-col sm:items-start">
                 <div className="flex w-full justify-center mb-4">
                   <div className="w-14 h-14 rounded-full flex justify-center items-center bg-blue-100 text-blue-600">
