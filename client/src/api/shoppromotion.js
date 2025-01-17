@@ -105,3 +105,20 @@ export const deletePromotion = async (id) => {
         throw error;
     }
 };
+
+export const getCurrentShopPromotion = async () => {
+    try {
+        const res = await axios.get(
+            `${BACKEND_API_URL}/v1/shopPromotion/get_current_shop_promotions`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+        return res.data;
+    } catch (err) {
+        console.error("Error getAllShopPromotion:", err);
+        throw err;
+    }
+};

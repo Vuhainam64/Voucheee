@@ -18,17 +18,14 @@ import { DownOutlined } from "@ant-design/icons";
 
 import {
   deletePromotion,
-  getAllPromotionByShopID,
+  getCurrentShopPromotion,
   updatePromotionStatus,
 } from "../../../../api/shoppromotion";
 import { CreatePromotion, EditPromotion } from "./components/DiscountCodeModal";
-import { useSelector } from "react-redux";
 
 const { RangePicker } = DatePicker;
 
 const DiscountCodeModal = ({ isVisible, onClose }) => {
-  const buyerId = useSelector((state) => state.cart.cart.buyerId);
-
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,9 +39,9 @@ const DiscountCodeModal = ({ isVisible, onClose }) => {
     const fetchPromotions = async () => {
       setLoading(true);
       try {
-        const response = await getAllPromotionByShopID(buyerId);
-        setData(response);
-        setFilteredData(response);
+        const response = await getCurrentShopPromotion();
+        setData(response.results);
+        setFilteredData(response.results);
       } catch (error) {
         message.error("Không thể tải danh sách mã giảm giá!");
         console.error("Error fetching shop promotions:", error);
