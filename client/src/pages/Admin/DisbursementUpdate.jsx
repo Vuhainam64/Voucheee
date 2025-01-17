@@ -104,16 +104,22 @@ const DisbursementUpdate = () => {
       title: "Số lượng",
       dataIndex: "count",
       key: "count",
+      sorter: (a, b) => a.count - b.count,
     },
     {
       title: "Thời gian",
       dataIndex: "updateDate",
       key: "updateDate",
+      sorter: (a, b) => new Date(a.rawDate) - new Date(b.rawDate),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: Array.from(new Set(data.map((item) => item.status))).map(
+        (status) => ({ text: status, value: status })
+      ),
+      onFilter: (value, record) => record.status === value,
     },
     {
       title: "Chức năng",
