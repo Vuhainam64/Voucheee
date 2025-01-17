@@ -32,20 +32,6 @@ const Zalo = () => {
             <div>Hải Nam</div>
           </div>
         </div>
-        <div className="py-8 italic">
-          Các trường hợp Lỗi thao tác các bác mở file error.txt gửi vào link ghi
-          nhận lỗi giúp bên em để khắc phục trong thời gian sớm nhất
-        </div>
-        <div className="italic">
-          Hoặc các bạn gửi file error.txt qua telegram{" "}
-          <Link
-            to={"https://t.me/autotool6789"}
-            className="text-xl text-blue-400 underline"
-          >
-            @autotool6789
-          </Link>{" "}
-          mình sẽ kiểm tra và cố gắng fix trong thời gian sớm nhất
-        </div>
       </div>
     </div>
   );

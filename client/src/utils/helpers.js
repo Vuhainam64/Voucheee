@@ -145,7 +145,7 @@ export const ClientMenus = [
       {
         title: "Social",
         Icon: IoShareSocial,
-        uri: "/seller/social",
+        uri: "https://www.facebook.com/profile.php?id=61561068212943",
       },
     ],
   },
@@ -231,7 +231,7 @@ export const AdminMenus = [
       {
         title: "Social",
         Icon: IoShareSocial,
-        uri: "/admin/social",
+        uri: "https://www.facebook.com/profile.php?id=61561068212943",
       },
     ],
   },
@@ -313,7 +313,7 @@ export const SupplierMenus = [
       {
         title: "Social",
         Icon: IoShareSocial,
-        uri: "/supplier/social",
+        uri: "https://www.facebook.com/profile.php?id=61561068212943",
       },
     ],
   },

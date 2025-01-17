@@ -3,6 +3,7 @@ import React from "react";
 import { IncomePayment } from "./components/SupplierIncome";
 import { IoWallet } from "react-icons/io5";
 import { FaChevronRight } from "react-icons/fa";
+import { BankInfor } from "./components/SupplierTransaction";
 
 const SupplierIncome = () => {
   return (
@@ -13,7 +14,7 @@ const SupplierIncome = () => {
         <FaChevronRight />
         <div>Thu nhập của tôi</div>
       </div>
-
+      <BankInfor />
       <IncomePayment />
     </div>
   );
