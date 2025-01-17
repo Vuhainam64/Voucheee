@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  Dropdown,
-  Input,
-  Menu,
-  Select,
-  Space,
-  Table,
-} from "antd";
-import { FaChevronDown } from "react-icons/fa";
+import { Button, DatePicker, Dropdown, Menu, Select, Space, Table } from "antd";
 import dayjs from "dayjs";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import * as XLSX from "xlsx";
 
+import { FaChevronDown } from "react-icons/fa";
+
 import { getSupplierOutTransaction } from "../../../../api/wallettransaction";
 
-const { Search } = Input;
 const { RangePicker } = DatePicker;
 
 const ListTransaction = () => {

@@ -11,6 +11,7 @@ import {
   Dropdown,
   Menu,
   Image,
+  message,
 } from "antd";
 import { FaChevronRight } from "react-icons/fa6";
 import { MdOutlineDashboard } from "react-icons/md";
@@ -98,7 +99,7 @@ const ReturnRequest = () => {
 
   const handleModalSubmit = async () => {
     if (reason.trim() === "") {
-      alert("Please provide a reason.");
+      message.warning("Please provide a reason.");
       return;
     }
 
@@ -110,13 +111,13 @@ const ReturnRequest = () => {
       );
 
       if (response.result) {
-        alert(response.message); // Show success message
+        message.success(response.message); // Show success message
         setIsModalVisible(false); // Close the modal
         fetchRefunds(); // Re-fetch the list to reflect the status change
       }
     } catch (error) {
       console.error("Failed to update refund status:", error);
-      alert("An error occurred while updating the refund status.");
+      message.error("An error occurred while updating the refund status.");
     }
   };
 

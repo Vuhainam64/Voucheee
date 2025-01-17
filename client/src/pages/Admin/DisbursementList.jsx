@@ -144,25 +144,25 @@ const DisbursementList = () => {
       key: "time",
       sorter: (a, b) => new Date(a.time) - new Date(b.time),
     },
-    {
-      title: "Chức năng",
-      key: "actions",
-      render: (_, record) => (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item key="1">Xem chi tiết</Menu.Item>
-              <Menu.Item key="2">Download</Menu.Item>
-              <Menu.Item key="3">Xuất Excel</Menu.Item>
-            </Menu>
-          }
-        >
-          <Button>
-            Xem thêm <DownOutlined />
-          </Button>
-        </Dropdown>
-      ),
-    },
+    // {
+    //   title: "Chức năng",
+    //   key: "actions",
+    //   render: (_, record) => (
+    //     <Dropdown
+    //       overlay={
+    //         <Menu>
+    //           <Menu.Item key="1">Xem chi tiết</Menu.Item>
+    //           <Menu.Item key="2">Download</Menu.Item>
+    //           <Menu.Item key="3">Xuất Excel</Menu.Item>
+    //         </Menu>
+    //       }
+    //     >
+    //       <Button>
+    //         Xem thêm <DownOutlined />
+    //       </Button>
+    //     </Dropdown>
+    //   ),
+    // },
   ];
 
   const handleRowSelect = (key, checked) => {
