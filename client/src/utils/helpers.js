@@ -4,7 +4,6 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import {
   MdCampaign,
   MdDashboard,
-  MdHistory,
   MdOutlineDashboard,
   MdOutlineRateReview,
   MdOutlineSettings,
@@ -12,7 +11,6 @@ import {
 import {
   RiCustomerService2Fill,
   RiInboxArchiveFill,
-  RiRefundFill,
 } from "react-icons/ri";
 import { CiBank, CiBoxList } from "react-icons/ci";
 import { BsShop } from "react-icons/bs";
@@ -96,11 +94,11 @@ export const ClientMenus = [
         Icon: TbTruckDelivery,
         uri: "/seller/order",
       },
-      {
-        title: "Quản lý đơn hoàn trả",
-        Icon: RiRefundFill,
-        uri: "/seller/reverse",
-      },
+      // {
+      //   title: "Quản lý đơn hoàn trả",
+      //   Icon: RiRefundFill,
+      //   uri: "/seller/reverse",
+      // },
       {
         title: "Quản lý đánh giá",
         Icon: MdOutlineRateReview,
@@ -192,11 +190,11 @@ export const AdminMenus = [
         Icon: GrUploadOption,
         uri: "/admin/disbursementUpdate",
       },
-      {
-        title: "Lịch sử giải ngân",
-        Icon: MdHistory,
-        uri: "/admin/disbursementHistory",
-      },
+      // {
+      //   title: "Lịch sử giải ngân",
+      //   Icon: MdHistory,
+      //   uri: "/admin/disbursementHistory",
+      // },
     ],
   },
   {

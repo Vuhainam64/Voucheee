@@ -347,7 +347,7 @@ const UserManagerment = () => {
           rowClassName="table-row"
           pagination={{
             current: currentPage,
-            pageSize: 10,
+            pageSize: 7,
             total: filteredUsers.length,
             onChange: (page) => setCurrentPage(page),
           }}

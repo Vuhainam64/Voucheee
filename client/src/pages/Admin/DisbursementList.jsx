@@ -9,6 +9,9 @@ import {
   message,
   Spin,
   Modal,
+  Input,
+  DatePicker,
+  Select,
 } from "antd";
 import * as XLSX from "xlsx";
 
@@ -22,16 +25,30 @@ import {
 } from "../../api/withdraw";
 import { DisbursementChart, Summary } from "./components/DisbursementList";
 
+const { RangePicker } = DatePicker;
+
 const DisbursementList = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [bankName, setBankName] = useState(null);
+  const [BankNumber, setBankNumber] = useState(null);
+  const [note, setNote] = useState(null);
+  const [StartDate, setStartDate] = useState(null);
+  const [EndDate, setEndDate] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const withdrawData = await getALLWithdraw(0);
+      const withdrawData = await getALLWithdraw(
+        0,
+        bankName,
+        BankNumber,
+        note,
+        StartDate,
+        EndDate
+      );
       setData(
         withdrawData.results.map((item, index) => ({
           key: item.id,
@@ -53,7 +70,7 @@ const DisbursementList = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [bankName, BankNumber, note, StartDate, EndDate]);
 
   const columns = [
     {
@@ -71,22 +88,40 @@ const DisbursementList = () => {
       title: "Số tài khoản (Account No.)",
       dataIndex: "bankNumber",
       key: "bankNumber",
+      filters: [...new Set(data.map((item) => item.bankNumber))].map((num) => ({
+        text: num,
+        value: num,
+      })),
+      onFilter: (value, record) => record.bankNumber === value,
     },
     {
       title: "Tên người thụ hưởng (Beneficiary)",
       dataIndex: "bankAccount",
       key: "bankAccount",
+      filters: [...new Set(data.map((item) => item.bankAccount))].map(
+        (name) => ({
+          text: name,
+          value: name,
+        })
+      ),
+      onFilter: (value, record) => record.bankAccount === value,
     },
     {
       title: "Ngân hàng thụ hưởng/Chi nhánh (Beneficiary Bank)",
       dataIndex: "bankName",
       key: "bankName",
+      filters: [...new Set(data.map((item) => item.bankName))].map((name) => ({
+        text: name,
+        value: name,
+      })),
+      onFilter: (value, record) => record.bankName === value,
     },
     {
       title: "Số tiền (Amount)",
       dataIndex: "amount",
       key: "amount",
       render: (value) => `${value.toLocaleString()} đ`,
+      sorter: (a, b) => a.amount - b.amount,
     },
     {
       title: "Nội dung chuyển khoản (Payment Detail)",
@@ -97,11 +132,17 @@ const DisbursementList = () => {
       title: "Vai trò (Role)",
       dataIndex: "role",
       key: "role",
+      filters: [...new Set(data.map((item) => item.role))].map((role) => ({
+        text: role,
+        value: role,
+      })),
+      onFilter: (value, record) => record.role === value,
     },
     {
       title: "Thời gian (Time)",
       dataIndex: "time",
       key: "time",
+      sorter: (a, b) => new Date(a.time) - new Date(b.time),
     },
     {
       title: "Chức năng",
@@ -177,7 +218,7 @@ const DisbursementList = () => {
             item.bankAccount, // Tên người thụ hưởng
             item.bankName, // Ngân hàng thụ hưởng
             item.amount, // Số tiền
-            item.note, // Nội dung chuyển khoản
+            `${item.note} Ma giao dich ${item.key}`, // Nội dung chuyển khoản
           ]);
         });
 
@@ -223,18 +264,47 @@ const DisbursementList = () => {
       </div>
 
       {/* Title and Export Button */}
-      <div className="bg-white rounded-lg p-4 flex justify-between items-center">
-        <div className="text-xl font-bold">Danh sách giải ngân</div>
-        <Button
-          type="primary"
-          onClick={() => {
-            setIsModalVisible(true);
-          }}
-          loading={loading}
-          disabled={selectedRows.length === 0}
-        >
-          Xuất Excel
-        </Button>
+      <div className="bg-white rounded-lg p-4 space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="text-xl font-bold">Danh sách giải ngân</div>
+          <Button
+            type="primary"
+            onClick={() => {
+              setIsModalVisible(true);
+            }}
+            loading={loading}
+            disabled={selectedRows.length === 0}
+          >
+            Xuất Excel
+          </Button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <Input
+              placeholder="Người thụ hưởng"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+            />
+            <Input
+              placeholder="Số tài khoản"
+              value={BankNumber}
+              onChange={(e) => setBankNumber(e.target.value)}
+            />
+            <Input
+              placeholder="Nội dung chuyển khoản"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+            />
+          </div>
+          <RangePicker
+            className="w-full"
+            onChange={(dates) => {
+              setStartDate(dates ? dates[0].toISOString().split("T")[0] : null);
+              setEndDate(dates ? dates[1].toISOString().split("T")[0] : null);
+            }}
+          />
+        </div>
       </div>
 
       {/* Table */}

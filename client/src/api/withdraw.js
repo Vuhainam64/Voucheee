@@ -1,14 +1,22 @@
 import axios from "axios";
 import { access_token, BACKEND_API_URL } from ".";
 
-export const getALLWithdraw = async (status) => {
+export const getALLWithdraw = async (status, BankName, BankNumber, note, StartDate, EndDate) => {
     try {
         const res = await axios.get(
-            `${BACKEND_API_URL}/v1/withdraw/get_all_withdraw_request?status=${status}`,
+            `${BACKEND_API_URL}/v1/withdraw/get_all_withdraw_request`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                 },
+                params: {
+                    status,
+                    BankName,
+                    BankNumber,
+                    note,
+                    StartDate,
+                    EndDate
+                }
             }
         );
         return res.data;

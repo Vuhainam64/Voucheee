@@ -1,8 +1,9 @@
 import React from "react";
 
-import { IncomePayment } from "./components/SupplierIncome";
 import { IoWallet } from "react-icons/io5";
 import { FaChevronRight } from "react-icons/fa";
+
+import { IncomePayment } from "./components/SupplierIncome";
 import { BankInfor } from "./components/SupplierTransaction";
 
 const SupplierIncome = () => {
