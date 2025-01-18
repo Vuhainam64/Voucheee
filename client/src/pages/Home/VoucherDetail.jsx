@@ -265,7 +265,9 @@ const VoucherDetail = () => {
         <div className="font-semibold text-lg">Điều kiện sử dụng</div>
         <div dangerouslySetInnerHTML={{ __html: voucher.description }}></div>
 
-        <div className="font-semibold text-lg">Địa chỉ cửa hàng</div>
+        <div className="font-semibold text-lg">
+          Địa chỉ cửa hàng/ Nơi sử dụng
+        </div>
         <div className="max-h-52 overflow-y-scroll space-y-2">
           {voucher.addresses && voucher.addresses.length > 0 ? (
             voucher.addresses.map((address) => (

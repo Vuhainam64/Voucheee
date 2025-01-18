@@ -150,7 +150,7 @@ const SellerPublish = () => {
                 />
               </div>
               <div className="flex items-center space-x-4">
-                <Button>Lưu bản nháp</Button>
+                {/* <Button>Lưu bản nháp</Button> */}
                 <Button type="primary" htmlType="submit">
                   Gửi đi
                 </Button>

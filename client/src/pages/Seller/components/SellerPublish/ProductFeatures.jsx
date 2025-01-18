@@ -125,7 +125,9 @@ const ProductFeatures = ({ setBrandId, setSupplierId }) => {
       </div>
 
       <div>
-        <div className="font-semibold text-lg">Địa chỉ cửa hàng</div>
+        <div className="font-semibold text-lg">
+          Địa chỉ cửa hàng/ Nơi sử dụng
+        </div>
         <div className="max-h-52 overflow-y-scroll space-y-2">
           {brandDetails &&
             brandDetails.addresses.map((address) => (
