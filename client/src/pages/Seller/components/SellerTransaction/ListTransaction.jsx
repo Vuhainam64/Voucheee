@@ -37,20 +37,29 @@ const ListTransaction = () => {
     },
     {
       title: "Thời gian giao dịch",
-      dataIndex: "createDate", // Dùng createDate từ API
+      dataIndex: "createDate",
       key: "createDate",
-      render: (text) => new Date(text).toLocaleString(), // Định dạng ngày tháng
+      render: (text) => new Date(text).toLocaleString(),
+      sorter: (a, b) => new Date(a.createDate) - new Date(b.createDate), // Sắp xếp theo thời gian
     },
     {
       title: "Loại giao dịch",
-      dataIndex: "type", // Dùng type từ API
+      dataIndex: "type",
       key: "type",
+      filters: [
+        { text: "Rút tiền tự động", value: "AUTO_WITHDRAW" },
+        { text: "Rút tiền thủ công", value: "MANUAL_WITHDRAW" },
+        { text: "Đơn hàng của người bán", value: "SELLER_ORDER" },
+      ],
+      onFilter: (value, record) => record.type === value, // Lọc theo type
       render: (text) => {
         switch (text) {
           case "AUTO_WITHDRAW":
             return "Rút tiền tự động";
           case "MANUAL_WITHDRAW":
             return "Rút tiền thủ công";
+          case "SELLER_ORDER":
+            return "Đơn hàng của người bán";
           default:
             return text;
         }
@@ -63,9 +72,10 @@ const ListTransaction = () => {
     },
     {
       title: "Số tiền",
-      dataIndex: "amount", // Dùng amount từ API
+      dataIndex: "amount",
       key: "amount",
-      render: (text) => `${text.toLocaleString()} VND`, // Hiển thị số tiền có dấu phẩy
+      sorter: (a, b) => a.amount - b.amount, // Sắp xếp theo số tiền
+      render: (text) => `${text.toLocaleString()} VND`,
     },
     {
       title: "Trạng thái",
@@ -84,39 +94,10 @@ const ListTransaction = () => {
       </div>
       <div className="space-y-4 mt-4">
         <Space className="w-full justify-between">
-          <div className="flex items-center space-x-4">
-            <Select
-              defaultValue="Loại giao dịch"
-              options={[
-                { value: "1", label: "Tất cả" },
-                { value: "2", label: "Từ ngân hàng hoàn về" },
-                { value: "3", label: "Thanh toán thất bại" },
-                { value: "4", label: "Rút tiền theo yêu cầu" },
-                { value: "5", label: "Rút tiền tự động" },
-              ]}
-              className="w-225"
-            />
+          {/* <div className="flex items-center space-x-4">
             <RangePicker />
             <Search placeholder="Mã số giao dịch" className="w-225" />
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button>Thiết lập lại</Button>
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item key="1">Chi tiết giao dịch (excel)</Menu.Item>
-                  <Menu.Item key="2">Chi tiết giao dịch (csv)</Menu.Item>
-                </Menu>
-              }
-            >
-              <Button>
-                <Space>
-                  Xuất dữ liệu
-                  <FaChevronDown />
-                </Space>
-              </Button>
-            </Dropdown>
-          </div>
+          </div> */}
         </Space>
         <Table
           columns={columns}

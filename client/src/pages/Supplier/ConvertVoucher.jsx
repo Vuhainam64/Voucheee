@@ -250,6 +250,9 @@ const ConvertVoucher = () => {
         loading={loading}
         rowKey="id"
         className="bg-white rounded-xl"
+        pagination={{
+          pageSize: 7,
+        }}
       />
 
       {/* Converting Detail Modal */}
