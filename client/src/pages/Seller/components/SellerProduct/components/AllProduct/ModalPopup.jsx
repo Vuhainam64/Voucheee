@@ -38,8 +38,9 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-  const [editMode, setEditMode] = useState(false); // Track whether we're editing or adding
-  const [currentRecord, setCurrentRecord] = useState(null); // Store the current record to edit
+  const [editMode, setEditMode] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState(null);
+  const [usedVoucherCodes, setUsedVoucherCodes] = useState([]);
   const [form] = Form.useForm(); // Create form instance
 
   useEffect(() => {
@@ -51,7 +52,9 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
           setModalData(data.results);
 
           setUnusedVoucherCodes(
-            data.results.voucherCodes.filter((code) => code.status === "UNUSED")
+            data.results.voucherCodes.filter(
+              (code) => code.status === "UNUSED" && !code.orderId
+            )
           );
           setPendingVoucherCodes(
             data.results.voucherCodes.filter(
@@ -62,6 +65,9 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
             data.results.voucherCodes.filter(
               (code) => code.status === "CONVERTING"
             )
+          );
+          setUsedVoucherCodes(
+            data.results.voucherCodes.filter((code) => code.orderId)
           );
         } catch (error) {
           console.error("Error loading modal data:", error);
@@ -318,12 +324,8 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
                 </TabPane>
                 <TabPane tab="Đã Bán" key="4">
                   <Table
-                    columns={modalPopupColumns.filter(
-                      (column) => column.visible !== false
-                    )}
-                    dataSource={modalData.voucherCodes.filter(
-                      (code) => code.status === "USED"
-                    )}
+                    columns={modalPopupColumns}
+                    dataSource={usedVoucherCodes}
                     rowKey={(record) => record.id}
                     pagination={{ pageSize: 5 }}
                   />
