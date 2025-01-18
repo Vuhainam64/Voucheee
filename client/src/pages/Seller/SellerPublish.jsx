@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Alert, Anchor, Button, Form, message, Progress, Steps } from "antd";
+import { Alert, Anchor, Button, Form, message, Progress } from "antd";
 
 import { FaBoxes } from "react-icons/fa";
 import { AiFillAccountBook } from "react-icons/ai";

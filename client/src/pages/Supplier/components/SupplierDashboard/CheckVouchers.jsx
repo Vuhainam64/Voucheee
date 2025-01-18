@@ -34,6 +34,12 @@ const CheckVouchers = () => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      filters: vouchers
+        .map((voucher) => ({ text: voucher.name, value: voucher.name }))
+        .filter(
+          (v, i, self) => self.findIndex((t) => t.value === v.value) === i
+        ), // Loại bỏ các giá trị trùng lặp
+      onFilter: (value, record) => record.name.includes(value),
     },
     {
       title: "Status",
@@ -60,11 +66,15 @@ const CheckVouchers = () => {
       title: "Start Date",
       dataIndex: "startDate",
       key: "startDate",
+      sorter: (a, b) => new Date(a.startDate) - new Date(b.startDate), // So sánh giá trị ngày
+      sortDirections: ["ascend", "descend"], // Hướng sắp xếp
     },
     {
       title: "End Date",
       dataIndex: "endDate",
       key: "endDate",
+      sorter: (a, b) => new Date(a.endDate) - new Date(b.endDate), // So sánh giá trị ngày
+      sortDirections: ["ascend", "descend"],
     },
   ];
 

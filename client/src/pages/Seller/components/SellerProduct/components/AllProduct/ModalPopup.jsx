@@ -353,7 +353,20 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
           <Form.Item
             label="End Date"
             name="endDate"
-            rules={[{ required: true, message: "Please select the end date!" }]}
+            dependencies={["startDate"]} // Tham chiếu đến giá trị của startDate
+            rules={[
+              { required: true, message: "Please select the end date!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || value.isAfter(getFieldValue("startDate"))) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("End date must be greater than start date!")
+                  );
+                },
+              }),
+            ]}
           >
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>

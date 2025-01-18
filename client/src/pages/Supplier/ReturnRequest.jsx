@@ -218,6 +218,7 @@ const ReturnRequest = () => {
       dataIndex: "createDate",
       key: "createDate",
       render: (date) => new Date(date).toLocaleString(),
+      sorter: (a, b) => new Date(a.createDate) - new Date(b.createDate),
     },
     {
       title: "Chức năng",

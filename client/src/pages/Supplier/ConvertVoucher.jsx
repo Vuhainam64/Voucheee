@@ -148,6 +148,35 @@ const ConvertVoucher = () => {
       title: "Thời gian",
       dataIndex: "time",
       key: "time",
+      render: (time) => new Date(time).toLocaleString(), // Hiển thị định dạng thời gian
+      sorter: (a, b) => new Date(a.time) - new Date(b.time), // Sắp xếp tăng/giảm dần
+      filters: [
+        {
+          text: "Hôm nay",
+          value: "today",
+        },
+        {
+          text: "7 ngày trước",
+          value: "last7days",
+        },
+        {
+          text: "30 ngày trước",
+          value: "last30days",
+        },
+      ],
+      onFilter: (value, record) => {
+        const now = new Date();
+        const recordDate = new Date(record.time);
+
+        if (value === "today") {
+          return recordDate.toDateString() === now.toDateString(); // Cùng ngày
+        } else if (value === "last7days") {
+          return recordDate > new Date(now.setDate(now.getDate() - 7));
+        } else if (value === "last30days") {
+          return recordDate > new Date(now.setDate(now.getDate() - 30));
+        }
+        return true;
+      },
     },
     {
       title: "Số lượng",
