@@ -316,6 +316,18 @@ const ModalPopup = ({ isVisible, onClose, modalId }) => {
                     pagination={{ pageSize: 5 }}
                   />
                 </TabPane>
+                <TabPane tab="Đã Bán" key="4">
+                  <Table
+                    columns={modalPopupColumns.filter(
+                      (column) => column.visible !== false
+                    )}
+                    dataSource={modalData.voucherCodes.filter(
+                      (code) => code.status === "USED"
+                    )}
+                    rowKey={(record) => record.id}
+                    pagination={{ pageSize: 5 }}
+                  />
+                </TabPane>
               </Tabs>
             </>
           )

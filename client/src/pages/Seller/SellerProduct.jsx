@@ -17,12 +17,12 @@ const SellerProduct = () => {
         <AiFillAccountBook className="text-xl" />
         <div>Sản Phẩm</div>
         <FaChevronRight />
-        <div className="font-bold">Quản Lý Sản Phẩm</div>
+        <div className="font-bold">Quản Lý Voucher</div>
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="font-bold text-xl">Quản Lý Sản Phẩm</div>
+          <div className="font-bold text-xl">Quản Lý Voucher</div>
           <div className="flex items-center space-x-4 py-2">
             <div
               className="flex items-center space-x-2 border-primary text-primary 
@@ -37,7 +37,7 @@ const SellerProduct = () => {
               p-2 px-4 cursor-pointer hover:no-underline hover:text-gray-200"
             >
               <FaPlus />
-              <div>Thêm sản phẩm</div>
+              <div>Thêm Voucher</div>
             </Link>
           </div>
         </div>

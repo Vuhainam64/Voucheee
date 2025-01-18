@@ -15,31 +15,12 @@ const UserProfileContainer = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="flex items-center justify-center cursor-pointer relative">
+    <div className="flex items-center justify-center cursor-pointer relative space-x-2">
       {/* name content  */}
       <div className="flex flex-col items-start justify-start gap-1">
         <h2 className="text-lg font-bold text-primary capitalize text-nowrap">
           {user?.displayName}
         </h2>
-        <div className="flex items-center justify-center gap-2">
-          <div
-            className="w-6 h-6 rounded-full flex items-center justify-center
-            border-2 border-gray-600 text-sm text-heroSecondory"
-          >
-            $
-          </div>
-          {user?.walletBalance ? (
-            <React.Fragment>
-              <p className="text-lg font-semibold text-primary">
-                {user?.walletBalance}
-              </p>
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <p className="text-lg font-semibold text-heroPrimary">0</p>
-            </React.Fragment>
-          )}
-        </div>
       </div>
       {/* img content  */}
       <div

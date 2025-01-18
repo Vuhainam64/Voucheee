@@ -197,24 +197,24 @@ export const AdminMenus = [
       // },
     ],
   },
-  {
-    title: "Quảng cáo",
-    Icon: FaBullhorn,
-    spacing: true,
-    submenu: true,
-    subMenuItems: [
-      {
-        title: "Phân tích",
-        Icon: AiOutlinePieChart,
-        uri: "/admin/analysis",
-      },
-      {
-        title: "Chiến dịch",
-        Icon: MdCampaign,
-        uri: "/admin/campaign",
-      },
-    ],
-  },
+  // {
+  //   title: "Quảng cáo",
+  //   Icon: FaBullhorn,
+  //   spacing: true,
+  //   submenu: true,
+  //   subMenuItems: [
+  //     {
+  //       title: "Phân tích",
+  //       Icon: AiOutlinePieChart,
+  //       uri: "/admin/analysis",
+  //     },
+  //     {
+  //       title: "Chiến dịch",
+  //       Icon: MdCampaign,
+  //       uri: "/admin/campaign",
+  //     },
+  //   ],
+  // },
   {
     title: "Hỗ Trợ",
     Icon: RiCustomerService2Fill,
@@ -236,16 +236,16 @@ export const AdminMenus = [
 ];
 
 export const DashboardMenus = [
-  {
-    id: 10003,
-    menu: "Chức năng",
-    uri: "/dash/account",
-    isAdmin: true,
-  },
+  // {
+  //   id: 10003,
+  //   menu: "Chức năng",
+  //   uri: "/dash/account",
+  //   isAdmin: true,
+  // },
   {
     id: 10004,
-    menu: "Cài đặt",
-    uri: "/admin/users",
+    menu: "Thông tin cá nhân",
+    uri: "/user/myProfile",
     isAdmin: true,
   },
 ];
