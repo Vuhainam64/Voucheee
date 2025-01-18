@@ -10,12 +10,15 @@ import {
   message,
 } from "antd";
 
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
 import { FaChevronRight, FaRegCopy } from "react-icons/fa";
-import { AiOutlinePrinter } from "react-icons/ai";
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { LuBarChartHorizontal } from "react-icons/lu";
 
 import { getSellerOrder } from "../../api/order";
+import { Watermark } from "../../assets/img";
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
@@ -35,10 +38,6 @@ const columns = [
     title: "Trạng thái",
     dataIndex: "status",
   },
-  // {
-  //   title: "Thao tác",
-  //   dataIndex: "action",
-  // },
 ];
 
 const SellerOrder = () => {
@@ -127,20 +126,7 @@ const SellerOrder = () => {
           </div>
         ),
         price: order.totalPrice,
-        status: (
-          <div>
-            <div className="font-semibold">{order.status || "Chờ xử lý"}</div>
-            {/* <div className="flex items-center space-x-2">
-              <AiOutlinePrinter />
-              <div>Hoá đơn</div>
-            </div> */}
-          </div>
-        ),
-        // action: (
-        //   <Button type="primary" className="w-full">
-        //     Chuẩn bị hàng và Gửi
-        //   </Button>
-        // ),
+        status: order.status || "Chờ xử lý",
       }));
   };
 
@@ -152,6 +138,79 @@ const SellerOrder = () => {
       setStartDate(null);
       setEndDate(null);
     }
+  };
+
+  const calculateTotalPrice = () => {
+    return orders.reduce((total, order) => total + order.totalPrice, 0);
+  };
+
+  const exportToPDF = () => {
+    if (selectedRowKeys.length === 0) {
+      message.warning("Vui lòng chọn ít nhất một đơn hàng để xuất!");
+      return;
+    }
+
+    const selectedOrders = orders.filter((order) =>
+      selectedRowKeys.includes(order.orderId)
+    );
+
+    const doc = new jsPDF();
+
+    // Thêm watermark
+    const imgData = Watermark;
+    doc.setFontSize(50);
+    doc.setTextColor(200, 200, 200);
+
+    const tableData = selectedOrders.map((order) => [
+      order.orderId,
+      order.modalId,
+      order.brandName,
+      order.sellerName,
+      order.unitPrice,
+      order.totalPrice,
+      order.status,
+    ]);
+
+    doc.setFontSize(12);
+    doc.text("List of invoices", 10, 20);
+
+    // Thêm bảng vào PDF
+    doc.autoTable({
+      head: [
+        [
+          "Order ID",
+          "Modal ID",
+          "Brand Name",
+          "Seller Name",
+          "Unit Price",
+          "Total Price",
+          "Status",
+        ],
+      ],
+      body: tableData,
+      startY: 30,
+    });
+
+    // Thêm tổng tiền
+    const totalPrice = calculateTotalPrice();
+    doc.text(`Total: ${totalPrice}VND`, 10, doc.autoTable.previous.finalY + 10);
+
+    // Thêm chữ ký bên phải
+    const signatureY = doc.autoTable.previous.finalY + 20; // Vị trí Y của chữ ký
+    doc.text("Signature", 170, signatureY); // Chữ ký ở bên phải
+    doc.addImage(
+      imgData,
+      "PNG",
+      150, // X tọa độ bên phải
+      signatureY + 5, // Y tọa độ
+      50,
+      25
+    );
+
+    const timestamp = new Date().toISOString().replace(/[-T:\.Z]/g, "");
+    const fileName = `HoaDon_${timestamp}.pdf`;
+
+    doc.save(fileName);
   };
 
   const filterProps = (
@@ -198,7 +257,6 @@ const SellerOrder = () => {
         <FaChevronRight />
         <div className="font-bold">Quản Lý Đơn Hàng</div>
       </div>
-
       <div className="text-xl font-semibold py-4">Quản lý đơn hàng</div>
       <div className="w-full h-full p-8 flex flex-col">
         {filterProps}
@@ -212,9 +270,10 @@ const SellerOrder = () => {
               <Button
                 type="primary"
                 disabled={selectedRowKeys.length === 0}
+                onClick={exportToPDF}
                 loading={loading}
               >
-                Xuất Excel
+                Xuất Hóa Đơn
               </Button>
             </Space>
             <Table
@@ -223,6 +282,16 @@ const SellerOrder = () => {
               dataSource={generateDataSource()}
               pagination={{ pageSize: 5 }}
               loading={loading}
+              summary={() => (
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={1} colSpan={3}>
+                    Tổng cộng
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1} colSpan={3}>
+                    {calculateTotalPrice()}đ
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+              )}
             />
           </Space>
         </div>
