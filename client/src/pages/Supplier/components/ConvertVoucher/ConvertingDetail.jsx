@@ -132,7 +132,7 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
         setLoading(true);
         const response = await convertNewCode(mappedData);
 
-        if (response.result) {
+        if (response) {
           message.success("Dữ liệu đã được nhập và cập nhật thành công.");
           setVisible(false);
           setVouchers([]);
