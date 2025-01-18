@@ -1,20 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  DatePicker,
-  Dropdown,
-  Input,
-  Menu,
-  Select,
-  Space,
-  Table,
-} from "antd";
-import { FaChevronDown } from "react-icons/fa";
+import { Space, Table } from "antd";
 
 import { getSellerTransaction } from "../../../../api/wallet";
-
-const { Search } = Input;
-const { RangePicker } = DatePicker;
 
 const ListTransaction = () => {
   const [transactions, setTransactions] = useState([]);
