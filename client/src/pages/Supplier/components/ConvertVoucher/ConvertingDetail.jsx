@@ -8,7 +8,7 @@ import {
 } from "../../../../api/vouchercode";
 
 const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
-  const [vouchers, setVouchers] = useState([]); // Use an array for multiple vouchers
+  const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
         setLoading(true);
         try {
           const response = await getVoucherConvertingByID(voucherId);
-          setVouchers(response.results); // Store all vouchers from the response
+          setVouchers(response.results);
         } catch (error) {
           message.error("Lỗi khi tải thông tin voucher.");
           console.error("Error fetching voucher details:", error);
@@ -30,9 +30,9 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
     if (visible && voucherId) {
       fetchVoucherDetails();
     } else {
-      setVouchers([]); // Reset vouchers if modal is closed
+      setVouchers([]);
     }
-  }, [visible, voucherId]); // Re-fetch data when modal is opened
+  }, [visible, voucherId]);
 
   const columns = [
     {
@@ -41,7 +41,7 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
       key: "name",
     },
     {
-      title: "Modal Name",
+      title: "Tên Biến Thể",
       dataIndex: "modalname",
       key: "modalname",
     },
@@ -85,11 +85,9 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
     endDate: voucher.endDate,
   }));
 
-  // Xuất Excel với các cột id, name, modalname, modalId, status, newCode, code, image, startDate, endDate
   const handleExportExcel = () => {
     const wb = XLSX.utils.book_new();
 
-    // Lấy dữ liệu cần thiết cho xuất Excel
     const exportData = vouchers.map((voucher) => ({
       id: voucher.id,
       name: voucher.name,
@@ -108,11 +106,10 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
     const ws = XLSX.utils.json_to_sheet(exportData);
     XLSX.utils.book_append_sheet(wb, ws, "VoucherDetails");
 
-    const fileName = `${voucherId}.xlsx`; // Tên file theo ID voucher
+    const fileName = `${voucherId}.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
-  // Nhập Excel
   const handleImportExcel = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -124,7 +121,6 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
       const ws = wb.Sheets[wb.SheetNames[0]];
       const data = XLSX.utils.sheet_to_json(ws);
 
-      // Map data to API structure
       const mappedData = data.map((row) => ({
         id: row.id,
         newCode: row.newCode,
@@ -134,15 +130,24 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
 
       try {
         setLoading(true);
-        await convertNewCode(mappedData);
-        message.success("Dữ liệu đã được nhập và cập nhật thành công.");
-        setVisible(false);
-        setVouchers([]);
+        const response = await convertNewCode(mappedData);
+
+        if (response.result) {
+          message.success("Dữ liệu đã được nhập và cập nhật thành công.");
+          setVisible(false);
+          setVouchers([]);
+        } else {
+          message.error(response.message || "Đã xảy ra lỗi khi xử lý dữ liệu.");
+        }
       } catch (error) {
-        message.error("Lỗi khi nhập dữ liệu từ Excel.");
-        console.error("Error importing data:", error);
+        // Kiểm tra phản hồi lỗi chi tiết từ API
+        const errorMessage =
+          error.response?.data?.message || "Đã xảy ra lỗi không xác định.";
+        message.error(`Lỗi khi nhập dữ liệu: ${errorMessage}`);
+        console.error("Error importing data:", error.response || error);
       } finally {
         setLoading(false);
+        e.target.value = ""; // Reset input file
       }
     };
     reader.readAsBinaryString(file);
@@ -165,20 +170,23 @@ const ConvertingDetail = ({ visible, setVisible, voucherId, onCancel }) => {
           Xuất Excel
         </Button>
 
-        {/* Ẩn input file, chỉ hiển thị nút "Nhập Excel" */}
         <input
           type="file"
           accept=".xlsx, .xls"
           onChange={handleImportExcel}
-          style={{ display: "none" }} // Ẩn input file
-          id="import-excel" // Id để tương tác
+          style={{ display: "none" }}
+          id="import-excel"
         />
-        <Button
-          type="default"
-          onClick={() => document.getElementById("import-excel").click()} // Kích hoạt input file khi người dùng nhấn vào nút "Nhập Excel"
-        >
-          Nhập Excel
-        </Button>
+        {vouchers[0]?.status === "CONVERTING" ? (
+          <Button
+            type="default"
+            onClick={() => document.getElementById("import-excel").click()}
+          >
+            Nhập Excel
+          </Button>
+        ) : (
+          ""
+        )}
       </div>
 
       {loading ? (
