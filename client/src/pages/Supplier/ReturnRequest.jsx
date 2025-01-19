@@ -368,10 +368,23 @@ const ReturnRequest = () => {
         {selectedDetails && (
           <div className="p-4 space-y-4 text-gray-700">
             <div className="flex flex-col">
-              <p>
-                <span className="font-medium">Mã Code:</span>{" "}
-                {selectedDetails.voucherCode?.code}
-              </p>
+              <div className="flex space-x-4">
+                <p>
+                  <span className="font-medium">Mã Code:</span>{" "}
+                  {selectedDetails.voucherCode?.code}
+                </p>
+                <div>
+                  <span className="font-medium">Tọa độ:</span>{" "}
+                  <a
+                    href={`https://www.google.com/maps?q=${selectedDetails.lat},${selectedDetails.lon}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    {selectedDetails.lat}, {selectedDetails.lon}
+                  </a>
+                </div>
+              </div>
               <p>
                 <span className="font-medium">Thương hiệu:</span>{" "}
                 {selectedDetails.voucherCode?.brand}
