@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import ProgressBar from "@ramonak/react-progress-bar";
+import { Progress } from "antd";
 
 import { AiFillAccountBook } from "react-icons/ai";
 import { FaChevronDown, FaChevronRight, FaPlus } from "react-icons/fa6";
@@ -45,13 +45,14 @@ const SellerProduct = () => {
         <div className="w-full flex bg-white rounded-xl px-4 justify-between py-4">
           <div className="flex items-center space-x-2">
             <div className="">Tổng quan sản phẩm</div>
-            <div className="w-225">
-              <ProgressBar
-                completed={(totalVoucher / 100) * 100}
-                bgColor={"#33acc7"}
+            <div className="w-225 items-center">
+              <Progress
+                percent={(totalVoucher / 100) * 100}
+                strokeColor="#33acc7"
+                format={(percent) => `${Math.round(percent)}%`}
               />
             </div>
-            <div>{totalVoucher}/100</div>
+            {/* <div>{totalVoucher}/100</div> */}
           </div>
           <div className="space-x-2 flex items-center text-primary">
             <div>Chi tiết</div>

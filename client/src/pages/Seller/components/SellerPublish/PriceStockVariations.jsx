@@ -142,7 +142,7 @@ const PriceStockVariations = ({ setModals }) => {
                     >
                       <Input addonAfter="₫" min={0} type="number" step="1000" />
                     </Form.Item>
-                    <Form.Item
+                    {/* <Form.Item
                       label="Mở bán"
                       labelCol={{ span: 24 }}
                       wrapperCol={{ span: 24 }}
@@ -150,7 +150,7 @@ const PriceStockVariations = ({ setModals }) => {
                       className="flex-1"
                     >
                       <Switch defaultChecked={true} />
-                    </Form.Item>
+                    </Form.Item> */}
                   </div>
                   <Form.Item
                     label="Ảnh"
